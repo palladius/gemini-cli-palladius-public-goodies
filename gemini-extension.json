@@ -1,0 +1,12 @@
+{
+  "name": "palladius-public-goodies",
+  "displayName": "Riccardos Public Goodies",
+  "version": "0.0.1",
+  "description": "Riccardos public Gemini CLI commands and skills for inspiration.",
+  "author": "Riccardo Carlesso",
+  "repository": "https://github.com/palladius/gemini-cli-palladius-public-goodies",
+  "homepage": "https://github.com/palladius/gemini-cli-palladius-public-goodies#readme",
+  "license": "Apache-2.0",
+  "commands": [
+  ]
+}
