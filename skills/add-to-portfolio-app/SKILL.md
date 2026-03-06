@@ -1,7 +1,7 @@
 ---
 name: add-to-portfolio-app
 description: 
-    Adds a new Talk or Article to Riccardo personal portfolio application. This is a placeholder and needs to be filled out.
+    (💛) Adds a new Talk or Article to Riccardo personal portfolio application. This is a placeholder and needs to be filled out.
 ---
 # Add to Portfolio App Skill
 
