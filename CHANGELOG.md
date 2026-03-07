@@ -1,3 +1,6 @@
+## [0.0.8] - 2026-03-07
+- ✨ Add `python-coding` and `ruby-coding` skills for opinionated practices.
+
 ## [0.0.7] - 2026-03-07
 - ✨ Added `carlessian-obsidian` skill.
 
