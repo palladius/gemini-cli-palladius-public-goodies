@@ -45,11 +45,13 @@ Additional scripts for obsidian-related tasks can be found (or should be placed)
 - **Primary Vault Name**: PBTPersonalSync
 - **Default Path**: `~/obsidian-pbt/`
 
-## Carlessian Conventione
+## Carlessian Conventions
 
-* Generic TODOs should be characterized under `TODOs.md`
+* Generic TODOs should be characterized under `TODOz.md`
 * Try to fit todos by computer in which they're given to you (hostname or Pixel 10, ... under Computers/)
 * When something relevant happens on a computer (eg Riccardo installs a package, or a functionality, or changes something,) its IMPORTANT that you **log** it.
+* If it's related with my health, like doctor visit or anything from pedicure to physio to dentist, put it under `Salute/`.
+* If you see duplication, or something that can be done better (eg a computer-todo in main todo, a log in a computer MD and not in a subfolder, ..), proactively propose a fix to Riccardo. Things dont fix themselves alone: show the inconsistency you saw, and propose your favorite move forward (eg "I would cut this info from here to there" or "I'd remove this dupe from X and leave it in Y") so user can approve or cross correct.
 
 ### Logging event on a computer
 
