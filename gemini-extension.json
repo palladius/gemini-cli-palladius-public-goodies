@@ -1,7 +1,7 @@
 {
   "name": "palladius-public-goodies",
   "displayName": "Riccardos Public Goodies",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "(💛) Riccardos public Gemini CLI commands and skills for inspiration. This is more for study than public consumption. Might contain Riccardo-hard-coded facts like I cant code Typescript. Use at your own risk.",
   "author": "Riccardo Carlesso",
   "repository": "https://github.com/palladius/gemini-cli-palladius-public-goodies",

@@ -1,3 +1,6 @@
+## [0.0.7] - 2026-03-07
+- ✨ Added `carlessian-obsidian` skill.
+
 ## [0.0.6] - 2026-03-06
 - 💛 Ensured yellow heart emoji usage for all public skill descriptions.
 
