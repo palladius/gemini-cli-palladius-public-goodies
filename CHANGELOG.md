@@ -1,9 +1,3 @@
-## [0.0.11] - 2026-03-08
-
-- ✨ Ported and updated `lobby-on-pupurabbux` skill from private repo.
-- 📸 Added image correlation example from 2026-03-07.
-- 🛠️ Added `find_yesterday_images.rb` utility script.
-
 ## [0.0.10] - 2026-03-08
 
 - ✨ Added `typescript-coding` skill with Riccardo's opinionated (mostly hands-off) approach.
