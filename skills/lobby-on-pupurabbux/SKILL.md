@@ -31,4 +31,7 @@ You can cross-correlate the two in two ways:
 ## Automation
 
 Use the provided script to find and correlate images:
-`./scripts/find_yesterday_images.rb`
+`./scripts/find_images.rb [YYYY-MM-DD]`
+
+- Defaults to today's date if no argument is provided.
+- Use `find_images.rb 2026-03-07` to find images from yesterday.

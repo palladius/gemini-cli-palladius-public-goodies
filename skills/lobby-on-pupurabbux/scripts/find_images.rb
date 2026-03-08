@@ -1,7 +1,10 @@
 #!/usr/bin/env ruby
-# (💛) find_yesterday_images.rb
-# This script finds images from yesterday in OpenClaw inbound and nano_banana folders.
+# (💛) find_images.rb
+# This script finds images on a specific date in OpenClaw inbound and nano_banana folders.
 # It uses Riccardo's preferred style: Colorful and emoji-friendly.
+#
+# Usage: ./find_images.rb [YYYY-MM-DD]
+# Defaults to TODAY if no date is provided.
 
 require 'date'
 
@@ -11,10 +14,19 @@ PIXAR_DIR = "/home/riccardo/.openclaw/workspace/nano_banana"
 MAPPING_FILE = "/home/riccardo/.openclaw/workspace/banana_mapping.csv"
 
 # Time setup
-target_date = (Date.today - 1).strftime("%Y-%m-%d")
-next_day = Date.today.strftime("%Y-%m-%d")
+begin
+  input_date = ARGV[0] || Date.today.to_s
+  target_date_obj = Date.parse(input_date)
+rescue ArgumentError
+  puts "❌ Invalid date format: #{ARGV[0]}. Please use YYYY-MM-DD."
+  exit 1
+end
 
-puts "🔍 Looking for images from yesterday (#{target_date})..."
+target_date = target_date_obj.strftime("%Y-%m-%d")
+next_day = (target_date_obj + 1).strftime("%Y-%m-%d")
+
+day_label = (target_date_obj == Date.today) ? "today" : ((target_date_obj == Date.today - 1) ? "yesterday" : target_date)
+puts "🔍 Looking for images from #{day_label} (#{target_date})..."
 
 # Check if directories exist
 unless Dir.exists?(INBOUND_DIR) && Dir.exists?(PIXAR_DIR)
@@ -30,7 +42,7 @@ output = `#{cmd}`
 if output.empty?
   puts "📭 No images found for #{target_date}."
 else
-  puts "✨ Found the following images from yesterday:"
+  puts "✨ Found the following images from #{day_label}:"
   output.each_line do |line|
     time, path = line.split(' ')
     # Make it beautiful with emojis
