@@ -1,6 +1,11 @@
+## [0.0.10] - 2026-03-08
+
+- ✨ Added `typescript-coding` skill with Riccardo's opinionated (mostly hands-off) approach.
+
 ## [0.0.9] - 2026-03-08
 
 - ✨ Riccardo modified `python-coding` and `ruby-coding` skills with his real opinions.
+- ✨ Added `openclaudio-update-advisor` skill.
 
 ## [0.0.8] - 2026-03-07
 
