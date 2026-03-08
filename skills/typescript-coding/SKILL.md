@@ -17,8 +17,14 @@ version: 0.1
 Riccardo is primarily a Ruby and Python developer and finds TypeScript/JavaScript complex. Therefore:
 
 1. **Avoid if possible:** Only use TypeScript/JavaScript when it's the only viable option (e.g., frontend development with React/Angular or specific Node.js-only libraries). If a task can be done in Ruby or Python, prefer those.
-2. **Extreme Documentation:** Document the code thoroughly, as if explaining it to someone with no prior JavaScript experience (or a 13-year-old). Explain the *why* and *how* of every non-trivial block.
+2. **Extreme Documentation:** Document the code thoroughly, as if explaining it to someone with no prior JavaScript experience (or a 13-year-old). Explain the _why_ and _how_ of every non-trivial block.
 3. **Minimalism:** Keep the code as simple and flat as possible. Avoid complex design patterns that are common in large JS codebases but hard to follow for outsiders.
 4. **Maintainability:** Since this is not Riccardo's primary language, the code must be exceptionally clear so he can understand and maintain it months later without a deep dive into JS documentation.
 5. **No "Magic":** Avoid clever tricks or obscure JS features. Stick to well-understood, standard patterns.
 6. **Beauty & Emojis:** Even in TypeScript, keep the CLI outputs (if any) beautiful, colorful, and emoji-friendly.
+7. Add all constants on TOP of the page with few spaces before code. Yes, even a rubyist can touch a GEMINI_MODEL = 'Gemini-2.5-pro' on top of a file. Leave constants ABOVe the big multiline explaination of what the file does.
+
+## Avoid bloating of code
+
+1. Ensure node_modules/ is git ignored.
+2. Ensure there's a `just clean` which (among other things) deletes node_modules/.
