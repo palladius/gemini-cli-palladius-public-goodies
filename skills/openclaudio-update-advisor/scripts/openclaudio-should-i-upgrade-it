@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# openclaudio-should-i-upgrade-it - Analisi acida e pigra sulla stabilità di OpenClaudio.
+
+# 1. Recupero la versione attuale
+CURRENT_VERSION=$(openclaw --version 2>/dev/null || echo "Boh, ignota")
+
+# 2. Recupero le ultime release da GitHub
+RELEASES=$(gh release list --repo "openclaw/openclaw" --limit 5)
+
+# 3. Recupero gli ultimi bug aperti
+ISSUES=$(gh issue list --repo "openclaw/openclaw" --limit 15)
+
+# 4. Preparo il prompt per gemini
+PROMPT="Sono bloccato su OpenClaudio versione '$CURRENT_VERSION'. 
+Le ultime release 'miracolose' sono:
+$RELEASES
+
+Gli ultimi disastri (issue) aperti nel repository sono:
+$ISSUES
+
+Analizza questi dati e dimmi se devo aggiornare OpenClaudio o se è meglio darsi all'ippica. 
+Sii sarcastico, divertente e usa molte emoji 🤡. Non risparmiare critiche se la versione nuova è un colabrodo (specialmente se c'è puzza di leak di log in chat come nella #39643).
+
+Voglio questo formato:
+1. Una recensione acida e spiritosa dello stato del repo.
+2. Raccomandazione secca (SI/NO/ASPETTA).
+3. PROPOSAL: Un comando bash di una riga da copiare e incollare per procedere (es. 'openclaw update' se SI, o un comando ironico tipo 'sleep 3600 && drink_coffee' se NO).
+
+Divertiti, ma non farmi rompere tutto, cazzo."
+
+# 5. Eseguo l'analisi e la passo a glow se disponibile
+echo "🤮 Sto annusando il codice di OpenClaudio per vedere se puzza..."
+echo "--------------------------------------------------------------------------------"
+
+# Rilevamento di glow
+GLOW_BIN=$(which glow)
+
+if [ -n "$GLOW_BIN" ]; then
+    # Se glow esiste, passiamo l'output per un rendering Markdown da urlo
+    gemini -e none --approval-mode plan -p "$PROMPT" | "$GLOW_BIN" -
+else
+    # Altrimenti output testuale standard
+    gemini -e none --approval-mode plan -p "$PROMPT"
+fi
+
+echo "--------------------------------------------------------------------------------"
