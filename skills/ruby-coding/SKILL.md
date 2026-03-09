@@ -2,7 +2,9 @@
 name: Ruby Coding Best Practices
 description: (💛) Opinionated Ruby coding practices and standards.
 tags: ruby, development, best-practices
-version: 0.1
+version: 0.2
+# v02 9mar26 Added blocks and symbols + nanobanana
+# v01 7mar26 Initial.
 ---
 
 ## Ruby Best Practices
@@ -10,8 +12,6 @@ version: 0.1
 - **RVM/rbenv:** Use a version manager for Ruby.
 - **StandardRB:** Prefer StandardRB for linting and formatting.
 - **Bundler:** Always use Bundler for dependency management.
-
-(Add your opinionated ideas here)
 
 ## Riccardo opinionations
 
@@ -22,6 +22,21 @@ version: 0.1
 5. Riccardo likes it colorful and emojiful. I like `lolcat` and `rainbow` gems.
 6. Use env ruby as shebang.
 7. I don't speak JavaScirpt and friends => reduce JS to a minimum, use Ruby whenever you can, in doubt. If you have to use JS, make sure to document throughly like I was a 13yr old.
+
+## Ruby idiosyncrasies
+
+- I love the symbols. Whenever you have a small constant string, like "foobar" use :foobar if it makes sense.
+- I love BLOCKs. Whenever a variable is repeated many times, feel free to use them for readability.
+- I tolerate =begin/-end -> but only on top of ruby files to explain what they do.
+
+## Image Generation of Ruby Logo (NanoBanana)
+
+I find it DIFFICULT to design ruby logos, so I found two ways to create ruby logos:
+
+- **Brilliant-cut ruby** (maybe add pentagonal to it or vertical view, as opposed to aerial view which is wrong)
+- **Red diamond** (while more imprecise, this usually gets the job done and gets the right color!)
+
+If you experiment with this and find a better implementation which works, PLEASE ask Riccardo to piggyback it into this skill!
 
 ### Versions
 
