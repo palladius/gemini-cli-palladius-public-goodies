@@ -2,7 +2,9 @@
 name: Python Coding Best Practices
 description: (💛) Opinionated Python coding practices and standards.
 tags: python, development, best-practices
-version: 0.1
+version: 0.2
+# 9mar26 0.2 added dotenv and references the main fil which was NOT used in previous iteration...
+# 6mar26 0.1 initial stesure
 ---
 
 ## Python Best Practices
@@ -24,3 +26,4 @@ Code needs to be readable an maintainable. Therefore:
 - Use standard naming, understood by Terraform/Pulumi, rather than random ones, like 'GOOGLE_CLOUD_PROJECT' is better than 'MY_PROJECT' or 'PROJECT_ID'.
 - Riccardo likes it colorful and emoji-ful. I like `glow` outputs, and nice tables. I'm a CLI guy, but I still love beauty in a CLI.
 - Beauty by default, but convenience also (maybe an output supports a nice good looking text but can also be served as --json to be parsed by jq or passed to an LLM).
+- for CLI apps, use `dotenv` by default, as in the sample `main.py`: its easy to pick up gemini api keys and stuff! So its a life saver!
