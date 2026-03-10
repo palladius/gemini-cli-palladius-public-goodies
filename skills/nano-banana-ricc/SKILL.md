@@ -1,7 +1,10 @@
 ---
 name: nano-banana-pro
-description: 🔴 Generate or edit images via Gemini 3 Pro Image (Nano Banana Pro).
+description: (💛) Generate or edit images via Gemini 3 Pro Image (Nano Banana Pro).
 homepage: https://ai.google.dev/
+version: 0.2
+# 10mar26 v0.2 Added emojis and some suggestions.
+# ??? v0.1 Initial copy I believe from openclaw skills
 metadata:
   {
     "openclaw":
