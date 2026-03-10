@@ -1,3 +1,11 @@
+## [0.1.0] - 2026-03-10
+
+- ✨ `nano-banana-ricc` skill character consistency works and has been sdoganated!
+
+## [0.0.13] - 2026-03-10
+
+- ✨ Added `nano-banana-ricc` skill for generating images with Riccardo character consistency using a specialized image asset set.
+
 ## [0.0.12] - 2026-03-10
 
 - 🔄 Replaced `nanobanana-milan-demo` with `imagen-milan-demo` and `imagen-zurich-demo` skills.
