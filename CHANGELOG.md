@@ -1,3 +1,7 @@
+## [0.0.12] - 2026-03-10
+
+- 🔄 Replaced `nanobanana-milan-demo` with `imagen-milan-demo` and `imagen-zurich-demo` skills.
+
 ## [0.0.10] - 2026-03-08
 
 - ✨ Added `typescript-coding` skill with Riccardo's opinionated (mostly hands-off) approach.
