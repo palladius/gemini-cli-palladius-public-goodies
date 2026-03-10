@@ -1,8 +1,12 @@
-## [0.1.0] - 2026-03-10
+## [0.1.1] - 2026-03-10 @derek
+
+- Nothing really just updated docs and git merged.
+
+## [0.1.0] - 2026-03-10 @pupurabbux
 
 - ✨ `nano-banana-ricc` skill character consistency works and has been sdoganated!
 
-## [0.0.13] - 2026-03-10
+## [0.0.13] - 2026-03-10 @pupurabbux
 
 - ✨ Added `nano-banana-ricc` skill for generating images with Riccardo character consistency using a specialized image asset set.
 
