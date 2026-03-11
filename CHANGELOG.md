@@ -1,3 +1,7 @@
+## [0.1.2] - 2026-03-11
+
+- 🔄 Bumped version and checked repository updates -- gc-skillume-bot-v0_1.
+
 ## [0.1.1] - 2026-03-10 @derek
 
 - Nothing really just updated docs and git merged.
