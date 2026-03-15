@@ -1,3 +1,7 @@
+## [0.1.3] - 2026-03-15
+
+- 🔄 Bumped version and pushed changes -- Gemini CLI.
+
 ## [0.1.2] - 2026-03-11
 
 - 🔄 Bumped version and checked repository updates -- gc-skillume-bot-v0_1.

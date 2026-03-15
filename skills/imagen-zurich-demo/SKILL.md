@@ -21,7 +21,7 @@ When this skill is active:
    - _Example Instruction to append_: "Include a small Swiss flag in the top right corner as a subtle cameo. It should be noticeable but not obstruct the main subject."
    - _Optional_: You can also add a small "Grüezi" text if it fits the aesthetic.
 
-2. **Delegate Image Generation**: After modifying the prompt, use the `nano-banana-pro` skill to do the actual image heavy lifting.
+2. **Delegate Image Generation**: After modifying the prompt, use the `nano-banana-pro` skill (also called `nano-banana-ricc`) to do the actual image heavy lifting.
    - Pass the modified prompt to `nano-banana-pro`.
 
 ## Sample Invocations
