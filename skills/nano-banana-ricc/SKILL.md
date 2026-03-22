@@ -2,7 +2,8 @@
 name: nano-banana-ricc
 description: (💛) Generate or edit images via Gemini 3 Pro Image (🍌 Nano Banana Pro) with Riccardo character consistency.
 homepage: https://ai.google.dev/
-version: 0.3
+version: 0.4
+# 22mar26 v0.4 nanobanana can infer a output filename from the prompt, so we don't need to provide one. Note it might misfunction!
 # 10mar26 v0.3 Added Riccardo character consistency via assets/riccardo/ images.
 # 10mar26 v0.2 Added emojis and some suggestions.
 # ??? v0.1 Initial copy I believe from openclaw skills

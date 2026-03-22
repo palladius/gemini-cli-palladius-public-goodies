@@ -81,7 +81,20 @@ def main():
     client = genai.Client(api_key=api_key)
 
     # Set up output path
-    output_path = Path(args.filename)
+    # Lobby patch: use NANOBANANA_OUTPUT_FOLDER if provided
+    filename = args.filename
+    if not filename.lower().endswith('.png'):
+        filename += '.png'
+        
+    output_folder = os.environ.get("NANOBANANA_OUTPUT_FOLDER", "nano_banana/")
+
+    # Only prepend folder if filename is not already an absolute path
+    if output_folder and not os.path.isabs(filename):
+        # Resolve output_folder relative to CWD (workspace)
+        Path(output_folder).mkdir(parents=True, exist_ok=True)
+        filename = os.path.join(output_folder, filename)
+
+    output_path = Path(filename)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Load input images if provided (up to 14 supported by Nano Banana Pro)
