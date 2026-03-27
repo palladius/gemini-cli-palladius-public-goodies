@@ -1,3 +1,7 @@
+## [0.1.4] - 2026-03-27
+
+- ✨ Added `musicgen-lyria3` skill for generating music with lyrics using the Google Lyria 3 model (script v0.0.4 with lyrics/metadata saving).
+
 ## [0.1.3] - 2026-03-15
 
 - 🔄 Bumped version and pushed changes -- Gemini CLI.

@@ -6,22 +6,24 @@
 # ]
 # ///
 
+import sys
+import argparse
+from google import genai
+from google.genai import types
+
+__version__ = "0.0.4"
+
 '''
 Lyria 3 Music Generation Script
 -------------------------------
 This script generates 30-second music clips using Google's Lyria 3 model.
 
-Usage:
-    uv run musicgen-lyria3.py --prompt "A fast-paced EDM track with heavy bass"
-
-Requirements:
-    - uv (recommended) or google-genai package
-    - GOOGLE_API_KEY environment variable (if not using ADC)
+Changelog:
+- 0.0.4: Added colorful emojis directly to STDOUT reporting for a cleaner UI output.
+- 0.0.3: Requires prompt, prints suggestions if empty, and saves generated lyrics/metadata to a matching .txt file.
+- 0.0.2: Added argparse with --prompt and --output-file flags. Auto-append .mp3 extension. Update shebang to uv and add PEP 723 metadata.
+- 0.0.1: Initial basic script with hardcoded prompt.
 '''
-
-import argparse
-from google import genai
-from google.genai import types
 
 def main():
     parser = argparse.ArgumentParser(
@@ -31,14 +33,36 @@ def main():
     parser.add_argument(
         "-p", "--prompt", 
         type=str, 
-        default="Create a 30-second cheerful acoustic folk song with guitar and harmonica.", 
+        default=None, 
         help="The text prompt describing the music you want the AI to generate."
+    )
+    parser.add_argument(
+        "-o", "--output-file", 
+        type=str, 
+        default="clip.mp3", 
+        help="The filename to save the generated audio to. Defaults to clip.mp3."
+    )
+    parser.add_argument(
+        "-v", "--version",
+        action="version",
+        version=f"%(prog)s {__version__}"
     )
     args = parser.parse_args()
 
+    if not args.prompt:
+        print("❌ Error: The script will not generate anything without a prompt.")
+        print("\nTry using one of these prompts:")
+        print("  ./musicgen-lyria3.py -p \"A fast-paced EDM track with heavy bass\"")
+        print("  ./musicgen-lyria3.py -p \"Cinematic orchestral trailer music with thundering drums and sweeping strings\"")
+        sys.exit(1)
+
+    output_filename = args.output_file
+    if not output_filename.endswith(".mp3"):
+        output_filename += ".mp3"
+
     client = genai.Client()
 
-    print(f"Generating music for prompt: '{args.prompt}'...")
+    print(f"🎸 Generating music for prompt: \033[36m'{args.prompt}'\033[0m...")
     try:
         response = client.models.generate_content(
             model="lyria-3-clip-preview",
@@ -49,18 +73,25 @@ def main():
         )
 
         # Parse the response
+        text_content = ""
         found_audio = False
         for part in response.parts:
             if part.text is not None:
-                print(f"Model response: {part.text}")
+                text_content += part.text + "\n"
             elif part.inline_data is not None:
-                with open("clip.mp3", "wb") as f:
+                with open(output_filename, "wb") as f:
                     f.write(part.inline_data.data)
-                print("✅ Audio saved to clip.mp3")
+                print(f"🎵 Audio saved to \033[32m{output_filename}\033[0m")
                 found_audio = True
+
+        if text_content.strip():
+            text_filename = output_filename[:-4] + ".txt"
+            with open(text_filename, "w") as f:
+                f.write(text_content.strip() + "\n")
+            print(f"📝 Lyrics and metadata saved to \033[34m{text_filename}\033[0m")
         
         if not found_audio:
-            print("❌ No audio was generated in the response.")
+            print("⚠️ No audio was generated in the response.")
 
     except Exception as e:
         print(f"❌ Error generating music: {str(e)}")
