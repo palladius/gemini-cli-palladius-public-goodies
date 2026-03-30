@@ -55,6 +55,10 @@
 - 🔄 Added automated context fetching for ADK documentation via `fetch_context.py`.
 - 📚 Added cross-language ADK references for TypeScript and Go.
 
+## [0.1.6] - 2026-03-30
+### Added
+- ✨ Added `git-best-practices` skill to enforce safe git usage and version bumping rules.
+
 ## [0.1.5] - 2026-03-30
 ### Removed
 - Moved `musicgen-lyria3` to SRE extension repo.
