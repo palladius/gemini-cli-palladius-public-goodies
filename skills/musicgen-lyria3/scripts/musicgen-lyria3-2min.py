@@ -11,14 +11,15 @@ import argparse
 from google import genai
 from google.genai import types
 
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 
 '''
 Lyria 3 Music Generation Script
 -------------------------------
-This script generates 30-second music clips using Google's Lyria 3 model.
+This script generates 2-minute full-length songs using Google's Lyria 3 model.
 
 Changelog:
+- 0.0.5: Added 2-minute full-song generator support using lyria-3-pro-preview.
 - 0.0.4: Added colorful emojis directly to STDOUT reporting for a cleaner UI output.
 - 0.0.3: Requires prompt, prints suggestions if empty, and saves generated lyrics/metadata to a matching .txt file.
 - 0.0.2: Added argparse with --prompt and --output-file flags. Auto-append .mp3 extension. Update shebang to uv and add PEP 723 metadata.
@@ -27,8 +28,8 @@ Changelog:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate 30-second Lyria 3 music clips using Google GenAI.",
-        epilog="Example usage: ./musicgen-lyria3.py --prompt \"A fast-paced EDM track with heavy bass\""
+        description="Generate 2-minute full-length Lyria 3 songs using Google GenAI.",
+        epilog="Example usage: ./musicgen-lyria3-2min.py --prompt \"A fast-paced EDM track with heavy bass\""
     )
     parser.add_argument(
         "-p", "--prompt", 
@@ -52,8 +53,8 @@ def main():
     if not args.prompt:
         print("❌ Error: The script will not generate anything without a prompt.")
         print("\nTry using one of these prompts:")
-        print("  ./musicgen-lyria3.py -p \"A fast-paced EDM track with heavy bass\"")
-        print("  ./musicgen-lyria3.py -p \"Cinematic orchestral trailer music with thundering drums and sweeping strings\"")
+        print("  ./musicgen-lyria3-2min.py -p \"A fast-paced EDM track with heavy bass\"")
+        print("  ./musicgen-lyria3-2min.py -p \"Cinematic orchestral trailer music with thundering drums and sweeping strings\"")
         sys.exit(1)
 
     output_filename = args.output_file
@@ -65,7 +66,7 @@ def main():
     print(f"🎸 Generating music for prompt: \033[36m'{args.prompt}'\033[0m...")
     try:
         response = client.models.generate_content(
-            model="lyria-3-clip-preview",
+            model="lyria-3-pro-preview",
             contents=args.prompt,
             config=types.GenerateContentConfig(
                 response_modalities=["AUDIO", "TEXT"],
