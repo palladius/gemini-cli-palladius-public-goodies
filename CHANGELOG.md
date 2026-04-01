@@ -1,3 +1,7 @@
+## [0.1.7] - 2026-03-30
+
+- 🔄 Renamed `git-best-practices` skill to `Git Coding Best Practices` (under `skills/git-coding/`) for consistency with other coding-related skills.
+
 ## [0.1.4] - 2026-03-27
 
 - ✨ Added `musicgen-lyria3` skill for generating music with lyrics using the Google Lyria 3 model (script v0.0.4 with lyrics/metadata saving).
