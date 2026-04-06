@@ -7,6 +7,17 @@ DEFAULT_VOICE="${DEFAULT_VOICE:-it-IT-GiuseppeNeural}"
 DEFAULT_SPEED="-10%"
 OPENAI_KEY="${OPENAI_API_KEY:-}"
 
+# Auto-detect channel based on target
+if [[ -z "$OCTTS_CHANNEL" ]]; then
+    if [[ "$TARGET" =~ ^\+ ]]; then
+        CHANNEL="whatsapp"
+    else
+        CHANNEL="telegram"
+    fi
+else
+    CHANNEL="$OCTTS_CHANNEL"
+fi
+
 VOICE=$DEFAULT_VOICE
 SPEED=$DEFAULT_SPEED
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -42,7 +53,10 @@ VOICE_NAME=$(echo "$VOICE" | sed -E 's/^[a-z]{2}-[A-Z]{2}-//' | sed 's/Neural//'
 SAFE_TEXT=$(echo "$TEXT" | tr -dc '[:alnum:]\n ' | tr '[:upper:]' '[:lower:]' | awk '{print $1"_"$2"_"$3}' | sed 's/_$//')
 [ -z "$SAFE_TEXT" ] && SAFE_TEXT="audio"
 
-TMP_FILE="$HOME/.openclaw/workspace/tmp/${VOICE_NAME}_${SAFE_TEXT}_$(date +%M%S).mp3"
+# Use authorized workspace tmp folder if possible
+TMP_BASE="$HOME/.openclaw/workspace/tmp"
+mkdir -p "$TMP_BASE"
+TMP_FILE="$TMP_BASE/${VOICE_NAME}_${SAFE_TEXT}_$(date +%M%S).mp3"
 
 echo "🎙️  Synthesizing with $VOICE (lang: $LANG, speed: $SPEED)..."
 
@@ -57,7 +71,7 @@ if [[ "$VOICE" == "echo" || "$VOICE" == "onyx" || "$VOICE" == "alloy" || "$VOICE
       -d "{ \"model\": \"tts-1\", \"input\": \"$TEXT\", \"voice\": \"$VOICE\" }" \
       --output "$TMP_FILE"
 else
-    # FIXED: Using full path for node_modules import
+    # Using absolute path for node_modules import
     node -e "
     import('$SCRIPT_DIR/node_modules/node-edge-tts/dist/edge-tts.js').then(async ({EdgeTTS}) => {
         try {
@@ -70,12 +84,12 @@ else
 fi
 
 if [ -s "$TMP_FILE" ]; then
-    echo "🚀 Sending via OpenClaw to $TARGET..."
+    echo "🚀 Sending via OpenClaw ($CHANNEL) to $TARGET..."
     if command -v openclaw >/dev/null 2>&1; then
-        openclaw message send --channel telegram --target "$TARGET" --media "$TMP_FILE"
+        openclaw message send --channel "$CHANNEL" --target "$TARGET" --media "$TMP_FILE"
     else
         # Fallback to local path if not in PATH
-        ~/git/openclaw/openclaw.mjs message send --channel telegram --target "$TARGET" --media "$TMP_FILE"
+        ~/git/openclaw/openclaw.mjs message send --channel "$CHANNEL" --target "$TARGET" --media "$TMP_FILE"
     fi
     rm -f "$TMP_FILE"
     echo "✅ Done!"

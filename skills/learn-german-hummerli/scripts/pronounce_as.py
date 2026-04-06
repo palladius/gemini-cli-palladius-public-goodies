@@ -13,7 +13,8 @@ def main():
     group.add_argument("--female", action="store_true", help="Use Frau Blücher 🐎 (Tutor)")
     parser.add_argument("-p", "--prompt", required=True, help="Text to pronounce")
     parser.add_argument("-s", "--speed", default="-10%", help="TTS Speed (default: -10%%)")
-    parser.add_argument("-t", "--target", help="Override chat ID")
+    parser.add_argument("-t", "--target", help="Override chat ID or phone number")
+    parser.add_argument("-c", "--channel", help="Specify channel (telegram, whatsapp, etc.)")
 
     args = parser.parse_args()
 
@@ -24,16 +25,15 @@ def main():
     env = os.environ.copy()
     if args.target:
         env["OCTTS_TARGET"] = args.target
-    elif "OCTTS_TARGET" not in env:
-        # Default target placeholder - update for your instance
-        env["OCTTS_TARGET"] = "" 
+    
+    if args.channel:
+        env["OCTTS_CHANNEL"] = args.channel
 
     # Look for octts in the skill's scripts directory first, then fallback
     base_dir = os.path.dirname(os.path.abspath(__file__))
     octts_path = os.path.join(base_dir, "octts-german")
     
     if not os.path.exists(octts_path):
-        # Fallback to system-wide openclaw location
         octts_path = os.path.expanduser("~/.openclaw/workspace/bin/octts")
     
     if not os.path.exists(octts_path):
@@ -42,7 +42,7 @@ def main():
 
     # Call the core octts utility
     cmd = [octts_path, voice, args.speed, args.prompt]
-    print(f"🎙️ Running: {' '.join(cmd)} (using {octts_path})")
+    print(f"🎙️ Running: {' '.join(cmd)}")
     subprocess.run(cmd, env=env)
 
 if __name__ == "__main__":
