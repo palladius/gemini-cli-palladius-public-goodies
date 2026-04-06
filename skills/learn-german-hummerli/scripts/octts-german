@@ -42,7 +42,7 @@ VOICE_NAME=$(echo "$VOICE" | sed -E 's/^[a-z]{2}-[A-Z]{2}-//' | sed 's/Neural//'
 SAFE_TEXT=$(echo "$TEXT" | tr -dc '[:alnum:]\n ' | tr '[:upper:]' '[:lower:]' | awk '{print $1"_"$2"_"$3}' | sed 's/_$//')
 [ -z "$SAFE_TEXT" ] && SAFE_TEXT="audio"
 
-TMP_FILE="$SCRIPT_DIR/tmp/${VOICE_NAME}_${SAFE_TEXT}_$(date +%M%S).mp3"
+TMP_FILE="$HOME/.openclaw/workspace/tmp/${VOICE_NAME}_${SAFE_TEXT}_$(date +%M%S).mp3"
 
 echo "🎙️  Synthesizing with $VOICE (lang: $LANG, speed: $SPEED)..."
 
