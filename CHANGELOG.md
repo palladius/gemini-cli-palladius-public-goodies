@@ -1,3 +1,7 @@
+## [0.1.8] - 2026-04-06
+
+- ✨ Moved `drawio` skill (v0.1) from `~/.openclaw/workspace/skills/drawio` on 2026-04-06.
+
 ## [0.1.7] - 2026-03-30
 
 - 🔄 Renamed `git-best-practices` skill to `Git Coding Best Practices` (under `skills/git-coding/`) for consistency with other coding-related skills.
