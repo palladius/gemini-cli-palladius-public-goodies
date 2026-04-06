@@ -30,7 +30,7 @@ def main():
 
     # Look for octts in the skill's scripts directory first, then fallback
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    octts_path = os.path.join(base_dir, "octts")
+    octts_path = os.path.join(base_dir, "octts-german")
     
     if not os.path.exists(octts_path):
         # Fallback to system-wide openclaw location

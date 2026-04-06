@@ -3,8 +3,8 @@
 # Uses OpenAI or Edge TTS APIs to create voice messages
 
 # Configuration
-TARGET="${OCTTS_TARGET:-605724096}"
-DEFAULT_VOICE="it-IT-GiuseppeNeural"
+TARGET="${OCTTS_TARGET:-}"
+DEFAULT_VOICE="${DEFAULT_VOICE:-it-IT-GiuseppeNeural}"
 DEFAULT_SPEED="-10%" # 1.25x
 OPENAI_KEY="${OPENAI_API_KEY:-}"
 
