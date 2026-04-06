@@ -1,11 +1,40 @@
 #!/bin/bash
 
+# ==============================================================================
+# 🦞 octts-german - OpenClaw Text-to-Speech Utility (German/Multilingual)
+# ==============================================================================
+#
+# This script generates text-to-speech audio using Edge TTS or OpenAI TTS
+# and sends it via OpenClaw to a specified target (Telegram or WhatsApp).
+#
+# FEATURES:
+# - Auto-detects WhatsApp targets (starting with '+') and Telegram IDs.
+# - Adds Artist metadata: "Frau Blücher @ HOSTNAME" or "Rijckard @ HOSTNAME".
+# - Sends native OGG Opus audio for WhatsApp (compatible as Voice Notes).
+# - Sends original MP3 audio for Telegram (preserves descriptive filenames).
+# - Generates descriptive filenames based on the prompt text and voice.
+# - Cleans up temporary audio files after successful delivery.
+#
+# USAGE:
+#   octts-german [voice] [speed] <message>
+#
+# EXAMPLES:
+#   # Using Hummerli skill Wrapper (Recommended):
+#   ./pronounce_as.py --female -t "+41123456789" -p "Guten Tag!"
+#
+#   # Direct Usage:
+#   export OCTTS_TARGET=605724096
+#   ./octts-german de-DE-KatjaNeural -10% "Hallo Welt!"
+#
+# ==============================================================================
+
 # Sanitized octts-german for portability
 # Configuration
 TARGET="${OCTTS_TARGET:-}"
 DEFAULT_VOICE="${DEFAULT_VOICE:-it-IT-GiuseppeNeural}"
 DEFAULT_SPEED="-10%"
 OPENAI_KEY="${OPENAI_API_KEY:-}"
+HOSTNAME_SHORT=$(hostname --short)
 
 # Auto-detect channel based on target
 if [[ -z "$OCTTS_CHANNEL" ]]; then
@@ -49,6 +78,16 @@ if [[ "$VOICE" =~ ^([a-z]{2}-[A-Z]{2})- ]]; then
     LANG="${BASH_REMATCH[1]}"
 fi
 
+# Determine Artist name for metadata
+if [[ "$VOICE" == "de-DE-KatjaNeural" ]]; then
+    ARTIST="Frau Blücher"
+elif [[ "$VOICE" == "de-DE-ConradNeural" ]]; then
+    ARTIST="Rijckard"
+else
+    ARTIST="OpenClaw TTS"
+fi
+ARTIST_FULL="$ARTIST @ $HOSTNAME_SHORT"
+
 VOICE_NAME=$(echo "$VOICE" | sed -E 's/^[a-z]{2}-[A-Z]{2}-//' | sed 's/Neural//' | tr '[:upper:]' '[:lower:]')
 SAFE_TEXT=$(echo "$TEXT" | tr -dc '[:alnum:]\n ' | tr '[:upper:]' '[:lower:]' | awk '{print $1"_"$2"_"$3}' | sed 's/_$//')
 [ -z "$SAFE_TEXT" ] && SAFE_TEXT="audio"
@@ -56,7 +95,9 @@ SAFE_TEXT=$(echo "$TEXT" | tr -dc '[:alnum:]\n ' | tr '[:upper:]' '[:lower:]' | 
 # Use authorized workspace tmp folder if possible
 TMP_BASE="$HOME/.openclaw/workspace/tmp"
 mkdir -p "$TMP_BASE"
+TMP_RAW="$TMP_BASE/${VOICE_NAME}_raw_$(date +%M%S).mp3"
 TMP_FILE="$TMP_BASE/${VOICE_NAME}_${SAFE_TEXT}_$(date +%M%S).mp3"
+OGG_FILE="$TMP_BASE/${VOICE_NAME}_${SAFE_TEXT}_$(date +%M%S).ogg"
 
 echo "🎙️  Synthesizing with $VOICE (lang: $LANG, speed: $SPEED)..."
 
@@ -69,30 +110,50 @@ if [[ "$VOICE" == "echo" || "$VOICE" == "onyx" || "$VOICE" == "alloy" || "$VOICE
       -H "Authorization: Bearer $OPENAI_KEY" \
       -H "Content-Type: application/json" \
       -d "{ \"model\": \"tts-1\", \"input\": \"$TEXT\", \"voice\": \"$VOICE\" }" \
-      --output "$TMP_FILE"
+      --output "$TMP_RAW"
 else
     # Using absolute path for node_modules import
     node -e "
     import('$SCRIPT_DIR/node_modules/node-edge-tts/dist/edge-tts.js').then(async ({EdgeTTS}) => {
         try {
             const tts = new EdgeTTS({voice: '$VOICE', lang: '$LANG', rate: '$SPEED'});
-            await tts.ttsPromise(\"$TEXT\", \"$TMP_FILE\");
+            await tts.ttsPromise(\"$TEXT\", \"$TMP_RAW\");
             process.exit(0);
         } catch(e) { console.error(e); process.exit(1); }
     }).catch(e => { console.error(e); process.exit(1); });
     "
 fi
 
-if [ -s "$TMP_FILE" ]; then
-    echo "🚀 Sending via OpenClaw ($CHANNEL) to $TARGET..."
-    if command -v openclaw >/dev/null 2>&1; then
-        openclaw message send --channel "$CHANNEL" --target "$TARGET" --media "$TMP_FILE"
+if [ -s "$TMP_RAW" ]; then
+    # Add metadata
+    echo "🏷️  Adding Artist metadata: $ARTIST_FULL"
+    ffmpeg -i "$TMP_RAW" -metadata artist="$ARTIST_FULL" -c copy -v quiet -y "$TMP_FILE"
+    rm -f "$TMP_RAW"
+
+    if [ "$CHANNEL" = "whatsapp" ]; then
+        echo "🔄 Converting to OGG Opus for WhatsApp voice note compatibility..."
+        ffmpeg -i "$TMP_FILE" -c:a libopus -b:a 32k -v quiet -y "$OGG_FILE"
+        FINAL_MEDIA="$OGG_FILE"
     else
-        # Fallback to local path if not in PATH
-        ~/git/openclaw/openclaw.mjs message send --channel "$CHANNEL" --target "$TARGET" --media "$TMP_FILE"
+        echo "✅ Keeping original MP3 format for Telegram to preserve filename..."
+        FINAL_MEDIA="$TMP_FILE"
     fi
-    rm -f "$TMP_FILE"
-    echo "✅ Done!"
+
+    if [ -s "$FINAL_MEDIA" ]; then
+        echo "🚀 Sending via OpenClaw ($CHANNEL) to $TARGET..."
+        if command -v openclaw >/dev/null 2>&1; then
+            openclaw message send --channel "$CHANNEL" --target "$TARGET" --media "$FINAL_MEDIA"
+        else
+            # Fallback to local path if not in PATH
+            ~/git/openclaw/openclaw.mjs message send --channel "$CHANNEL" --target "$TARGET" --media "$FINAL_MEDIA"
+        fi
+        rm -f "$TMP_FILE" "$OGG_FILE"
+        echo "✅ Done!"
+    else
+        echo "❌ Failed to prepare audio media."
+        rm -f "$TMP_FILE" "$OGG_FILE"
+        exit 1
+    fi
 else
     echo "❌ Failed to generate audio."
     exit 1
