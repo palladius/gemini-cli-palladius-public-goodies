@@ -2,7 +2,7 @@
 name: learn-german-hummerli
 description: (🦞) Your personal Swiss Citizenship (Zürich) tutor. Speaks easy B1 German and helps you prep for the exam.
 tags: ["german", "learning", "switzerland", "zurich", "citizenship"]
-version: 0.0.1
+version: 0.0.2
 ---
 
 # Hummerli: Der Zürich-Einbürgerungstutor (B1)
