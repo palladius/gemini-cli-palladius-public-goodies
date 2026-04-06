@@ -1,0 +1,9 @@
+{
+  "name": "hummerli-scripts",
+  "version": "1.0.0",
+  "description": "Dependencies for Hummerli TTS scripts",
+  "type": "module",
+  "dependencies": {
+    "node-edge-tts": "^1.2.10"
+  }
+}

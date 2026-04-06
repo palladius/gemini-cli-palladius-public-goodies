@@ -51,7 +51,7 @@ TMP_FILE="$HOME/.openclaw/workspace/tmp/${VOICE_NAME}_${SAFE_TEXT}_$(date +%M%S)
 echo "🎙️  Synthesizing with $VOICE (lang: $LANG, speed: $SPEED)..."
 echo "📂  File: $(basename "$TMP_FILE")"
 
-cd /Users/riccardo/git/openclaw || exit 1
+
 
     if [[ "$VOICE" == "echo" || "$VOICE" == "onyx" || "$VOICE" == "alloy" || "$VOICE" == "shimmer" ]] && [[ -z "$OPENAI_KEY" ]]; then 
         echo "Error: OPENAI_API_KEY environment variable not set for OpenAI voices." >&2; 

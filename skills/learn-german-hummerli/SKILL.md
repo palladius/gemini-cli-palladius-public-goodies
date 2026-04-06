@@ -53,3 +53,10 @@ Frau Blücher 🐎 should focus her questions on:
 ## ⚠️ Safety Rule
 - NEVER use Swiss German (Schweizerdeutsch) for the main teaching, only High German (Hochdeutsch), as the exam is in Hochdeutsch.
 - Keep the vocabulary within the B1 "Easy" range to build confidence.
+
+## 🚀 First-time Setup
+To use this skill on a new machine, you need to install the Node.js dependencies:
+\`\`\`bash
+cd {baseDir}/scripts/
+npm install
+\`\`\`
