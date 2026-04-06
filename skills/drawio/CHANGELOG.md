@@ -1,4 +1,5 @@
+# Changelog - drawio Skill
 
-... todo GC to fix in proper changelog style
+## [0.1.1] - 2026-04-06
 
-moved from openclaydio to here on 6apr26.
+- ✨ Moved skill (v0.1) from `~/.openclaw/workspace/skills/drawio` to `palladius-public-goodies`.
