@@ -70,7 +70,7 @@ if [[ "$VOICE" == "echo" || "$VOICE" == "onyx" || "$VOICE" == "alloy" || "$VOICE
       --output "$TMP_FILE"
 else
     # Edge TTS Path
-    node -e "
+    NODE_PATH="$(dirname "$0")/node_modules" node -e "
     import('node-edge-tts').then(async ({EdgeTTS}) => {
         try {
             const tts = new EdgeTTS({voice: '$VOICE', lang: '$LANG', rate: '$SPEED'});
