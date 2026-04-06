@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# Uses OpenAI or Edge TTS APIs to create voice messages
+
+# Configuration
+TARGET="${OCTTS_TARGET:-605724096}"
+DEFAULT_VOICE="it-IT-GiuseppeNeural"
+DEFAULT_SPEED="-10%" # 1.25x
+OPENAI_KEY="${OPENAI_API_KEY:-}"
+
+VOICE=$DEFAULT_VOICE
+SPEED=$DEFAULT_SPEED
+
+# Quick voice check
+case "$1" in
+    it-IT-*|de-DE-*|en-US-*|echo|onyx|alloy|shimmer|nova|fable)
+        VOICE="$1"
+        shift
+        ;;
+esac
+
+# Quick speed check
+if [[ "$1" =~ ^[0-9]+(\.[0-9]+)?x?$ ]] || [[ "$1" =~ ^[+-][0-9]+% ]]; then
+    SPEED="$1"
+    shift
+fi
+
+TEXT="$*"
+
+if [ -z "$TEXT" ]; then
+    echo "Usage: octts [voice] [speed] <message>"
+    echo "Default: $DEFAULT_VOICE at $DEFAULT_SPEED"
+    exit 1
+fi
+
+# 1. Detect language from voice
+LANG="it-IT" # Default
+if [[ "$VOICE" =~ ^([a-z]{2}-[A-Z]{2})- ]]; then
+    LANG="${BASH_REMATCH[1]}"
+fi
+
+# 2. Extract a clean name from the voice
+VOICE_NAME=$(echo "$VOICE" | sed -E 's/^[a-z]{2}-[A-Z]{2}-//' | sed 's/Neural//' | tr '[:upper:]' '[:lower:]')
+
+# 3. Generate descriptive filename
+SAFE_TEXT=$(echo "$TEXT" | tr -dc '[:alnum:]\n ' | tr '[:upper:]' '[:lower:]' | awk '{print $1"_"$2"_"$3}' | sed 's/_$//')
+[ -z "$SAFE_TEXT" ] && SAFE_TEXT="audio"
+
+TMP_FILE="$HOME/.openclaw/workspace/tmp/${VOICE_NAME}_${SAFE_TEXT}_$(date +%M%S).mp3"
+
+echo "🎙️  Synthesizing with $VOICE (lang: $LANG, speed: $SPEED)..."
+echo "📂  File: $(basename "$TMP_FILE")"
+
+cd /Users/riccardo/git/openclaw || exit 1
+
+    if [[ "$VOICE" == "echo" || "$VOICE" == "onyx" || "$VOICE" == "alloy" || "$VOICE" == "shimmer" ]] && [[ -z "$OPENAI_KEY" ]]; then 
+        echo "Error: OPENAI_API_KEY environment variable not set for OpenAI voices." >&2; 
+        exit 1; 
+    fi
+if [[ "$VOICE" == "echo" || "$VOICE" == "onyx" || "$VOICE" == "alloy" || "$VOICE" == "shimmer" ]]; then
+    # OpenAI Path
+    curl -s https://api.openai.com/v1/audio/speech \
+      -H "Authorization: Bearer $OPENAI_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"model\": \"tts-1\",
+        \"input\": \"$TEXT\",
+        \"voice\": \"$VOICE\"
+      }" \
+      --output "$TMP_FILE"
+else
+    # Edge TTS Path
+    node -e "
+    import('node-edge-tts').then(async ({EdgeTTS}) => {
+        try {
+            const tts = new EdgeTTS({voice: '$VOICE', lang: '$LANG', rate: '$SPEED'});
+            await tts.ttsPromise(\"$TEXT\", \"$TMP_FILE\");
+            process.exit(0);
+        } catch(e) { console.error(e); process.exit(1); }
+    }).catch(e => { console.error(e); process.exit(1); });
+    "
+fi
+
+if [ -s "$TMP_FILE" ]; then
+    echo "🚀 Sending via OpenClaw to $TARGET..."
+    ./openclaw.mjs message send --channel telegram --target "$TARGET" --media "$TMP_FILE"
+    rm -f "$TMP_FILE"
+    echo "✅ Done!"
+else
+    echo "❌ Failed to generate audio."
+    exit 1
+fi

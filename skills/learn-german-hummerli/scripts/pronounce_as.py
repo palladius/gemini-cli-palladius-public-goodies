@@ -25,17 +25,24 @@ def main():
     if args.target:
         env["OCTTS_TARGET"] = args.target
     elif "OCTTS_TARGET" not in env:
-        env["OCTTS_TARGET"] = "" # Set your chat ID here # Default Workflow channel
+        # Default target placeholder - update for your instance
+        env["OCTTS_TARGET"] = "" 
 
-    octts_path = os.path.expanduser("~/.openclaw/workspace/bin/octts") # Update to your local octts path
+    # Look for octts in the skill's scripts directory first, then fallback
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    octts_path = os.path.join(base_dir, "octts")
     
     if not os.path.exists(octts_path):
-        print(f"Error: octts not found at {octts_path}", file=sys.stderr)
+        # Fallback to system-wide openclaw location
+        octts_path = os.path.expanduser("~/.openclaw/workspace/bin/octts")
+    
+    if not os.path.exists(octts_path):
+        print(f"Error: octts utility not found in {base_dir} or standard location.", file=sys.stderr)
         sys.exit(1)
 
     # Call the core octts utility
     cmd = [octts_path, voice, args.speed, args.prompt]
-    print(f"🎙️ Running: {' '.join(cmd)}")
+    print(f"🎙️ Running: {' '.join(cmd)} (using {octts_path})")
     subprocess.run(cmd, env=env)
 
 if __name__ == "__main__":
