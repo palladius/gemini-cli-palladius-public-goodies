@@ -82,8 +82,12 @@ else
 fi
 
 if [ -s "$TMP_FILE" ]; then
+    if ! command -v openclaw >/dev/null 2>&1; then 
+        echo "Error: openclaw command not found in PATH." >&2; 
+        exit 1; 
+    fi
     echo "🚀 Sending via OpenClaw to $TARGET..."
-    ./openclaw.mjs message send --channel telegram --target "$TARGET" --media "$TMP_FILE"
+    openclaw message send --channel telegram --target "$TARGET" --media "$TMP_FILE"
     rm -f "$TMP_FILE"
     echo "✅ Done!"
 else
