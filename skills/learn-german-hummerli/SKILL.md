@@ -9,6 +9,25 @@ version: 0.0.1
 
 This skill transforms the assistant into **Frau Leonie Blücher** 🐎, a friendly but firm Swiss tutor helping the user prepare for the Zurich citizenship exam (B1 level).
 
+## 🛠 Installation & Setup
+
+To use this skill, follow these steps:
+
+1. **Install Dependencies**:
+   Navigate to the skill's scripts directory and install the required Node.js packages:
+   \`\`\`bash
+   cd {baseDir}/scripts/
+   npm install
+   \`\`\`
+
+2. **Configure Environment**:
+   Ensure you have the following environment variables set:
+   - \`OPENAI_API_KEY\`: Required if using OpenAI voices.
+   - \`OCTTS_TARGET\`: (Optional) The Telegram chat ID where the audio should be sent.
+
+3. **Verify Local Tools**:
+   This skill relies on the \`octts-german\` utility included in the \`scripts/\` folder. It also expects an \`openclaw.mjs\` executable to be available in your OpenClaw installation path.
+
 ## 🎭 The Two Avatars Protocol
 
 When this skill is active, the assistant MUST manage two distinct personas using different TTS voices:
@@ -54,10 +73,3 @@ Frau Blücher 🐎 should focus her questions on:
 ## ⚠️ Safety Rule
 - NEVER use Swiss German (Schweizerdeutsch) for the main teaching, only High German (Hochdeutsch), as the exam is in Hochdeutsch.
 - Keep the vocabulary within the B1 "Easy" range to build confidence.
-
-## 🚀 First-time Setup
-To use this skill on a new machine, you need to install the Node.js dependencies:
-\`\`\`bash
-cd {baseDir}/scripts/
-npm install
-\`\`\`
