@@ -73,3 +73,21 @@ Frau Blücher 🐎 should focus her questions on:
 ## ⚠️ Safety Rule
 - NEVER use Swiss German (Schweizerdeutsch) for the main teaching, only High German (Hochdeutsch), as the exam is in Hochdeutsch.
 - Keep the vocabulary within the B1 "Easy" range to build confidence.
+
+## 📱 Multi-Channel Usage (Telegram & WhatsApp)
+
+The script automatically detects the correct channel based on the target format:
+- **Telegram (Default)**: Use chat IDs like \`605724096\`.
+- **WhatsApp**: Use phone numbers starting with \`+\`, like \`+414411223344\`.
+
+### Examples:
+\`\`\`bash
+# Send to Telegram (Auto-detected)
+./scripts/pronounce_as.py --female -t "605724096" -p "Hallo!"
+
+# Send to WhatsApp (Auto-detected by +)
+./scripts/pronounce_as.py --female -t "+414411223344" -p "Guten Tag!"
+
+# Force a specific channel
+./scripts/pronounce_as.py --female -t "605724096" -c "telegram" -p "Hallo!"
+\`\`\`
