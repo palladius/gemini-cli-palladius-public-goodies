@@ -1,5 +1,12 @@
 # Changelog - learn-german-hummerli Skill
 
+## [0.0.3] - 2026-04-06
+- ✨ Integrated GCE improvements for better file management.
+- 🏷️ Added Artist metadata to audio files (e.g., "Frau Blücher @ HOSTNAME").
+- 🔄 Added auto-conversion to OGG Opus for WhatsApp (compatible as native Voice Notes).
+- 📖 Improved documentation and internal code comments in `octts-german`.
+- 🧹 Added cleanup of temporary files after delivery.
+
 ## [0.0.2] - 2026-04-06
 - 🚀 Made the skill fully portable and self-contained.
 - 📦 Bundled `octts-german` utility with sanitized OpenAI API keys.
