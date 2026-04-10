@@ -1,3 +1,7 @@
+## [0.1.9] - 2026-04-10
+
+- ✨ Updated `carlessian-obsidian` skill to version 0.2, adding Obsidian path configuration instructions.
+
 ## [0.1.8] - 2026-04-06
 
 - ✨ Moved `drawio` skill (v0.1) from `~/.openclaw/workspace/skills/drawio` on 2026-04-06.

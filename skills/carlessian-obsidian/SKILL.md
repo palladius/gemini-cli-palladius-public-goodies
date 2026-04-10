@@ -1,6 +1,8 @@
 ---
 name: carlessian-obsidian
 description: "💛 Expert guide for interacting with Riccardo's Obsidian vault (The Carlessian Vault)."
+metadata:
+  version: 0.2
 ---
 
 # Carlessian Obsidian
@@ -66,3 +68,9 @@ To log an event for cmputer HOSTANEM, find or create the `Computers/HOSTNAME.md`
 
 * YOUR_EMOJI should be your personality, a lobster if you're openclaw, or a Gemini zodiac sign if you're Gemini, or 🛰 if you're AntiGravity.
 * AGENT_NAME should be in backticks and should be your program, to separate from a human: Gemini CLI, Antigravity, Lobby, Gamberone, or whatever fits best. IT's the agent name.
+
+# Obsidian path
+
+Once you find where obsidian is, do two things:
+1. Ensure there's a PATH with `CARLESSIAN_OBSIDIAN_PATH` in .bashrc pointing to the rea path. 
+2. Usually this path is `~/obsidian-pbt`. If this folder doesn't exist, create it as a symlink to the original path so our scripts can depend on this.
