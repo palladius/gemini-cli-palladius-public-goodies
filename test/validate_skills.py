@@ -4,7 +4,7 @@ import sys
 
 # Requirements categorization
 # MUST (Errors): name, description, SKILL.md existence
-# SHOULD (Warnings): compatibility, metadata.version, CHANGELOG.md existence
+# SHOULD (Warnings): compatibility, metadata.version, CHANGELOG.md existence, version in CHANGELOG
 
 def validate_skill(skill_dir):
     skill_path = os.path.join(skill_dir, 'SKILL.md')
@@ -53,13 +53,25 @@ def validate_skill(skill_dir):
         warnings.append("Missing 'compatibility'")
     
     metadata = frontmatter.get('metadata')
+    version = None
     if not metadata or (isinstance(metadata, dict) and 'version' not in metadata):
         warnings.append("Missing 'metadata.version'")
-    
+    elif isinstance(metadata, dict):
+        version = str(metadata.get('version'))
+
     # Check for CHANGELOG.md in the skill directory
     changelog_path = os.path.join(skill_dir, 'CHANGELOG.md')
     if not os.path.exists(changelog_path):
         warnings.append(f"Missing {changelog_path}")
+    elif version:
+        # Check if version exists in CHANGELOG.md
+        with open(changelog_path, 'r', encoding='utf-8') as f:
+            changelog_content = f.read()
+            # Look for version in headers like ## 0.1.0 or ## [0.1.0] or ## v0.1.0
+            # We match the version string anywhere in a level 2 header
+            version_pattern = rf'##\s+.*{re.escape(version)}.*'
+            if not re.search(version_pattern, changelog_content):
+                warnings.append(f"Version {version} from SKILL.md not found in {changelog_path}")
     
     return errors, warnings
 
