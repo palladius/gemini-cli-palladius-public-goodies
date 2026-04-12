@@ -11,8 +11,11 @@ def validate_skill(skill_dir):
     if not os.path.exists(skill_path):
         return [f"Missing {skill_path}"], []
     
-    with open(skill_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+    try:
+        with open(skill_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+    except Exception as e:
+        return [f"Error reading SKILL.md: {e}"], []
     
     # Extract frontmatter
     match = re.match(r'^---\s*\n(.*?)\n---\s*\n', content, re.DOTALL)
@@ -64,46 +67,52 @@ def validate_skill(skill_dir):
     if not os.path.exists(changelog_path):
         warnings.append(f"Missing {changelog_path}")
     elif version:
-        # Check if version exists in CHANGELOG.md
-        with open(changelog_path, 'r', encoding='utf-8') as f:
-            changelog_content = f.read()
-            # Look for version in headers like ## 0.1.0 or ## [0.1.0] or ## v0.1.0
-            # We match the version string anywhere in a level 2 header
-            version_pattern = rf'##\s+.*{re.escape(version)}.*'
-            if not re.search(version_pattern, changelog_content):
-                warnings.append(f"Version {version} from SKILL.md not found in {changelog_path}")
+        try:
+            with open(changelog_path, 'r', encoding='utf-8') as f:
+                changelog_content = f.read()
+                version_pattern = rf'##\s+.*{re.escape(version)}.*'
+                if not re.search(version_pattern, changelog_content):
+                    warnings.append(f"Version {version} from SKILL.md not found in {changelog_path}")
+        except Exception:
+            warnings.append(f"Could not read {changelog_path}")
     
     return errors, warnings
 
 def main():
-    skills_dir = 'skills'
-    if not os.path.exists(skills_dir):
-        print(f"Directory {skills_dir} not found.")
-        sys.exit(1)
+    # Use command line arguments or default to current directory
+    dirs_to_scan = sys.argv[1:] if len(sys.argv) > 1 else ['.']
     
     total_errors = 0
     total_warnings = 0
     
-    # Sort for deterministic output
-    skill_names = sorted(os.listdir(skills_dir))
-    
-    for skill_name in skill_names:
-        skill_dir = os.path.join(skills_dir, skill_name)
-        if os.path.isdir(skill_dir):
-            errors, warnings = validate_skill(skill_dir)
-            
-            if errors or warnings:
-                print(f"Skill: {skill_name}")
-                for e in errors:
-                    print(f"  [ERROR] {e}")
-                for w in warnings:
-                    print(f"  [WARN]  {w}")
-                total_errors += len(errors)
-                total_warnings += len(warnings)
+    for base_dir in dirs_to_scan:
+        if not os.path.exists(base_dir):
+            print(f"Path '{base_dir}' not found, skipping...")
+            continue
+        
+        # If it's a directory, check if it's a skill or a container of skills
+        if os.path.isdir(base_dir):
+            # Case 1: The directory itself is a skill
+            if os.path.exists(os.path.join(base_dir, 'SKILL.md')):
+                errors, warnings = validate_skill(base_dir)
+                if errors or warnings:
+                    print(f"Skill: {base_dir}")
+                    for e in errors: print(f"  [ERROR] {e}")
+                    for w in warnings: print(f"  [WARN]  {w}")
+                    total_errors += len(errors); total_warnings += len(warnings)
+            # Case 2: It's a directory containing skills (like 'skills/')
+            else:
+                for item in sorted(os.listdir(base_dir)):
+                    skill_dir = os.path.join(base_dir, item)
+                    if os.path.isdir(skill_dir) and os.path.exists(os.path.join(skill_dir, 'SKILL.md')):
+                        errors, warnings = validate_skill(skill_dir)
+                        if errors or warnings:
+                            print(f"Skill: {skill_dir}")
+                            for e in errors: print(f"  [ERROR] {e}")
+                            for w in warnings: print(f"  [WARN]  {w}")
+                            total_errors += len(errors); total_warnings += len(warnings)
     
     print(f"\nFinished: {total_errors} errors, {total_warnings} warnings")
-    
-    # Exit with 1 only if there are errors
     if total_errors > 0:
         sys.exit(1)
 
