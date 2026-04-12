@@ -1,8 +1,10 @@
 ---
 name: veo
 description: Generate short videos from text or image prompts using Google's Veo model. Use when the user asks to create a video, generate a clip, or animate an image.
+compatibility: Gemini CLI
+metadata:
+  version: 0.1
 ---
-
 # Veo Video Generation
 
 This skill uses a Python script to generate videos via the Google Veo API, leveraging pre-existing code from the user's `genai-googlecloud-scripts` repository.

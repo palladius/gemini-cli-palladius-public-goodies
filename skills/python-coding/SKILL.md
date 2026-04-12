@@ -1,12 +1,10 @@
 ---
-name: Python Coding Best Practices
+name: python-coding
 description: (💛) Opinionated Python coding practices and standards.
-tags: python, development, best-practices
-version: 0.2
-# 9mar26 0.2 added dotenv and references the main fil which was NOT used in previous iteration...
-# 6mar26 0.1 initial stesure
+compatibility: Gemini CLI
+metadata:
+  version: 0.2
 ---
-
 ## Python Best Practices
 
 - **UV for dependency management:** Always prefer `uv` for script management and dependencies.

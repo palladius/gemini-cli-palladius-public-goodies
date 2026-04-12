@@ -1,7 +1,9 @@
 ---
 name: add-to-portfolio-app
-description: 
-    (💛) Adds a new Talk or Article to Riccardo personal portfolio application. This is a placeholder and needs to be filled out.
+description: (💛) Adds a new Talk or Article to Riccardo personal portfolio application. 
+compatibility: Gemini CLI
+metadata:
+  version: 0.1
 ---
 # Add to Portfolio App Skill
 
@@ -46,5 +48,6 @@ If the repo online doesn't show data, ensure user has:
 
 
 ## Resources
-- `~/git/vibecoding/apps-portfolio/`
+
+- `~/git/vibecoding/apps-portfolio/`. In particular, read well its `GEMINI.md`: plenty of non obvious dependencies in there.
 - `~/git/my-sessions-and-bio/`

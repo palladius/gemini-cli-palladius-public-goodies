@@ -1,10 +1,10 @@
 ---
-name: TypeScript Coding Best Practices
+name: typescript-coding
 description: (💛) Opinionated TypeScript coding practices and standards for those who prefer Ruby.
-tags: typescript, javascript, development, best-practices
-version: 0.1
+compatibility: Gemini CLI
+metadata:
+  version: 0.1
 ---
-
 ## TypeScript Best Practices
 
 - **Strict Mode:** Always enable `strict` in `tsconfig.json`.

@@ -1,33 +1,10 @@
 ---
 name: nano-banana-ricc
 description: (💛) Generate or edit images via Gemini 3 Pro Image (🍌 Nano Banana Pro) with Riccardo character consistency.
-homepage: https://ai.google.dev/
-version: 0.4
-# 22mar26 v0.4 nanobanana can infer a output filename from the prompt, so we don't need to provide one. Note it might misfunction!
-# 10mar26 v0.3 Added Riccardo character consistency via assets/riccardo/ images.
-# 10mar26 v0.2 Added emojis and some suggestions.
-# ??? v0.1 Initial copy I believe from openclaw skills
+compatibility: Gemini CLI
 metadata:
-  {
-    "openclaw":
-      {
-        "emoji": "🍌",
-        "requires": { "bins": ["uv"], "env": ["GEMINI_API_KEY"] },
-        "primaryEnv": "GEMINI_API_KEY",
-        "install":
-          [
-            {
-              "id": "uv-brew",
-              "kind": "brew",
-              "formula": "uv",
-              "bins": ["uv"],
-              "label": "Install uv (brew)",
-            },
-          ],
-      },
-  }
+  version: 0.4
 ---
-
 # Nano Banana Riccardo (Gemini 3 Pro Image)
 
 Use the bundled script to generate or edit images. This version is specialized for creating images featuring Riccardo with high character consistency.

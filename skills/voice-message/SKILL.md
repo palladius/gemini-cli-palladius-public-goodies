@@ -1,8 +1,10 @@
 ---
 name: voice-message
 description: Formats the transcript of a voice message with a standardized, fixed-width layout. Use this skill whenever a voice message is received to present the transcript clearly before taking action.
+compatibility: Gemini CLI
+metadata:
+  version: 0.1
 ---
-
 # Voice Message Formatter
 
 This skill standardizes the presentation of voice message transcripts. It wraps the transcript in a fixed-width markdown block, includes the appropriate language flag, and separates it with horizontal lines.

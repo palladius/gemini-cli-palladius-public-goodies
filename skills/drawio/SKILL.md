@@ -1,10 +1,10 @@
 ---
 name: drawio
 description: Generates and edits diagrams using draw.io via local files or the MCP service.
-tags: ["OpenClaudio", "diagrams", "visualization", "microphone-dictated"]
-version: 0.1
+compatibility: Gemini CLI
+metadata:
+  version: 0.1
 ---
-
 # draw.io Diagram Skill
 
 This skill enables the creation and editing of diagrams using the powerful draw.io editor. It can operate in two modes.

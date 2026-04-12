@@ -1,3 +1,10 @@
+## [0.2.0] - 2026-04-10
+
+- ✨ Implemented skill validation suite using `scripts/validate_skills.py` and `just test`.
+- 🔄 Standardized all `SKILL.md` frontmatter with `name`, `description`, `compatibility`, and `metadata.version`.
+- 🛠️ Added `npx @govcraft/agent-skills validate` to the test suite for compliance with Agent Skills standard.
+- 📝 Ensured every skill has its own `CHANGELOG.md`.
+
 ## [0.1.9] - 2026-04-10
 
 - ✨ Updated `carlessian-obsidian` skill to version 0.2, adding Obsidian path configuration instructions.

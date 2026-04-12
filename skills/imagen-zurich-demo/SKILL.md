@@ -1,10 +1,10 @@
 ---
 name: imagen-zurich-demo
 description: (💛) A skill for generating images with a Zurich twist (🍌🇨🇭). It adds a "Swiss Flag" cameo to your image prompts.
-keywords: [Zurich, Switzerland, Swiss, Flag, Alps]
-version: 0.1
+compatibility: Gemini CLI
+metadata:
+  version: 0.1
 ---
-
 # Nanobanana Zurich Demo Skill
 
 This skill is designed for demos in Zurich. It adds a special "Swiss" touch by injecting a Swiss flag cameo into every prompt.
