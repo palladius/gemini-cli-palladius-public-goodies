@@ -1,3 +1,8 @@
+## [0.2.1] - 2026-04-17
+
+- ✨ Added `google-stt` skill for audio transcription using Gemini 1.5 Flash.
+- 🤖 Auto-populated by `gc-skillume-bot-v0_2`.
+
 ## [0.2.0] - 2026-04-10
 
 - ✨ Implemented skill validation suite using `scripts/validate_skills.py` and `just test`.
