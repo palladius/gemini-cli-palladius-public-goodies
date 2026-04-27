@@ -1,3 +1,8 @@
+## [0.2.2] - 2026-04-27
+
+- 🖼️ Added Vegas skyline pixar demo image to `nano-banana-ricc` skill.
+- 🤖 Auto-populated by `gc-skillume-bot-v0_2`.
+
 ## [0.2.1] - 2026-04-17
 
 - ✨ Added `google-stt` skill for audio transcription using Gemini 1.5 Flash.

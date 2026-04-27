@@ -1,5 +1,8 @@
 # CHANGELOG for nano-banana-ricc
 
+## 0.5 (2026-04-27)
+- 🖼️ Added Vegas skyline pixar demo image to `nano_banana/` folder.
+
 ## 0.4 (2026-03-22)
 - Improve image output path handling with NANOBANANA_OUTPUT_FOLDER.
 - Automatically append .png extension.
