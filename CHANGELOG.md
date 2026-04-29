@@ -1,3 +1,8 @@
+## [0.3.1] - 2026-04-29
+
+- 📝 Updated `README.md` with a skills list for better discoverability.
+- 🤖 Maintenance by `gc-skillume-bot-v0_2`.
+
 ## [0.3.0] - 2026-04-28
 
 - ✨ Added `drensin-reasoning` skill (v0.1.0) based on the Elephant-Goldfish Model.
@@ -9,91 +14,4 @@
 - 🖼️ Added Vegas skyline pixar demo image to `nano-banana-ricc` skill.
 - 🤖 Auto-populated by `gc-skillume-bot-v0_2`.
 
-## [0.2.1] - 2026-04-17
-
-- ✨ Added `google-stt` skill for audio transcription using Gemini 1.5 Flash.
-- 🤖 Auto-populated by `gc-skillume-bot-v0_2`.
-
-## [0.2.0] - 2026-04-10
-
-- ✨ Implemented skill validation suite using `scripts/validate_skills.py` and `just test`.
-- 🔄 Standardized all `SKILL.md` frontmatter with `name`, `description`, `compatibility`, and `metadata.version`.
-- 🛠️ Added `npx @govcraft/agent-skills validate` to the test suite for compliance with Agent Skills standard.
-- 📝 Ensured every skill has its own `CHANGELOG.md`.
-
-## [0.1.9] - 2026-04-10
-
-- ✨ Updated `carlessian-obsidian` skill to version 0.2, adding Obsidian path configuration instructions.
-
-## [0.1.8] - 2026-04-06
-
-- ✨ Moved `drawio` skill (v0.1) from `~/.openclaw/workspace/skills/drawio` on 2026-04-06.
-
-## [0.1.7] - 2026-03-30
-
-- 🔄 Renamed `git-best-practices` skill to `Git Coding Best Practices` (under `skills/git-coding/`) for consistency with other coding-related skills.
-
-## [0.1.4] - 2026-03-27
-
-- ✨ Added `musicgen-lyria3` skill for generating music with lyrics using the Google Lyria 3 model (script v0.0.4 with lyrics/metadata saving).
-
-## [0.1.3] - 2026-03-15
-
-- 🔄 Bumped version and pushed changes -- Gemini CLI.
-
-## [0.1.2] - 2026-03-11
-
-- 🔄 Bumped version and checked repository updates -- gc-skillume-bot-v0_1.
-
-## [0.1.1] - 2026-03-10 @derek
-
-- Nothing really just updated docs and git merged.
-
-## [0.1.0] - 2026-03-10 @pupurabbux
-
-- ✨ `nano-banana-ricc` skill character consistency works and has been sdoganated!
-
-## [0.0.13] - 2026-03-10 @pupurabbux
-
-- ✨ Added `nano-banana-ricc` skill for generating images with Riccardo character consistency using a specialized image asset set.
-
-## [0.0.12] - 2026-03-10
-
-- 🔄 Replaced `nanobanana-milan-demo` with `imagen-milan-demo` and `imagen-zurich-demo` skills.
-
-## [0.0.10] - 2026-03-08
-
-- ✨ Added `typescript-coding` skill with Riccardo's opinionated (mostly hands-off) approach.
-
-## [0.0.9] - 2026-03-08
-
-- ✨ Riccardo modified `python-coding` and `ruby-coding` skills with his real opinions.
-- ✨ Added `openclaudio-update-advisor` skill.
-
-## [0.0.8] - 2026-03-07
-
-- ✨ Add `python-coding` and `ruby-coding` skills for opinionated practices.
-
-## [0.0.7] - 2026-03-07
-
-- ✨ Added `carlessian-obsidian` skill.
-
-## [0.0.6] - 2026-03-06
-
-- 💛 Ensured yellow heart emoji usage for all public skill descriptions.
-
-# Changelog
-
-## [0.0.3] - 2026-03-05
-
-- ✨ Added `adk-python` skill to help build agents using Google's Agent Development Kit (ADK).
-- 🔄 Added automated context fetching for ADK documentation via `fetch_context.py`.
-- 📚 Added cross-language ADK references for TypeScript and Go.
-
-## [0.1.6] - 2026-03-30
-### Added
-- ✨ Added `git-best-practices` skill to enforce safe git usage and version bumping rules.
-
-## [0.1.5] - 2026-03-30
-### Removed
-- Moved `musicgen-lyria3` to SRE extension repo.
+...
