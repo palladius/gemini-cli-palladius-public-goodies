@@ -1,12 +1,10 @@
 ---
-name: Ruby Coding Best Practices
+name: ruby-coding
 description: (💛) Opinionated Ruby coding practices and standards.
-tags: ruby, development, best-practices
-version: 0.2
-# v02 9mar26 Added blocks and symbols + nanobanana
-# v01 7mar26 Initial.
+compatibility: Gemini CLI
+metadata:
+  version: 0.2
 ---
-
 ## Ruby Best Practices
 
 - **RVM/rbenv:** Use a version manager for Ruby.

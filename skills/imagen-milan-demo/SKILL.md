@@ -1,12 +1,10 @@
 ---
 name: imagen-milan-demo
 description: (💛) A skill for generating images with a Milanese twist (🍌🇮🇹). It adds a "Panettone" cameo to your image prompts.
-keywords: [Milan, Milano, Milanese, Panettone, Duomo]
-version: 0.3
-# v0.3 Also nano banana ricc.
-# v0.2 10mar26 Removed the nano banana python logic (delegated to another script).
+compatibility: Gemini CLI
+metadata:
+  version: 0.3
 ---
-
 # Nanobanana Milan Demo Skill
 
 This skill is designed for demos in Milan. It adds a special "Milanese" touch by injecting a Panettone cameo into every prompt.

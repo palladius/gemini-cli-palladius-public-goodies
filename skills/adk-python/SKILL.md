@@ -1,6 +1,9 @@
 ---
 name: adk-python
 description: (💛) Create and manage AI agents using Google's Agent Development Kit (ADK) for Python. Use when the user wants to build single or multi-agent systems, evaluate agents, or deploy them. Includes instructions for fetching fresh ADK documentation and links for TypeScript and Go development.
+compatibility: Gemini CLI
+metadata:
+  version: 0.1
 ---
 # ADK Python Skill
 
