@@ -21,4 +21,9 @@ Follow these three phases rigorously to ensure a high-quality CFP.
 - [ ] Save the finalized proposal to a file (e.g., `YYYYMM-cfp-<event_name>/out/FINAL_PROPOSAL.md`).
 - [ ] Run the validation script: `uv run <path_to_skill>/scripts/validate_proposal.py <path_to_final_proposal.md>`
 - [ ] Report the stats (character count, word count) to the user to ensure it meets constraints.
-- [ ] Remind the user to sync the final result to the `apps-portfolio` project.
+
+## Phase 4: Post-Submission Tasks
+When the CFP is successfully submitted:
+- [ ] Ask the user to update their internal ticketing system (e.g., Buganizer) to track the proposal.
+- [ ] Update the `apps-portfolio` project with this application and the skill.
+- [ ] Update the Bio Sessions GH repo (usually located at `~/git/my-sessions-and-bio/`).
