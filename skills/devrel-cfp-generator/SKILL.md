@@ -2,8 +2,9 @@
 name: devrel-cfp-generator
 description: A specialized workflow for crafting high-quality Call for Papers (CFP) applications. Use when the user wants to apply to a tech conference and needs to draft abstracts, outlines, and bios based on their existing work.
 metadata:
-  author: Riccardo Carlesso
-  version: 0.0.1
+  version: 0.0.2
+compatibility:
+  gemini-cli: ">=0.1.0"
 ---
 
 # 🎤 DevRel CFP Generator Skill
