@@ -1,3 +1,7 @@
+## [0.3.3] - 2026-04-30
+
+- ✨ Added `devrel-cfp-generator` skill (v0.0.1) to create highly structured and validated conference proposals.
+
 ## [0.3.2] - 2026-04-30
 
 - 🤖 Maintenance run and version bump -- gc-skillume-bot-v0_2.
