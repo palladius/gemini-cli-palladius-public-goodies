@@ -70,7 +70,14 @@ def main():
     print("Detected Monitors:")
     for i, m in enumerate(monitors):
         pos = "Left" if i == 0 else "Right" if i == len(monitors)-1 else f"Monitor {i}"
-        print(f"{pos}: {m['product']} ({m['connector']}) - {m['w']}x{m['h']} at +{m['x']}+{m['y']} (Rotation: {m['rotation']}, Scale: {m['scale']})")
+        
+        # Determine emoji based on orientation
+        if m['w'] > m['h']:
+            orientation_emoji = "🖥️  [▭ Horizontal]"
+        else:
+            orientation_emoji = "📱 [▯ Vertical]"
+            
+        print(f"{orientation_emoji} {pos}: {m['product']} ({m['connector']}) - {m['w']}x{m['h']} at +{m['x']}+{m['y']} (Scale: {m['scale']})")
 
     # Target the left monitor
     left = monitors[0]
