@@ -14,5 +14,8 @@
 ## 📝 Abstract
 [Insert Abstract Here]
 
+## 🔍 Small Print
+[Insert additional info: technical requirements, list of conferences, first public delivery, target audience, preferred session duration, etc.]
+
 ## 🗣️ Bio
 [Insert Selected Bio Here]

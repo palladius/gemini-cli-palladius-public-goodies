@@ -20,12 +20,18 @@ def validate(filepath, max_chars=None, max_words=None):
     # Simple section extraction
     title_match = re.search(r'## 🏷️ Title\n(.*?)(?=##|$)', content, re.DOTALL)
     abstract_match = re.search(r'## 📝 Abstract\n(.*?)(?=##|$)', content, re.DOTALL)
+    small_print_match = re.search(r'## 🔍 Small Print\n(.*?)(?=##|$)', content, re.DOTALL)
     bio_match = re.search(r'## 🗣️ Bio\n(.*?)(?=##|$)', content, re.DOTALL)
 
     if not title_match:
         print("❌ Missing '## 🏷️ Title' section")
     else:
         print(f"✅ Title found: {title_match.group(1).strip()[:40]}...")
+
+    if not small_print_match:
+        print("⚠️ Warning: Missing '## 🔍 Small Print' section (Sessionize usually requires this)")
+    else:
+        print("✅ Small Print section found.")
 
     if not bio_match:
         print("❌ Missing '## 🗣️ Bio' section")
