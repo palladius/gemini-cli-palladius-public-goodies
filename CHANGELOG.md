@@ -1,3 +1,7 @@
+## [0.3.2] - 2026-04-30
+
+- 🤖 Maintenance run and version bump -- gc-skillume-bot-v0_2.
+
 ## [0.3.1] - 2026-04-29
 
 - 📝 Updated `README.md` with a skills list for better discoverability.
