@@ -5,8 +5,9 @@
 import sys
 import re
 import os
+import argparse
 
-def validate(filepath):
+def validate(filepath, max_chars=None, max_words=None):
     if not os.path.exists(filepath):
         print(f"❌ Error: File '{filepath}' not found.")
         sys.exit(1)
@@ -33,22 +34,42 @@ def validate(filepath):
 
     if not abstract_match:
         print("❌ Missing '## 📝 Abstract' section")
-        return
+        sys.exit(1)
 
     abstract_text = abstract_match.group(1).strip()
     char_count = len(abstract_text)
-    char_count_no_spaces = len(abstract_text.replace(" ", "").replace("\n", ""))
     word_count = len(abstract_text.split())
 
     print("\n📈 Abstract Stats:")
-    print(f"   Characters (with spaces):    {char_count}")
-    print(f"   Characters (without spaces): {char_count_no_spaces}")
-    print(f"   Words:                       {word_count}")
+    print(f"   Characters: {char_count}")
+    print(f"   Words:      {word_count}")
 
-    print("\n💡 Tip: Cross-check these stats against your conference constraints!")
+    failed = False
+    print("") # Empty line before pass/fail results
+    if max_chars is not None:
+        if char_count > max_chars:
+            print(f"❌ FAIL: Character count ({char_count}) exceeds maximum allowed ({max_chars}).")
+            failed = True
+        else:
+            print(f"✅ PASS: Character count ({char_count}) is within limit ({max_chars}).")
+
+    if max_words is not None:
+        if word_count > max_words:
+            print(f"❌ FAIL: Word count ({word_count}) exceeds maximum allowed ({max_words}).")
+            failed = True
+        else:
+            print(f"✅ PASS: Word count ({word_count}) is within limit ({max_words}).")
+
+    if failed:
+        sys.exit(1)
+
+    print("\n💡 Tip: All constraints met! Good luck with your CFP! 🚀")
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print("Usage: ./validate_proposal.py <proposal_markdown_file>")
-        sys.exit(1)
-    validate(sys.argv[1])
+    parser = argparse.ArgumentParser(description="Validate CFP Proposal Markdown.")
+    parser.add_argument("filepath", help="Path to the proposal markdown file")
+    parser.add_argument("--max-chars", type=int, help="Maximum allowed characters in the abstract")
+    parser.add_argument("--max-words", type=int, help="Maximum allowed words in the abstract")
+    
+    args = parser.parse_args()
+    validate(args.filepath, args.max_chars, args.max_words)
