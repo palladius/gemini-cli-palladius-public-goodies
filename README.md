@@ -9,7 +9,24 @@ This extension includes the following **[Agent Skills](https://geminicli.com/doc
 
 *   **`add-to-portfolio-app`**: Adds a new Talk or Article to Riccardo's personal portfolio application.
 *   **`adk-python`**: Create and manage AI agents using Google's Agent Development Kit (ADK) for Python.
-*   *... and many more (see the `skills/` directory).*
+*   **`carlessian-obsidian`**: Interact with Riccardo's Obsidian vault (The Carlessian Vault).
+*   **`devrel-cfp-generator`**: Craft high-quality Call for Papers (CFP) applications for tech conferences.
+*   **`drawio`**: Generate and edit diagrams using draw.io.
+*   **`drensin-reasoning`**: Implementation of the Elephant-Goldfish Model (EGM) for deep reasoning.
+*   **`git-coding`**: Mandatory guidelines for git operations and repository management.
+*   **`google-stt`**: Transcribe audio files using Google Gemini 1.5 Flash.
+*   **`imagen-milan-demo`**: Nanobanana Milanese twist image generation.
+*   **`imagen-zurich-demo`**: Nanobanana Zurich twist image generation.
+*   **`learn-german-hummerli`**: Personal Swiss Citizenship (Zürich) tutor in B1 German.
+*   **`nano-banana-ricc`**: Character-consistent image generation via Gemini 3 Pro Image.
+*   **`openclaudio-update-advisor`**: Fact-based analysis of OpenClaudio release stability.
+*   **`python-coding`**: Opinionated Python coding practices and standards.
+*   **`riccardo-at-the-computer`**: Determine if Riccardo is active on his desktop.
+*   **`ruby-coding`**: Opinionated Ruby coding practices and standards.
+*   **`take-screenshot`**: Specialized skill for taking and managing screenshots.
+*   **`typescript-coding`**: Opinionated TypeScript practices (for Ruby lovers).
+*   **`veo`**: Generate short videos from text or image prompts.
+*   **`voice-message`**: Format voice message transcripts with a standardized layout.
 
 ### Cross-Links:
 *   [General-Purpose Gemini CLI Custom Commands](https://github.com/palladius/gemini-cli-custom-commands)
