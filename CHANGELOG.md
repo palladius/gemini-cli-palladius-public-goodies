@@ -1,3 +1,7 @@
+## [0.3.7] - 2026-05-03
+
+- ✨ Feat: Added `lyria2-music-generation` skill to generate music using Google's Lyria model.
+
 ## [0.3.6] - 2026-05-03
 
 - 🔒 Security: Removed hardcoded OpenAI API key from `octts` script.
