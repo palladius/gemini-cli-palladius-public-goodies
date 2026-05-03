@@ -1,3 +1,6 @@
+## [0.3.5] - 2026-05-01
+3 updated hummerli
+
 ## [0.3.4] - 2026-05-01
 
 - ✨ Added `take-screenshot` skill to the main CHANGELOG.
