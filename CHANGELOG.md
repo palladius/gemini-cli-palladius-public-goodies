@@ -1,3 +1,8 @@
+## [0.3.6] - 2026-05-03
+
+- 🔒 Security: Removed hardcoded OpenAI API key from `octts` script.
+- 🐛 Bugfix: Added environment variable check for `OPENAI_API_KEY` in `octts`.
+
 ## [0.3.5] - 2026-05-01
 3 updated hummerli
 
