@@ -18,6 +18,7 @@ This extension includes the following **[Agent Skills](https://geminicli.com/doc
 *   **`imagen-milan-demo`**: Nanobanana Milanese twist image generation.
 *   **`imagen-zurich-demo`**: Nanobanana Zurich twist image generation.
 *   **`learn-german-hummerli`**: Personal Swiss Citizenship (Zürich) tutor in B1 German.
+*   **`lyria2-music-generation`**: Generate music using Google's Lyria (v2) model via Vertex AI.
 *   **`nano-banana-ricc`**: Character-consistent image generation via Gemini 3 Pro Image.
 *   **`openclaudio-update-advisor`**: Fact-based analysis of OpenClaudio release stability.
 *   **`python-coding`**: Opinionated Python coding practices and standards.

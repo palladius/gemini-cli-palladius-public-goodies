@@ -1,3 +1,8 @@
+## [0.3.8] - 2026-05-04
+
+- 📝 Updated README.md with missing `lyria2-music-generation` skill.
+- 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
+
 ## [0.3.7] - 2026-05-03
 
 - ✨ Feat: Added `lyria2-music-generation` skill to generate music using Google's Lyria model.
