@@ -1,3 +1,6 @@
+## [0.3.9] - 2026-05-07
+- 🤖 Maintenance run by `gc-skillume-bot-v0_2`: Fixed typos in `GEMINI.md`.
+
 ## [0.3.8] - 2026-05-04
 
 - 📝 Updated README.md with missing `lyria2-music-generation` skill.
