@@ -1,5 +1,8 @@
 # CHANGELOG for nano-banana-ricc
 
+## 0.6 (2026-05-08)
+- 🖼️ Added new pixar demo images to `nano_banana/` folder.
+
 ## 0.5 (2026-04-27)
 - 🖼️ Added Vegas skyline pixar demo image to `nano_banana/` folder.
 

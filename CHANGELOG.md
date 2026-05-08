@@ -1,3 +1,7 @@
+## [0.3.10] - 2026-05-08
+- 🖼️ Added new pixar demo images to `nano-banana-ricc` skill.
+- 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
+
 ## [0.3.9] - 2026-05-07
 - 🤖 Maintenance run by `gc-skillume-bot-v0_2`: Fixed typos in `GEMINI.md`.
 
