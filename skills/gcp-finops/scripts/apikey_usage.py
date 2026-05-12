@@ -153,6 +153,8 @@ def fetch_and_display(project_id):
             service_emoji = " 💻"
         elif clean_service == "storage":
             service_emoji = " 🪣"
+        elif clean_service in ["firestore", "sqladmin", "spanner", "bigtable"]:
+            service_emoji = " 🛢️"
         
         display_service = f"{clean_service}{service_emoji}"
         disp_name, trunc_key = key_info.get(cred_id, (cred_id, "Unknown"))
