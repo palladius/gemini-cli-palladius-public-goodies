@@ -112,17 +112,33 @@ def fetch_and_display(project_id):
 
     key_info = get_api_key_info(project_id)
     
+    # Collect and filter rows for sorting
+    rows = []
+    for unique_id, ranges_data in usage_data.items():
+        total_24h = sum(ranges_data["24h"])
+        total_30d = sum(ranges_data["30d"])
+        if total_24h == 0 and total_30d == 0:
+            continue
+        rows.append({
+            "unique_id": unique_id,
+            "total_24h": total_24h,
+            "total_30d": total_30d,
+            "ranges_data": ranges_data
+        })
+    
+    # Sort by 30d spend descending
+    rows.sort(key=lambda x: x["total_30d"], reverse=True)
+
     print(f"\nGenAI usage for Project: {project_id}")
     print("=" * 150)
     print(f"{'Cost (24h)':>10} | {'Cost (30d)':>10} | {'Last 24h':<8} | {'Last 30d':<10} | {'Key (Truncated)':<35} | {'Service'}")
     print("-" * 150)
 
-    for unique_id, ranges_data in usage_data.items():
-        total_24h = sum(ranges_data["24h"])
-        total_30d = sum(ranges_data["30d"])
-        
-        if total_24h == 0 and total_30d == 0:
-            continue
+    for row in rows:
+        unique_id = row["unique_id"]
+        total_24h = row["total_24h"]
+        total_30d = row["total_30d"]
+        ranges_data = row["ranges_data"]
 
         cred_id, raw_service = unique_id.split("|")
         clean_service = raw_service.split(".")[0] if "." in raw_service else raw_service
