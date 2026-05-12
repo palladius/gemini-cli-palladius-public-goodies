@@ -142,12 +142,12 @@ def fetch_and_display(project_id, breakdown_by_product=False):
     rows.sort(key=lambda x: x["total_30d"], reverse=True)
 
     print(f"\nGenAI usage for Project: {project_id}")
-    print("=" * 160)
-    header = f"{'Cost (24h)':>10} | {'Cost (30d)':>10} | {'Last 24h':<8} | {'Last 30d':<10} | {'Credential / Key':<45}"
+    print("=" * 180)
+    header = f"{'Cost (24h)':>10} | {'Cost (30d)':>10} | {'24h':<8} | {'30d':<10} | {'Identifier (ID)':<40} | {'Identity':<30}"
     if breakdown_by_product:
         header += " | Service"
     print(header)
-    print("-" * 160)
+    print("-" * 180)
 
     for row in rows:
         unique_id = row["unique_id"]
@@ -187,28 +187,30 @@ def fetch_and_display(project_id, breakdown_by_product=False):
         raw_spark_24h = generate_sparkline(ranges_data["24h"], num_bins=ranges["24h"]["bins"])
         raw_spark_30d = generate_sparkline(ranges_data["30d"], num_bins=ranges["30d"]["bins"])
         
+        # Apply Colors: Gray for past, White for current
         colored_spark_24h = f"{GRAY}{raw_spark_24h[:split_idx_24h]}{WHITE}{raw_spark_24h[split_idx_24h:]}"
         colored_spark_30d = f"{GRAY}{raw_spark_30d[:split_idx_30d]}{WHITE}{raw_spark_30d[split_idx_30d:]}"
 
+        # New Display Logic: ID column and Identity column
+        identity = "❓ Unknown"
         if cred_type == "apikey":
-            disp_name, trunc_key = key_info.get(cred_id, (None, None))
-            if disp_name:
-                key_display = f"🔑 {disp_name[:25]} ({trunc_key})"
-            else:
-                key_display = f"🔑 Key ID: {cred_id[:12]}..."
+            disp_name, _ = key_info.get(cred_id, (None, None))
+            identity = f"🔑 {disp_name}" if disp_name else "🔑 API Key"
         elif cred_type == "serviceaccount":
-            key_display = f"👤 SA ID: {cred_id[:15]}..."
+            identity = "👤 Service Account"
         elif cred_type == "oauth2":
-            key_display = f"🆔 OAuth: {cred_id[:15]}..."
-        else:
-            key_display = f"❓ {cred_id}"
-        
+            identity = "🆔 OAuth2 Client"
+        elif cred_type == "unknown":
+            identity = "❓ Unknown Entity"
+
+        # Format costs
         c24_str = f"${est_cost_24h:,.2f}"
         c30_str = f"${est_cost_30d:,.2f}"
         
-        print(f"{c24_str:>10} | {c30_str:>10} | {colored_spark_24h} | {colored_spark_30d} | {key_display:<45}{service_display}")
+        # Print with IDs before Names
+        print(f"{c24_str:>10} | {c30_str:>10} | {colored_spark_24h} | {colored_spark_30d} | {cred_id:<40} | {identity:<30}{service_display}")
 
-    print("=" * 160)
+    print("=" * 180)
     print(f"Note: Cost is estimated at $0.002 per request (Placeholder). Generated at {now.strftime('%Y-%m-%d %H:%M:%S')} UTC")
 
 def main():
