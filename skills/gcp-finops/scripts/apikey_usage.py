@@ -22,22 +22,29 @@ WHITE = "\033[0m" # Reset to default (usually white/light)
 
 def generate_sparkline(vals, num_bins=12):
     if not vals:
-        return ""
-    if len(vals) < num_bins:
-        num_bins = len(vals)
+        return " " * num_bins
     
-    # Split into bins and calculate the sum of each bin
+    # Ensure we have at least num_bins values by padding with zeros at the BEGINNING
+    if len(vals) < num_bins:
+        vals = [0] * (num_bins - len(vals)) + list(vals)
+    
+    # Split into EXACTLY num_bins sections
     splits = np.array_split(vals, num_bins)
-    binned = np.array([np.sum(s) for s in splits if len(s) > 0])
+    # Use 0 for empty splits (though padding above should prevent this)
+    binned = np.array([np.sum(s) if len(s) > 0 else 0 for s in splits])
     
     vmin, vmax = np.min(binned), np.max(binned)
     if vmin == vmax:
-        return "▄" * len(binned)
+        return "▄" * num_bins
     
     normalized = np.round((binned - vmin) / (vmax - vmin) * 7).astype(int)
     chars = [' ', '▂', '▃', '▄', '▅', '▆', '▇', '█']
     shape_str = "".join([chars[i] for i in normalized])
-    return shape_str
+    
+    # Final safety check on length
+    if len(shape_str) < num_bins:
+        shape_str = shape_str.ljust(num_bins)
+    return shape_str[:num_bins]
 
 def get_api_key_info(project_id):
     client = api_keys_v2.ApiKeysClient()
