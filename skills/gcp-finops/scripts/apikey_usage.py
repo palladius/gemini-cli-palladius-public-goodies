@@ -49,17 +49,17 @@ def generate_sparkline(vals, num_bins=12):
 def get_api_key_info(project_id):
     client = api_keys_v2.ApiKeysClient()
     parent = f"projects/{project_id}/locations/global"
-    key_info = {}
+    key_info = {} # uid -> (display_name, key_string)
     try:
         response = client.list_keys(parent=parent)
         for key in response:
             disp_name = key.display_name or key.name.split('/')[-1]
-            key_info[key.uid] = disp_name
+            key_info[key.uid] = (disp_name, key.key_string)
     except Exception:
         pass
     return key_info
 
-def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None, filter_id=None, export_csv=None):
+def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None, filter_id=None, export_csv=None, show_keys=False):
     if allowed_types is None:
         allowed_types = ["apikey"]
     
@@ -168,7 +168,7 @@ def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None
         print(f"\n{YELLOW}📂 Data exported to {export_csv}{RESET}")
 
     print(f"\nGenAI usage for Project: {project_id} (Filter: {filter_id or ', '.join(allowed_types)})")
-    print("=" * 180)
+    print("=" * 210)
 
     for c_type in sorted(grouped_rows.keys()):
         type_label = c_type.upper()
@@ -178,9 +178,14 @@ def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None
         else: type_emoji = "❓"
         
         print(f"\n{BOLD}{type_emoji} {type_label}{RESET}")
-        print("-" * 180)
-        print(f"{'Cost (24h)':>10} | {'Cost (30d)':>10} | {'24h':<8} | {'30d':<10} | {'Identifier (ID)':<40} | {'Identity':<30}" + (" | Service -> Method" if filter_id else " | Service"))
-        print("-" * 180)
+        print("-" * 210)
+        col_header = f"{'Cost (24h)':>10} | {'Cost (30d)':>10} | {'24h':<8} | {'30d':<10} | {'Identifier (ID)':<40} | {'Key String':<25} | {'Identity':<30}"
+        if filter_id:
+            col_header += " | Service -> Method"
+        elif breakdown_by_product:
+            col_header += " | Service"
+        print(col_header)
+        print("-" * 210)
 
         rows = sorted(grouped_rows[c_type], key=lambda x: x["total_30d"], reverse=True)
         for row in rows:
@@ -217,6 +222,7 @@ def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None
 
             identity = "Unknown"
             id_color = RESET
+            key_str_display = "-"
             
             # 1. Check Manual Overrides
             if cred_id in MANUAL_OVERRIDES:
@@ -224,20 +230,27 @@ def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None
                 id_color = YELLOW
             # 2. Check API Key Info
             elif cred_type == "apikey":
-                name = key_info.get(cred_id)
-                if name:
+                info = key_info.get(cred_id)
+                if info:
+                    name, raw_key = info
                     identity = name
                     if any(x in name.lower() for x in ["mini", "lobby", "lingo"]):
                         id_color = YELLOW
                     else:
                         id_color = CYAN
+                    
+                    if raw_key:
+                        if show_keys:
+                            key_str_display = raw_key
+                        else:
+                            key_str_display = raw_key[:12] + "*" * (len(raw_key)-12)
             elif cred_type == "serviceaccount": identity = "Service Account"
             elif cred_type == "oauth2": identity = "OAuth2 Client"
 
             c24_str, c30_str = f"${total_24h*0.002:,.2f}", f"${total_30d*0.002:,.2f}"
-            print(f"{c24_str:>10} | {c30_str:>10} | {colored_spark_24h} | {colored_spark_30d} | {cred_id:<40} | {id_color}{identity:<30}{RESET}{service_display}")
+            print(f"{c24_str:>10} | {c30_str:>10} | {colored_spark_24h} | {colored_spark_30d} | {cred_id:<40} | {key_str_display:<25} | {id_color}{identity:<30}{RESET}{service_display}")
 
-    print("\n" + "=" * 180)
+    print("\n" + "=" * 210)
     print(f"Note: Cost is estimated at $0.002 per request. Generated at {now.strftime('%Y-%m-%d %H:%M:%S')} UTC")
     
     # Permalink logic
@@ -264,8 +277,9 @@ def main():
     parser.add_argument("--credential-types", default="apikey", help="Comma-separated types: apikey,serviceaccount,oauth2,unknown,all")
     parser.add_argument("--for-id", help="Filter for a specific credential ID (UUID, email, etc.)")
     parser.add_argument("--export-csv", help="Path to export raw usage data to CSV")
+    parser.add_argument("--show-keys", action="store_true", help="Reveal full API key strings (DANGEROUS)")
     args = parser.parse_args()
-    fetch_and_display(args.project, args.breakdown_by_product, args.credential_types.split(","), args.for_id, args.export_csv)
+    fetch_and_display(args.project, args.breakdown_by_product, args.credential_types.split(","), args.for_id, args.export_csv, args.show_keys)
 
 if __name__ == "__main__":
     main()
