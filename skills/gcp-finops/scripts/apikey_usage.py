@@ -113,9 +113,9 @@ def fetch_and_display(project_id):
     key_info = get_api_key_info(project_id)
     
     print(f"\nGenAI usage for Project: {project_id}")
-    print("=" * 140)
-    print(f"{'Key (Truncated)':<45} | {'Service':<30} | {'Cost (24h)':<10} | {'Last 24h':<12} | {'Last 30d':<14}")
-    print("-" * 140)
+    print("=" * 150)
+    print(f"{'Cost (24h)':>11} | {'Cost (30d)':>11} | {'Last 24h':<12} | {'Last 30d':<14} | {'Key (Truncated)':<35} | {'Service'}")
+    print("-" * 150)
 
     for unique_id, ranges_data in usage_data.items():
         total_24h = sum(ranges_data["24h"])
@@ -128,9 +128,9 @@ def fetch_and_display(project_id):
         clean_service = raw_service.split(".")[0] if "." in raw_service else raw_service
         disp_name, trunc_key = key_info.get(cred_id, (cred_id, "Unknown"))
         
-        # Calculate 24h cost
-        total_24h = sum(ranges_data["24h"])
+        # Calculate costs
         est_cost_24h = total_24h * 0.002 
+        est_cost_30d = total_30d * 0.002
         
         raw_spark_24h = generate_sparkline(ranges_data["24h"], num_bins=ranges["24h"]["bins"])
         raw_spark_30d = generate_sparkline(ranges_data["30d"], num_bins=ranges["30d"]["bins"])
@@ -145,10 +145,10 @@ def fetch_and_display(project_id):
             else:
                 key_display = f"🔑 ID: {cred_id[:12]}..."
         else:
-            # Key name from API is available
-            key_display = f"🔑 {disp_name[:30]} ({trunc_key})"
+            key_display = f"🔑 {disp_name[:25]} ({trunc_key})"
         
-        print(f"{key_display:<45} | {clean_service:<30} | ${est_cost_24h:<9.2f} | \"{colored_spark_24h:<8}\" | \"{colored_spark_30d:<10}\"")
+        # Print with Cost and Sparklines first
+        print(f"${est_cost_24h:>10.2f} | ${est_cost_30d:>10.2f} | \"{colored_spark_24h:<8}\" | \"{colored_spark_30d:<10}\" | {key_display:<35} | {clean_service}")
 
     print("=" * 110)
     print("Note: Cost is estimated at $0.002 per request (Placeholder).")
