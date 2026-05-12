@@ -86,7 +86,7 @@ def fetch_and_display(project_id):
             "alignment_period": {"seconds": r_config["alignment"]},
             "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_SUM,
             "cross_series_reducer": monitoring_v3.Aggregation.Reducer.REDUCE_SUM,
-            "group_by_fields": ["metric.labels.credential_id"],
+            "group_by_fields": ["metric.labels.credential_id", "resource.labels.service"],
         })
 
         results = client.list_time_series(request={
@@ -98,17 +98,27 @@ def fetch_and_display(project_id):
 
         for series in results:
             cred_id = series.metric.labels.get("credential_id", "unknown")
+            service = series.resource.labels.get("service", "unknown")
+            unique_id = f"{cred_id}|{service}"
             points = sorted(series.points, key=lambda p: p.interval.start_time)
-            usage_data[cred_id][r_name] = [p.value.int64_value for p in points]
+            usage_data[unique_id][r_name] = [p.value.int64_value for p in points]
 
     key_info = get_api_key_info(project_id)
     
     print(f"\nGenAI usage for Project: {project_id}")
-    print("=" * 110)
-    print(f"{'Key (Truncated)':<35} | {'Cost (24h)':<10} | {'Last 24h':<12} | {'Last 30d':<14}")
-    print("-" * 110)
+    print("=" * 140)
+    print(f"{'Key (Truncated)':<45} | {'Service':<30} | {'Cost (24h)':<10} | {'Last 24h':<12} | {'Last 30d':<14}")
+    print("-" * 140)
 
-    for cred_id, ranges_data in usage_data.items():
+    for unique_id, ranges_data in usage_data.items():
+        total_24h = sum(ranges_data["24h"])
+        total_30d = sum(ranges_data["30d"])
+        
+        if total_24h == 0 and total_30d == 0:
+            continue
+
+        cred_id, raw_service = unique_id.split("|")
+        clean_service = raw_service.split(".")[0] if "." in raw_service else raw_service
         disp_name, trunc_key = key_info.get(cred_id, (cred_id, "Unknown"))
         
         # Calculate 24h cost
@@ -122,15 +132,16 @@ def fetch_and_display(project_id):
         colored_spark_24h = f"{GRAY}{raw_spark_24h[:split_idx_24h]}{WHITE}{raw_spark_24h[split_idx_24h:]}"
         colored_spark_30d = f"{GRAY}{raw_spark_30d[:split_idx_30d]}{WHITE}{raw_spark_30d[split_idx_30d:]}"
 
-        key_display = f"🔑 {disp_name} ({trunc_key})"
         if disp_name == cred_id:
             if cred_id == "unknown":
-                # Check for service labels via a second pass or more complex aggregation if needed
-                key_display = "🔑 ID: unknown (Service-level)"
-            else:
                 key_display = f"🔑 ID: {cred_id}"
+            else:
+                key_display = f"🔑 ID: {cred_id[:12]}..."
+        else:
+            # Key name from API is available
+            key_display = f"🔑 {disp_name[:30]} ({trunc_key})"
         
-        print(f"{key_display:<35} | ${est_cost_24h:<9.2f} | \"{colored_spark_24h:<8}\" | \"{colored_spark_30d:<10}\"")
+        print(f"{key_display:<45} | {clean_service:<30} | ${est_cost_24h:<9.2f} | \"{colored_spark_24h:<8}\" | \"{colored_spark_30d:<10}\"")
 
     print("=" * 110)
     print("Note: Cost is estimated at $0.002 per request (Placeholder).")
