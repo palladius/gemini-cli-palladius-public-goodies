@@ -24,6 +24,11 @@ CYAN = "\033[96m"
 BOLD = "\033[1m"
 RESET = "\033[0m"
 
+# Manual Identity Overrides (for keys programmatically hard to find)
+MANUAL_OVERRIDES = {
+    "fff1a659-9432-4366-8bcd-d98f5847bedc": "LingoLeap AI Tutor (Manual)",
+}
+
 def generate_sparkline(vals, num_bins=12):
     if not vals:
         return " " * num_bins
@@ -54,7 +59,7 @@ def get_api_key_info(project_id):
         pass
     return key_info
 
-def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None, filter_id=None):
+def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None, filter_id=None, export_csv=None):
     if allowed_types is None:
         allowed_types = ["apikey"]
     
@@ -135,6 +140,7 @@ def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None
     
     # Group by type for display
     grouped_rows = defaultdict(list)
+    all_rows_for_csv = []
     for unique_id, ranges_data in usage_data.items():
         total_24h = sum(ranges_data["24h"])
         total_30d = sum(ranges_data["30d"])
@@ -143,12 +149,23 @@ def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None
         
         full_cred = unique_id.split("|")[0]
         cred_type = full_cred.split(":")[0]
-        grouped_rows[cred_type].append({
+        row_data = {
             "unique_id": unique_id,
             "total_24h": total_24h,
             "total_30d": total_30d,
             "ranges_data": ranges_data
-        })
+        }
+        grouped_rows[cred_type].append(row_data)
+        all_rows_for_csv.append(row_data)
+
+    if export_csv:
+        import csv
+        with open(export_csv, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(["Unique_ID", "Cost_24h", "Cost_30d"])
+            for r in all_rows_for_csv:
+                writer.writerow([r["unique_id"], r["total_24h"]*0.002, r["total_30d"]*0.002])
+        print(f"\n{YELLOW}📂 Data exported to {export_csv}{RESET}")
 
     print(f"\nGenAI usage for Project: {project_id} (Filter: {filter_id or ', '.join(allowed_types)})")
     print("=" * 180)
@@ -200,11 +217,20 @@ def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None
 
             identity = "Unknown"
             id_color = RESET
-            if cred_type == "apikey":
+            
+            # 1. Check Manual Overrides
+            if cred_id in MANUAL_OVERRIDES:
+                identity = MANUAL_OVERRIDES[cred_id]
+                id_color = YELLOW
+            # 2. Check API Key Info
+            elif cred_type == "apikey":
                 name = key_info.get(cred_id)
                 if name:
                     identity = name
-                    id_color = YELLOW if "mini" in name.lower() or "lobby" in name.lower() else CYAN
+                    if any(x in name.lower() for x in ["mini", "lobby", "lingo"]):
+                        id_color = YELLOW
+                    else:
+                        id_color = CYAN
             elif cred_type == "serviceaccount": identity = "Service Account"
             elif cred_type == "oauth2": identity = "OAuth2 Client"
 
@@ -213,6 +239,23 @@ def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None
 
     print("\n" + "=" * 180)
     print(f"Note: Cost is estimated at $0.002 per request. Generated at {now.strftime('%Y-%m-%d %H:%M:%S')} UTC")
+    
+    # Permalink logic
+    import urllib.parse
+    
+    # 1. Monitoring Explorer Link
+    encoded_filter = 'metric.type="serviceruntime.googleapis.com/api/request_count" AND resource.type="consumed_api"'
+    if filter_id:
+        encoded_filter += f' AND (metric.labels.credential_id="apikey:{filter_id}" OR resource.labels.credential_id="apikey:{filter_id}")'
+    safe_filter = urllib.parse.quote(encoded_filter)
+    m_url = f"https://console.cloud.google.com/monitoring/metrics-explorer?project={project_id}&pageState=%7B%22xyChart%22:%7B%22dataSets%22:%5B%7B%22timeSeriesFilter%22:%7B%22filter%22:%22{safe_filter}%22,%22perSeriesAligner%22:%22ALIGN_SUM%22,%22crossSeriesReducer%22:%22REDUCE_SUM%22,%22groupByFields%22:%5B%22metric.label.credential_id%22,%22resource.label.credential_id%22,%22resource.label.service%22%5D%7D%7D%5D%7D%7D"
+    
+    print(f"\n{CYAN}🔗 Cloud Monitoring Permalink:{RESET}\n{m_url}")
+
+    # 2. Pantheon Credential Link (if apikey)
+    if filter_id and "-" in filter_id: # Looks like a UUID
+        p_url = f"https://pantheon.corp.google.com/apis/credentials/key/{filter_id}?project={project_id}"
+        print(f"\n{YELLOW}🔑 Pantheon Credential Permalink:{RESET}\n{p_url}")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -220,8 +263,9 @@ def main():
     parser.add_argument("--breakdown-by-product", action="store_true", help="Add service-level breakdown")
     parser.add_argument("--credential-types", default="apikey", help="Comma-separated types: apikey,serviceaccount,oauth2,unknown,all")
     parser.add_argument("--for-id", help="Filter for a specific credential ID (UUID, email, etc.)")
+    parser.add_argument("--export-csv", help="Path to export raw usage data to CSV")
     args = parser.parse_args()
-    fetch_and_display(args.project, args.breakdown_by_product, args.credential_types.split(","), args.for_id)
+    fetch_and_display(args.project, args.breakdown_by_product, args.credential_types.split(","), args.for_id, args.export_csv)
 
 if __name__ == "__main__":
     main()
