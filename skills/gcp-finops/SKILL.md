@@ -35,6 +35,7 @@ Provides a high-signal summary of GenAI usage per API key, including estimated c
 **Arguments:**
 - `project_id` (string): The GCP project ID.
 - `breakdown_by_product` (boolean, optional): If true, breaks down usage by specific GCP service (default: false).
+- `credential_types` (string, optional): Comma-separated list of types to include: `apikey`, `serviceaccount`, `oauth2`, `unknown`, or `all` (default: `apikey`).
 
 ### `compare_costs`
 Compares two CSV cost reports and highlights differences.
