@@ -145,7 +145,7 @@ def fetch_and_display(project_id):
         
         # Add Emojis to services (after the name)
         service_emoji = ""
-        if clean_service in ["generativelanguage", "aiplatform"]:
+        if clean_service in ["generativelanguage", "aiplatform", "cloudaicompanion"]:
             service_emoji = " ♊"
         elif clean_service in ["logging", "monitoring", "telemetry", "cloudtrace", "errorreporting"]:
             service_emoji = " 👀"
