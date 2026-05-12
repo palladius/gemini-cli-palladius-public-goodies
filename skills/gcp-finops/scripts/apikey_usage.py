@@ -114,7 +114,7 @@ def fetch_and_display(project_id):
     
     print(f"\nGenAI usage for Project: {project_id}")
     print("=" * 150)
-    print(f"{'Cost (24h)':>11} | {'Cost (30d)':>11} | {'Last 24h':<12} | {'Last 30d':<14} | {'Key (Truncated)':<35} | {'Service'}")
+    print(f"{'Cost (24h)':>10} | {'Cost (30d)':>10} | {'Last 24h':<10} | {'Last 30d':<12} | {'Key (Truncated)':<35} | {'Service'}")
     print("-" * 150)
 
     for unique_id, ranges_data in usage_data.items():
@@ -126,6 +126,15 @@ def fetch_and_display(project_id):
 
         cred_id, raw_service = unique_id.split("|")
         clean_service = raw_service.split(".")[0] if "." in raw_service else raw_service
+        
+        # Add Emojis to services
+        service_emoji = ""
+        if clean_service == "generativelanguage":
+            service_emoji = "♊ "
+        elif clean_service in ["logging", "monitoring", "telemetry", "cloudtrace", "errorreporting"]:
+            service_emoji = "👀 "
+        
+        display_service = f"{service_emoji}{clean_service}"
         disp_name, trunc_key = key_info.get(cred_id, (cred_id, "Unknown"))
         
         # Calculate costs
@@ -141,17 +150,21 @@ def fetch_and_display(project_id):
 
         if disp_name == cred_id:
             if cred_id == "unknown":
-                key_display = f"🔑 ID: {cred_id}"
+                key_display = "🔑 ID: unknown"
             else:
                 key_display = f"🔑 ID: {cred_id[:12]}..."
         else:
             key_display = f"🔑 {disp_name[:25]} ({trunc_key})"
         
-        # Print with Cost and Sparklines first
-        print(f"${est_cost_24h:>10.2f} | ${est_cost_30d:>10.2f} | \"{colored_spark_24h:<8}\" | \"{colored_spark_30d:<10}\" | {key_display:<35} | {clean_service}")
+        # Format costs with right-justification and commas
+        c24_str = f"${est_cost_24h:,.2f}"
+        c30_str = f"${est_cost_30d:,.2f}"
+        
+        # Print with fixed-width columns first
+        print(f"{c24_str:>10} | {c30_str:>10} | \"{colored_spark_24h}\" | \"{colored_spark_30d}\" | {key_display:<35} | {display_service}")
 
-    print("=" * 110)
-    print("Note: Cost is estimated at $0.002 per request (Placeholder).")
+    print("=" * 150)
+    print(f"Note: Cost is estimated at $0.002 per request (Placeholder). Generated at {now.strftime('%Y-%m-%d %H:%M:%S')} UTC")
 
 def main():
     parser = argparse.ArgumentParser()
