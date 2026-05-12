@@ -15,5 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `apikey_usage_by_project`: High-signal "dream" CLI with estimated costs and sparklines.
   - Defaults to aggregation by credential.
   - Added `--breakdown-by-product` flag for service-level details.
+  - Added `--for-id` flag to "double-click" on a specific ID with method-level breakdown.
+  - Added grouped type headers and color-coded human-readable identities.
 - `compare_costs`: Compare two CSV reports.
 - Python scripts for data fetching, visualization, and comparison using `uv run` for automatic dependency management.
