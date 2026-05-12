@@ -127,14 +127,18 @@ def fetch_and_display(project_id):
         cred_id, raw_service = unique_id.split("|")
         clean_service = raw_service.split(".")[0] if "." in raw_service else raw_service
         
-        # Add Emojis to services
+        # Add Emojis to services (after the name)
         service_emoji = ""
-        if clean_service == "generativelanguage":
-            service_emoji = "♊ "
+        if clean_service in ["generativelanguage", "aiplatform"]:
+            service_emoji = " ♊"
         elif clean_service in ["logging", "monitoring", "telemetry", "cloudtrace", "errorreporting"]:
-            service_emoji = "👀 "
+            service_emoji = " 👀"
+        elif clean_service == "compute":
+            service_emoji = " 💻"
+        elif clean_service == "storage":
+            service_emoji = " 🪣"
         
-        display_service = f"{service_emoji}{clean_service}"
+        display_service = f"{clean_service}{service_emoji}"
         disp_name, trunc_key = key_info.get(cred_id, (cred_id, "Unknown"))
         
         # Calculate costs
