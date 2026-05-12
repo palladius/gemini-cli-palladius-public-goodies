@@ -31,10 +31,10 @@ Downloads/exports the cost data to a CSV file.
 - `days` (integer, optional): Number of days to look back (default: 7).
 
 ### `apikey_usage_by_project`
-Provides a high-signal summary of GenAI usage per API key, including estimated costs and a visual sparkline.
+Provides a high-signal summary of GenAI usage per API key, including estimated costs and visual sparklines.
 **Arguments:**
 - `project_id` (string): The GCP project ID.
-- `days` (integer, optional): Number of days to look back (default: 1).
+- `breakdown_by_product` (boolean, optional): If true, breaks down usage by specific GCP service (default: false).
 
 ### `compare_costs`
 Compares two CSV cost reports and highlights differences.

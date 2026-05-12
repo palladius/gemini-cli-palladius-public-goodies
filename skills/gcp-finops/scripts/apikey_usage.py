@@ -60,18 +60,16 @@ def get_api_key_info(project_id):
         pass
     return key_info
 
-def fetch_and_display(project_id):
+def fetch_and_display(project_id, breakdown_by_product=False):
     client = monitoring_v3.MetricServiceClient()
     project_name = f"projects/{project_id}"
     now = datetime.datetime.now(datetime.timezone.utc)
     
     # Calculate split indices for color
-    # 24h: 8 bins (3h each). How many bins are "today" (since 00:00 UTC)?
     hours_today = now.hour + now.minute / 60.0
     bins_today_24h = min(8, int(hours_today / 3.0))
     split_idx_24h = 8 - bins_today_24h
 
-    # 30d: 10 bins (3d each). How many bins are "this month" (since day 1)?
     days_this_month = now.day
     bins_this_month_30d = min(10, int(days_this_month / 3.0))
     split_idx_30d = 10 - bins_this_month_30d
@@ -84,6 +82,10 @@ def fetch_and_display(project_id):
 
     usage_data = defaultdict(lambda: {"24h": [], "30d": []})
     
+    group_by = ["metric.labels.credential_id", "resource.labels.credential_id"]
+    if breakdown_by_product:
+        group_by.append("resource.labels.service")
+
     for r_name, r_config in ranges.items():
         start_time = now - datetime.timedelta(days=r_config["days"])
         interval = monitoring_v3.TimeInterval({"end_time": now, "start_time": start_time})
@@ -93,11 +95,7 @@ def fetch_and_display(project_id):
             "alignment_period": {"seconds": r_config["alignment"]},
             "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_SUM,
             "cross_series_reducer": monitoring_v3.Aggregation.Reducer.REDUCE_SUM,
-            "group_by_fields": [
-                "metric.labels.credential_id", 
-                "resource.labels.credential_id",
-                "resource.labels.service"
-            ],
+            "group_by_fields": group_by,
         })
 
         results = client.list_time_series(request={
@@ -108,19 +106,20 @@ def fetch_and_display(project_id):
         })
 
         for series in results:
-            # Check both metric and resource labels for credential_id
             m_cred = series.metric.labels.get("credential_id")
             r_cred = series.resource.labels.get("credential_id")
             raw_cred = m_cred or r_cred or "unknown"
             
-            cred_type = "unknown"
-            cred_id = raw_cred
+            cred_type, cred_id = "unknown", raw_cred
             if ":" in raw_cred:
                 cred_type, cred_id = raw_cred.split(":", 1)
 
-            service = series.resource.labels.get("service", "unknown")
-            # Store both type and id
-            unique_id = f"{cred_type}:{cred_id}|{service}"
+            if breakdown_by_product:
+                service = series.resource.labels.get("service", "unknown")
+                unique_id = f"{cred_type}:{cred_id}|{service}"
+            else:
+                unique_id = f"{cred_type}:{cred_id}"
+
             points = sorted(series.points, key=lambda p: p.interval.start_time)
             usage_data[unique_id][r_name] = [p.value.int64_value for p in points]
 
@@ -140,13 +139,15 @@ def fetch_and_display(project_id):
             "ranges_data": ranges_data
         })
     
-    # Sort by 30d spend descending
     rows.sort(key=lambda x: x["total_30d"], reverse=True)
 
     print(f"\nGenAI usage for Project: {project_id}")
-    print("=" * 150)
-    print(f"{'Cost (24h)':>10} | {'Cost (30d)':>10} | {'Last 24h':<8} | {'Last 30d':<10} | {'Key (Truncated)':<35} | {'Service'}")
-    print("-" * 150)
+    print("=" * 160)
+    header = f"{'Cost (24h)':>10} | {'Cost (30d)':>10} | {'Last 24h':<8} | {'Last 30d':<10} | {'Credential / Key':<45}"
+    if breakdown_by_product:
+        header += " | Service"
+    print(header)
+    print("-" * 160)
 
     for row in rows:
         unique_id = row["unique_id"]
@@ -154,34 +155,31 @@ def fetch_and_display(project_id):
         total_30d = row["total_30d"]
         ranges_data = row["ranges_data"]
 
-        full_cred, raw_service = unique_id.split("|")
-        # Ensure we have both type and id
-        if ":" in full_cred:
+        service_display = ""
+        if breakdown_by_product:
+            full_cred, raw_service = unique_id.split("|")
             cred_type, cred_id = full_cred.split(":", 1)
+            clean_service = raw_service.split(".")[0] if "." in raw_service else raw_service
+            
+            service_emoji = ""
+            if clean_service in ["generativelanguage", "aiplatform", "cloudaicompanion"]:
+                service_emoji = " ♊"
+            elif clean_service in ["logging", "monitoring", "telemetry", "cloudtrace", "errorreporting"]:
+                service_emoji = " 👀"
+            elif clean_service == "compute":
+                service_emoji = " 💻"
+            elif clean_service == "storage":
+                service_emoji = " 🪣"
+            elif clean_service in ["firestore", "sqladmin", "spanner", "bigtable"]:
+                service_emoji = " 🛢️"
+            elif clean_service == "run":
+                service_emoji = " 🏃"
+            elif clean_service.startswith("container"):
+                service_emoji = " 🚢"
+            service_display = f" | {clean_service}{service_emoji}"
         else:
-            cred_type, cred_id = "unknown", full_cred
-        
-        clean_service = raw_service.split(".")[0] if "." in raw_service else raw_service
-        
-        # Add Emojis to services (after the name)
-        service_emoji = ""
-        if clean_service in ["generativelanguage", "aiplatform", "cloudaicompanion"]:
-            service_emoji = " ♊"
-        elif clean_service in ["logging", "monitoring", "telemetry", "cloudtrace", "errorreporting"]:
-            service_emoji = " 👀"
-        elif clean_service == "compute":
-            service_emoji = " 💻"
-        elif clean_service == "storage":
-            service_emoji = " 🪣"
-        elif clean_service in ["firestore", "sqladmin", "spanner", "bigtable"]:
-            service_emoji = " 🛢️"
-        elif clean_service == "run":
-            service_emoji = " 🏃"
-        elif clean_service.startswith("container"):
-            service_emoji = " 🛑"
-        
-        display_service = f"{clean_service}{service_emoji}"
-        
+            cred_type, cred_id = unique_id.split(":", 1)
+
         # Calculate costs
         est_cost_24h = total_24h * 0.002 
         est_cost_30d = total_30d * 0.002
@@ -189,11 +187,9 @@ def fetch_and_display(project_id):
         raw_spark_24h = generate_sparkline(ranges_data["24h"], num_bins=ranges["24h"]["bins"])
         raw_spark_30d = generate_sparkline(ranges_data["30d"], num_bins=ranges["30d"]["bins"])
         
-        # Apply Colors: Gray for past, White for current
         colored_spark_24h = f"{GRAY}{raw_spark_24h[:split_idx_24h]}{WHITE}{raw_spark_24h[split_idx_24h:]}"
         colored_spark_30d = f"{GRAY}{raw_spark_30d[:split_idx_30d]}{WHITE}{raw_spark_30d[split_idx_30d:]}"
 
-        # Logic for Credential Display
         if cred_type == "apikey":
             disp_name, trunc_key = key_info.get(cred_id, (None, None))
             if disp_name:
@@ -207,21 +203,20 @@ def fetch_and_display(project_id):
         else:
             key_display = f"❓ {cred_id}"
         
-        # Format costs with right-justification and commas
         c24_str = f"${est_cost_24h:,.2f}"
         c30_str = f"${est_cost_30d:,.2f}"
         
-        # Print with fixed-width columns first (no quotes around sparklines)
-        print(f"{c24_str:>10} | {c30_str:>10} | {colored_spark_24h} | {colored_spark_30d} | {key_display:<45} | {display_service}")
+        print(f"{c24_str:>10} | {c30_str:>10} | {colored_spark_24h} | {colored_spark_30d} | {key_display:<45}{service_display}")
 
-    print("=" * 150)
+    print("=" * 160)
     print(f"Note: Cost is estimated at $0.002 per request (Placeholder). Generated at {now.strftime('%Y-%m-%d %H:%M:%S')} UTC")
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("project")
+    parser.add_argument("--breakdown-by-product", action="store_true", help="Add service-level breakdown")
     args = parser.parse_args()
-    fetch_and_display(args.project)
+    fetch_and_display(args.project, args.breakdown_by_product)
 
 if __name__ == "__main__":
     main()
