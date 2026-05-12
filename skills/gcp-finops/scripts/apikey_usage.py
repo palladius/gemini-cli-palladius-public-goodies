@@ -93,7 +93,11 @@ def fetch_and_display(project_id):
             "alignment_period": {"seconds": r_config["alignment"]},
             "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_SUM,
             "cross_series_reducer": monitoring_v3.Aggregation.Reducer.REDUCE_SUM,
-            "group_by_fields": ["metric.labels.credential_id", "resource.labels.service"],
+            "group_by_fields": [
+                "metric.labels.credential_id", 
+                "resource.labels.credential_id",
+                "resource.labels.service"
+            ],
         })
 
         results = client.list_time_series(request={
@@ -104,9 +108,19 @@ def fetch_and_display(project_id):
         })
 
         for series in results:
-            cred_id = series.metric.labels.get("credential_id", "unknown")
+            # Check both metric and resource labels for credential_id
+            m_cred = series.metric.labels.get("credential_id")
+            r_cred = series.resource.labels.get("credential_id")
+            raw_cred = m_cred or r_cred or "unknown"
+            
+            cred_type = "unknown"
+            cred_id = raw_cred
+            if ":" in raw_cred:
+                cred_type, cred_id = raw_cred.split(":", 1)
+
             service = series.resource.labels.get("service", "unknown")
-            unique_id = f"{cred_id}|{service}"
+            # Store both type and id
+            unique_id = f"{cred_type}:{cred_id}|{service}"
             points = sorted(series.points, key=lambda p: p.interval.start_time)
             usage_data[unique_id][r_name] = [p.value.int64_value for p in points]
 
@@ -140,7 +154,13 @@ def fetch_and_display(project_id):
         total_30d = row["total_30d"]
         ranges_data = row["ranges_data"]
 
-        cred_id, raw_service = unique_id.split("|")
+        full_cred, raw_service = unique_id.split("|")
+        # Ensure we have both type and id
+        if ":" in full_cred:
+            cred_type, cred_id = full_cred.split(":", 1)
+        else:
+            cred_type, cred_id = "unknown", full_cred
+        
         clean_service = raw_service.split(".")[0] if "." in raw_service else raw_service
         
         # Add Emojis to services (after the name)
@@ -157,9 +177,10 @@ def fetch_and_display(project_id):
             service_emoji = " 🛢️"
         elif clean_service == "run":
             service_emoji = " 🏃"
+        elif clean_service.startswith("container"):
+            service_emoji = " 🛑"
         
         display_service = f"{clean_service}{service_emoji}"
-        disp_name, trunc_key = key_info.get(cred_id, (cred_id, "Unknown"))
         
         # Calculate costs
         est_cost_24h = total_24h * 0.002 
@@ -172,20 +193,26 @@ def fetch_and_display(project_id):
         colored_spark_24h = f"{GRAY}{raw_spark_24h[:split_idx_24h]}{WHITE}{raw_spark_24h[split_idx_24h:]}"
         colored_spark_30d = f"{GRAY}{raw_spark_30d[:split_idx_30d]}{WHITE}{raw_spark_30d[split_idx_30d:]}"
 
-        if disp_name == cred_id:
-            if cred_id == "unknown":
-                key_display = "🔑 ID: unknown"
+        # Logic for Credential Display
+        if cred_type == "apikey":
+            disp_name, trunc_key = key_info.get(cred_id, (None, None))
+            if disp_name:
+                key_display = f"🔑 {disp_name[:25]} ({trunc_key})"
             else:
-                key_display = f"🔑 ID: {cred_id[:12]}..."
+                key_display = f"🔑 Key ID: {cred_id[:12]}..."
+        elif cred_type == "serviceaccount":
+            key_display = f"👤 SA ID: {cred_id[:15]}..."
+        elif cred_type == "oauth2":
+            key_display = f"🆔 OAuth: {cred_id[:15]}..."
         else:
-            key_display = f"🔑 {disp_name[:25]} ({trunc_key})"
+            key_display = f"❓ {cred_id}"
         
         # Format costs with right-justification and commas
         c24_str = f"${est_cost_24h:,.2f}"
         c30_str = f"${est_cost_30d:,.2f}"
         
         # Print with fixed-width columns first (no quotes around sparklines)
-        print(f"{c24_str:>10} | {c30_str:>10} | {colored_spark_24h} | {colored_spark_30d} | {key_display:<35} | {display_service}")
+        print(f"{c24_str:>10} | {c30_str:>10} | {colored_spark_24h} | {colored_spark_30d} | {key_display:<45} | {display_service}")
 
     print("=" * 150)
     print(f"Note: Cost is estimated at $0.002 per request (Placeholder). Generated at {now.strftime('%Y-%m-%d %H:%M:%S')} UTC")
