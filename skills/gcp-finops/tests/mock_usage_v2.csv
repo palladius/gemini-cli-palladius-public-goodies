@@ -1,0 +1,3 @@
+date,key_name,service,usage_count
+2026-05-12,KeyA,vertexai.googleapis.com,200
+2026-05-12,KeyB,vertexai.googleapis.com,100
