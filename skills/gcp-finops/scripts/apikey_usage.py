@@ -114,7 +114,7 @@ def fetch_and_display(project_id):
     
     print(f"\nGenAI usage for Project: {project_id}")
     print("=" * 150)
-    print(f"{'Cost (24h)':>10} | {'Cost (30d)':>10} | {'Last 24h':<10} | {'Last 30d':<12} | {'Key (Truncated)':<35} | {'Service'}")
+    print(f"{'Cost (24h)':>10} | {'Cost (30d)':>10} | {'Last 24h':<8} | {'Last 30d':<10} | {'Key (Truncated)':<35} | {'Service'}")
     print("-" * 150)
 
     for unique_id, ranges_data in usage_data.items():
@@ -160,8 +160,8 @@ def fetch_and_display(project_id):
         c24_str = f"${est_cost_24h:,.2f}"
         c30_str = f"${est_cost_30d:,.2f}"
         
-        # Print with fixed-width columns first
-        print(f"{c24_str:>10} | {c30_str:>10} | \"{colored_spark_24h}\" | \"{colored_spark_30d}\" | {key_display:<35} | {display_service}")
+        # Print with fixed-width columns first (no quotes around sparklines)
+        print(f"{c24_str:>10} | {c30_str:>10} | {colored_spark_24h} | {colored_spark_30d} | {key_display:<35} | {display_service}")
 
     print("=" * 150)
     print(f"Note: Cost is estimated at $0.002 per request (Placeholder). Generated at {now.strftime('%Y-%m-%d %H:%M:%S')} UTC")
