@@ -1,3 +1,7 @@
+## [0.4.0] - 2026-05-11
+
+- ✨ Feat: Added `tmux-renamer` skill to audit and rename tmux sessions.
+
 ## [0.3.10] - 2026-05-08
 - 🖼️ Added new pixar demo images to `nano-banana-ricc` skill.
 - 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
