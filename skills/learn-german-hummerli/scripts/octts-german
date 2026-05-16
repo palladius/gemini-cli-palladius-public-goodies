@@ -31,6 +31,7 @@
 # Sanitized octts-german for portability
 # Configuration
 TARGET="${OCTTS_TARGET:-}"
+ACCOUNT="${OCTTS_ACCOUNT:-}"
 DEFAULT_VOICE="${DEFAULT_VOICE:-it-IT-GiuseppeNeural}"
 DEFAULT_SPEED="-10%"
 OPENAI_KEY="${OPENAI_API_KEY:-}"
@@ -141,11 +142,17 @@ if [ -s "$TMP_RAW" ]; then
 
     if [ -s "$FINAL_MEDIA" ]; then
         echo "🚀 Sending via OpenClaw ($CHANNEL) to $TARGET..."
+        
+        ACCOUNT_ARG=""
+        if [ -n "$ACCOUNT" ]; then
+            ACCOUNT_ARG="--account $ACCOUNT"
+        fi
+        
         if command -v openclaw >/dev/null 2>&1; then
-            openclaw message send --channel "$CHANNEL" --target "$TARGET" --media "$FINAL_MEDIA"
+            openclaw message send --channel "$CHANNEL" $ACCOUNT_ARG --target "$TARGET" --media "$FINAL_MEDIA"
         else
             # Fallback to local path if not in PATH
-            ~/git/openclaw/openclaw.mjs message send --channel "$CHANNEL" --target "$TARGET" --media "$FINAL_MEDIA"
+            ~/git/openclaw/openclaw.mjs message send --channel "$CHANNEL" $ACCOUNT_ARG --target "$TARGET" --media "$FINAL_MEDIA"
         fi
         rm -f "$TMP_FILE" "$OGG_FILE"
         echo "✅ Done!"

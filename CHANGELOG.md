@@ -1,3 +1,7 @@
+## [0.4.1] - 2026-05-16
+
+- ✨ Feat: Added multi-account support for `openclaw message send` in `learn-german-hummerli` skill.
+
 ## [0.4.0] - 2026-05-11
 
 - ✨ Feat: Added `tmux-renamer` skill to audit and rename tmux sessions.
