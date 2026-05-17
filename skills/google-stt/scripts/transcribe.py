@@ -22,7 +22,7 @@ def transcribe_audio(file_path):
     """Transcribes a single audio file using the Gemini API."""
     try:
         audio_file = genai.upload_file(path=file_path)
-        model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
+        model = genai.GenerativeModel(model_name="models/gemini-3.1-flash-lite")
         response = model.generate_content(["Please transcribe this audio file.", audio_file])
         # It seems that the response.text is empty, and the transcription is in the candidates
         if response.candidates:

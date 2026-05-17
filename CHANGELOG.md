@@ -1,3 +1,8 @@
+## [0.4.1] - 2026-05-17
+
+- 🎙️ Updated `google-stt` to use `gemini-3.1-flash-lite` model for faster/cheaper transcription.
+- 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
+
 ## [0.4.0] - 2026-05-11
 
 - ✨ Feat: Added `tmux-renamer` skill to audit and rename tmux sessions.
