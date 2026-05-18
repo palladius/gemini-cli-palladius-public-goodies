@@ -1,7 +1,13 @@
-## [0.4.1] - 2026-05-17
+## [0.4.2] - 2026-05-18
 
 - 🎙️ Updated `google-stt` to use `gemini-3.1-flash-lite` model for faster/cheaper transcription.
+- ✨ Feat: Added multi-account support for `openclaw message send` in `learn-german-hummerli` skill.
+- 🚚 Added specific instruction to `nano-banana-ricc` for Hermes (Ermete Bottazzi).
 - 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
+
+## [0.4.1] - 2026-05-16
+
+- ✨ Feat: Added multi-account support for `openclaw message send` in `learn-german-hummerli` skill.
 
 ## [0.4.0] - 2026-05-11
 

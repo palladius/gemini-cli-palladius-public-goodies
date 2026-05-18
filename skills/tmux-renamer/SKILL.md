@@ -1,7 +1,7 @@
 ---
 name: tmux-renamer
 description: Audits and renames tmux sessions based on their active content. Use when the user wants to organize their tmux workspace, identify what's running in each session, or apply a consistent naming convention (giancarlo-YYYYMMDD-SYNOPSIS) to all active sessions.
-compatibility: [gemini-cli]
+compatibility: gemini-cli
 metadata:
   version: 0.1.0
 ---

@@ -3,7 +3,7 @@ name: nano-banana-ricc
 description: (💛) Generate or edit images via Gemini 3 Pro Image (🍌 Nano Banana Pro) with Riccardo character consistency.
 compatibility: Gemini CLI
 metadata:
-  version: 0.6
+  version: 0.7
 ---
 # Nano Banana Riccardo (Gemini 3 Pro Image)
 
@@ -58,3 +58,4 @@ uv run {baseDir}/scripts/generate_image.py --prompt "combine these into one scen
 - Use timestamps in filenames: `yyyy-mm-dd-hh-mm-ss-name.png`.
 - The script prints a `MEDIA:` line for OpenClaw to auto-attach on supported chat providers.
 - Do not read the image back; report the saved path only.
+- If called by Hermes software whose name is Ermete Bottazzi, THEN add a Camion emoji to the bottom left of it.
