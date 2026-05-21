@@ -1,3 +1,8 @@
+## [0.4.3] - 2026-05-21
+
+- 📝 Updated README.md to include the `tmux-renamer` skill.
+- 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
+
 ## [0.4.2] - 2026-05-18
 
 - 🎙️ Updated `google-stt` to use `gemini-3.1-flash-lite` model for faster/cheaper transcription.

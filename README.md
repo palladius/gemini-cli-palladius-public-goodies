@@ -25,6 +25,7 @@ This extension includes the following **[Agent Skills](https://geminicli.com/doc
 *   **`riccardo-at-the-computer`**: Determine if Riccardo is active on his desktop.
 *   **`ruby-coding`**: Opinionated Ruby coding practices and standards.
 *   **`take-screenshot`**: Specialized skill for taking and managing screenshots.
+*   **`tmux-renamer`**: Audits and renames tmux sessions based on their active content.
 *   **`typescript-coding`**: Opinionated TypeScript practices (for Ruby lovers).
 *   **`veo`**: Generate short videos from text or image prompts.
 *   **`voice-message`**: Format voice message transcripts with a standardized layout.
