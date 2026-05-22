@@ -1,3 +1,8 @@
+## [0.4.4] - 2026-05-22
+
+- 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
+- 🛠️ Routine checks and minor updates.
+
 ## [0.4.3] - 2026-05-21
 
 - 📝 Updated README.md to include the `tmux-renamer` skill.
