@@ -1,3 +1,8 @@
+## [0.4.8] - 2026-05-27
+
+- 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
+- 🧹 Routine checks and minor updates.
+
 ## [0.4.7] - 2026-05-26
 
 - 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
