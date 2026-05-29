@@ -1,7 +1,9 @@
 ---
 name: carlessian-gog
 description: Google Workspace CLI managed the Carlesso way—featuring isolated configurations, selective read-only security, and standard workflows.
-version: 1.0.0
+compatibility: Gemini CLI
+metadata:
+  version: 1.0.0
 ---
 
 # GOG (Google Workspace CLI) - The Carlesso Way
