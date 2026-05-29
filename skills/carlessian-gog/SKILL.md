@@ -51,8 +51,17 @@ alias gws-rubycon='GOOGLE_WORKSPACE_CLI_CONFIG_DIR=~/.config/gws-rubycon gws'
 ```
 
 ## 🗓️ 3. Google Calendar Workflows
-Standard operations for managing calendar events:
+Writing Google Calendar events is the sole exception to the read-only rule. This is safe, but agents must follow these strict guidelines when creating events:
 
+### 🏷️ Agent Event Guidelines
+*   **Prepend Agent Emoji**: Always prepend the title with the agent's unique emoji:
+    *   **OpenClaw / OpenClaudio**: Prepend with a lobster emoji (`🦞`).
+    *   **Hermes**: Prepend with a caduceus (`⚚`).
+    *   **Antigravity**: Prepend with a sparkle/rocket (`✨` / `🚀`).
+*   **Sign-Off**: Add your name and emojis at the end of the event description.
+*   **Enrich Details**: Try to fill in locations (maps), add relevant people to attendees, and make descriptions as detailed and rich as possible.
+
+### Commands
 *   **List Calendars**: `gog calendar list`
 *   **Search Events**: `gog calendar events primary --from "2026-05-29T00:00:00+02:00" --to "2026-05-29T23:59:59+02:00"`
 *   **Create Event**:
