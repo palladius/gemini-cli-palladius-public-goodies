@@ -8,6 +8,9 @@ version: 1.0.0
 
 Opinionated guidelines and commands to manage GOG safely and efficiently under the Carlesso identity.
 
+> [!IMPORTANT]
+> **Use `gog`, not `gws`.** For some reason, `gws` does not work in this environment. Always prefer `gog` commands.
+
 ## 🔐 1. Selective Read-Only Security (The Gold Standard)
 To protect your Gmail inbox from accidental write/send actions while maintaining write access to your Google Calendar, always authenticate personal accounts with selective scopes:
 
