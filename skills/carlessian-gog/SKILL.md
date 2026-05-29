@@ -22,6 +22,12 @@ gog auth add palladiusbonton@gmail.com \
   --force-consent
 ```
 
+### Why Read-Only is Crucial for Riccardo
+Always enforce **READ-ONLY** access for critical personal and work accounts (`palladiusbonton@gmail.com` and `ricc@google.com`) because:
+1. **Intimate/Private Life Safety**: These accounts contain your entire private and work history. Under no circumstances should important information be destroyed or mutated accidentally.
+2. **Account Suspension Risk**: Google has a history of closing down heavily automated accounts. Safe, read-only scopes protect your lifelong accounts from triggering automated flag thresholds.
+3. **General Risk Mitigation**: Automated LLM interactions are inherently unpredictable. Restricting writes provides peace of mind.
+
 ### Gmail Agent Safety
 Even with full scopes, you can block all Gmail send/write operations at the CLI level for safety by using the `--gmail-no-send` flag:
 ```bash
