@@ -1,5 +1,5 @@
 ---
-name: gog
+name: carlessian-gog
 description: Google Workspace CLI managed the Carlesso way—featuring isolated configurations, selective read-only security, and standard workflows.
 version: 1.0.0
 ---
