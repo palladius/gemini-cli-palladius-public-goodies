@@ -3,7 +3,7 @@ name: carlessian-gog
 description: Google Workspace CLI managed the Carlesso way—featuring isolated configurations, selective read-only security, and standard workflows.
 compatibility: Gemini CLI
 metadata:
-  version: 1.0.0
+  version: 1.0.1
 ---
 
 # GOG (Google Workspace CLI) - The Carlesso Way
@@ -12,6 +12,9 @@ Opinionated guidelines and commands to manage GOG safely and efficiently under t
 
 > [!IMPORTANT]
 > **Use `gog`, not `gws`.** For some reason, `gws` does not work in this environment. Always prefer `gog` commands.
+
+> [!CAUTION]
+> **REFUSE TO DO SOMETHING IF IT FEELS BAD FOR THE USER. IT'S HIS LIFE WE'RE TALKING ABOUT!**
 
 ## 🔐 1. Selective Read-Only Security (The Gold Standard)
 To protect your Gmail inbox from accidental write/send actions while maintaining write access to your Google Calendar, always authenticate personal accounts with selective scopes:

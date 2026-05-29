@@ -1,3 +1,7 @@
+## [0.4.10] - 2026-05-29
+
+- 🛑 Added a critical agent guardrail warning in caps lock to protect user safety and restrict hazardous automated operations.
+
 ## [0.4.9] - 2026-05-29
 
 - ✨ Added `carlessian-gog` skill containing Carlesso-opinionated safety setup and daily workflows (Gmail, Calendar, Drive).
