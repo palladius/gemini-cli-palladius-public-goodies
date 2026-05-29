@@ -1,4 +1,10 @@
+## [0.4.9] - 2026-05-29
+
+- ✨ Added `gog` skill containing Carlesso-opinionated safety setup and daily workflows (Gmail, Calendar, Drive).
+- 🔗 Symlinked the `gog` skill into GIC workspace.
+
 ## [0.4.8] - 2026-05-27
+
 
 - 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
 - 🧹 Routine checks and minor updates.
