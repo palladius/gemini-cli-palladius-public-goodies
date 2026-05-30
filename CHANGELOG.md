@@ -1,3 +1,10 @@
+## [0.4.11] - 2026-05-30
+
+- 🏖️ Added `zurich-badi-info` skill providing real-time water temperatures, open/closed status for Zurich outdoor pools, lakes, and Limmat/Letten river. Includes custom family weather recommendations (>25°C), morning Ironman swim highlights, and safety advice for Limmat canotto floating.
+- 💡 Integrated Lake Zurich West vs. East side microclimate observations into the skill logic.
+- 📝 Translated the entire CLI script output and documentation into Italian, and added a baseline comparison system for Pegel water height with SECCA alerts.
+- 📓 Automatically detects and saves daily reports directly into the active Obsidian vault.
+
 ## [0.4.10] - 2026-05-29
 
 - 🛑 Added a critical agent guardrail warning in caps lock to protect user safety and restrict hazardous automated operations.
