@@ -29,6 +29,7 @@ This extension includes the following **[Agent Skills](https://geminicli.com/doc
 *   **`typescript-coding`**: Opinionated TypeScript practices (for Ruby lovers).
 *   **`veo`**: Generate short videos from text or image prompts.
 *   **`voice-message`**: Format voice message transcripts with a standardized layout.
+*   **`zurich-badi-info`**: (💛) Real-time water temperatures, open status of Zurich badis (lakes, river/Letten, pools), outside weather recommendations for family trips, and Limmat canotto/dinghy flow safety alerts.
 
 ### Cross-Links:
 *   [General-Purpose Gemini CLI Custom Commands](https://github.com/palladius/gemini-cli-custom-commands)

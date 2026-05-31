@@ -1,3 +1,8 @@
+## [0.4.12] - 2026-05-31
+
+- 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
+- 📝 Updated README.md to include missing skills: `carlessian-gog`, `git-repo-documenter`, and `zurich-badi-info`.
+
 ## [0.4.11] - 2026-05-30
 
 - 🏖️ Added `zurich-badi-info` skill providing real-time water temperatures, open/closed status for Zurich outdoor pools, lakes, and Limmat/Letten river. Includes custom family weather recommendations (>25°C), morning Ironman swim highlights, and safety advice for Limmat canotto floating.
