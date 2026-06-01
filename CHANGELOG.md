@@ -1,3 +1,8 @@
+## [0.4.13] - 2026-06-01
+
+- 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
+- 📝 Corrected README.md to actually include missing skills: `carlessian-gog` and `git-repo-documenter` (fixing incomplete 0.4.12 sync).
+
 ## [0.4.12] - 2026-05-31
 
 - 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
