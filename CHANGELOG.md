@@ -1,3 +1,8 @@
+## [0.3.10] - 2026-06-05
+
+- 🐛 Bugfix: Renamed `skills/gcp-finops` to `skills/gemini-finops` to resolve folder/specification mismatch validation errors.
+- 🧪 Unit Tests: Refactored `skills/nano-banana-ricc/scripts/generate_image.py` to extract `auto_detect_resolution` and `choose_output_resolution` to pass the 8 pytest unit tests.
+
 ## [0.3.9] - 2026-05-07
 - 🤖 Maintenance run by `gc-skillume-bot-v0_2`: Fixed typos in `GEMINI.md`.
 

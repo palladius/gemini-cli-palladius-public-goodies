@@ -29,6 +29,26 @@ def get_api_key(provided_key: str | None) -> str | None:
     return os.environ.get("GEMINI_API_KEY")
 
 
+def auto_detect_resolution(max_input_dim: int) -> str:
+    """Detect appropriate resolution based on max dimension of input images."""
+    if max_input_dim >= 3000:
+        return "4K"
+    elif max_input_dim >= 1500:
+        return "2K"
+    return "1K"
+
+
+def choose_output_resolution(
+    resolution: str | None, max_input_dim: int, is_input_provided: bool
+) -> tuple[str, bool]:
+    """Select the output resolution, prioritizing explicit choice, then auto-detection, then default."""
+    if resolution is not None:
+        return resolution, False
+    if is_input_provided and max_input_dim > 0:
+        return auto_detect_resolution(max_input_dim), True
+    return "1K", False
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate images using Nano Banana Pro (Gemini 3 Pro Image)"
@@ -53,7 +73,7 @@ def main():
     parser.add_argument(
         "--resolution", "-r",
         choices=["1K", "2K", "4K"],
-        default="1K",
+        default=None,
         help="Output resolution: 1K (default), 2K, or 4K"
     )
     parser.add_argument(
@@ -99,13 +119,12 @@ def main():
 
     # Load input images if provided (up to 14 supported by Nano Banana Pro)
     input_images = []
-    output_resolution = args.resolution
+    max_input_dim = 0
     if args.input_images:
         if len(args.input_images) > 14:
             print(f"Error: Too many input images ({len(args.input_images)}). Maximum is 14.", file=sys.stderr)
             sys.exit(1)
 
-        max_input_dim = 0
         for img_path in args.input_images:
             try:
                 with PILImage.open(img_path) as img:
@@ -120,15 +139,11 @@ def main():
                 print(f"Error loading input image '{img_path}': {e}", file=sys.stderr)
                 sys.exit(1)
 
-        # Auto-detect resolution from largest input if not explicitly set
-        if args.resolution == "1K" and max_input_dim > 0:  # Default value
-            if max_input_dim >= 3000:
-                output_resolution = "4K"
-            elif max_input_dim >= 1500:
-                output_resolution = "2K"
-            else:
-                output_resolution = "1K"
-            print(f"Auto-detected resolution: {output_resolution} (from max input dimension {max_input_dim})")
+    output_resolution, is_auto = choose_output_resolution(
+        args.resolution, max_input_dim, bool(args.input_images)
+    )
+    if is_auto:
+        print(f"Auto-detected resolution: {output_resolution} (from max input dimension {max_input_dim})")
 
     # Build contents (images first if editing, prompt only if generating)
     if input_images:
