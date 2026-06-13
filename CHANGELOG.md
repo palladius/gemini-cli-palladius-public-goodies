@@ -1,3 +1,8 @@
+## [0.4.14] - 2026-06-13
+
+- 🤖 Routine audit: verified 25 skills, all tests passed.
+- 🚀 Bumped version to 0.4.14.
+
 ## [0.4.13] - 2026-06-01
 
 - 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
