@@ -1,6 +1,6 @@
 ---
 description: Rules to create and maintain a GOOD CLI
-name: cli-best-practices
+name: create-cli-best-practices
 ---
 
 TODO(make this well)
