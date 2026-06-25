@@ -12,7 +12,8 @@ A carlessian CLI should also be doucmented in $GIC/ under installables.
 
 * Prefer smaller files to a single big monolithic file. It'll be harder to manage in rebases :) 
 * honour NO_COLOR env var!
-* Make sure it works well in `watch` scenarios.
+* Make sure it works well in `watch` scenarios — see [references/detect-watch-mode-rust.md](references/detect-watch-mode-rust.md)
+  for the full `/proc` parent-process detection technique (short version: `isatty` lies, env vars are absent, walk `/proc/<ppid>/comm`).
 
 
 All commands should have:
