@@ -15,6 +15,7 @@ def main():
     parser.add_argument("-s", "--speed", default="-10%", help="TTS Speed (default: -10%%)")
     parser.add_argument("-t", "--target", help="Override chat ID or phone number")
     parser.add_argument("-c", "--channel", help="Specify channel (telegram, whatsapp, etc.)")
+    parser.add_argument("-a", "--account", default="hummerli", help="Specify account ID (default: hummerli)")
 
     args = parser.parse_args()
 
@@ -28,6 +29,9 @@ def main():
     
     if args.channel:
         env["OCTTS_CHANNEL"] = args.channel
+
+    if args.account:
+        env["OCTTS_ACCOUNT"] = args.account
 
     # Look for octts in the skill's scripts directory first, then fallback
     base_dir = os.path.dirname(os.path.abspath(__file__))

@@ -1,6 +1,9 @@
 ---
 name: lyria2-music-generation
 description: Generate music using Google's Lyria (v2) model via Vertex AI. Use when the user wants to create audio clips, background music, or experiment with AI music generation.
+compatibility: gemini-cli
+metadata:
+  version: 0.1.0
 ---
 
 # Lyria Music Generation (v2)

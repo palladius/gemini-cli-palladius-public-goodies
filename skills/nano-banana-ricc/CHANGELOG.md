@@ -1,5 +1,11 @@
 # CHANGELOG for nano-banana-ricc
 
+## 0.7 (2026-05-15)
+- 🚚 Added specific instruction to add a Camion emoji if called by Hermes (Ermete Bottazzi).
+
+## 0.6 (2026-05-08)
+- 🖼️ Added new pixar demo images to `nano_banana/` folder.
+
 ## 0.5 (2026-04-27)
 - 🖼️ Added Vegas skyline pixar demo image to `nano_banana/` folder.
 

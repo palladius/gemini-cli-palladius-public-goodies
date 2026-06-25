@@ -9,11 +9,13 @@ This extension includes the following **[Agent Skills](https://geminicli.com/doc
 
 *   **`add-to-portfolio-app`**: Adds a new Talk or Article to Riccardo's personal portfolio application.
 *   **`adk-python`**: Create and manage AI agents using Google's Agent Development Kit (ADK) for Python.
+*   **`carlessian-gog`**: Carlesso-opinionated safety setup and daily workflows (Gmail, Calendar, Drive).
 *   **`carlessian-obsidian`**: Interact with Riccardo's Obsidian vault (The Carlessian Vault).
 *   **`devrel-cfp-generator`**: Craft high-quality Call for Papers (CFP) applications for tech conferences.
 *   **`drawio`**: Generate and edit diagrams using draw.io.
 *   **`drensin-reasoning`**: Implementation of the Elephant-Goldfish Model (EGM) for deep reasoning.
 *   **`git-coding`**: Mandatory guidelines for git operations and repository management.
+*   **`git-repo-documenter`**: Auto-documents any Git repository: creates ABOUT.md, generates project hero images, and builds deep diagrams.
 *   **`google-stt`**: Transcribe audio files using Google Gemini 1.5 Flash.
 *   **`imagen-milan-demo`**: Nanobanana Milanese twist image generation.
 *   **`imagen-zurich-demo`**: Nanobanana Zurich twist image generation.
@@ -25,9 +27,11 @@ This extension includes the following **[Agent Skills](https://geminicli.com/doc
 *   **`riccardo-at-the-computer`**: Determine if Riccardo is active on his desktop.
 *   **`ruby-coding`**: Opinionated Ruby coding practices and standards.
 *   **`take-screenshot`**: Specialized skill for taking and managing screenshots.
+*   **`tmux-renamer`**: Audits and renames tmux sessions based on their active content.
 *   **`typescript-coding`**: Opinionated TypeScript practices (for Ruby lovers).
 *   **`veo`**: Generate short videos from text or image prompts.
 *   **`voice-message`**: Format voice message transcripts with a standardized layout.
+*   **`zurich-badi-info`**: (💛) Real-time water temperatures, open status of Zurich badis (lakes, river/Letten, pools), outside weather recommendations for family trips, and Limmat canotto/dinghy flow safety alerts.
 
 ### Cross-Links:
 *   [General-Purpose Gemini CLI Custom Commands](https://github.com/palladius/gemini-cli-custom-commands)
