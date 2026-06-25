@@ -1,3 +1,15 @@
+## [0.5.3] - 2026-06-25
+
+- 📖 Docs: Added `--ai-help` best practice to `create-cli-best-practices` skill and updated TODO.md.
+
+## [0.5.2] - 2026-06-25
+
+- 📖 Docs: Added Alies Lapatsin reference link to `create-cli-best-practices` skill and updated the version to 0.5.2.
+
+## [0.5.1] - 2026-06-25
+
+- 📖 Docs: Updated `create-cli-best-practices` skill with AI-friendly CLI design guidelines (idempotence, dry-run, bare quiet output, actionable errors, non-interactive TTY detection) and added reference links.
+
 ## [0.5.0] - 2026-06-25
 
 - ✨ Feat: Added `gemini-finops` skill to monitor and analyze GenAI expenditure on Google Cloud (Vertex AI/Gemini).
@@ -94,7 +106,6 @@
 ## [0.3.10] - 2026-05-08
 - 🖼️ Added new pixar demo images to `nano-banana-ricc` skill.
 - 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
->>>>>>> main
 
 ## [0.3.9] - 2026-05-07
 - 🤖 Maintenance run by `gc-skillume-bot-v0_2`: Fixed typos in `GEMINI.md`.
