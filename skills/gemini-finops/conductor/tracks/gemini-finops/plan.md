@@ -15,5 +15,5 @@
 - [x] Add tests for the Python scripts (mock data verification).
 
 ## Phase 4: Refinement
-- [ ] Optimize for speed and minimal API calls.
+- [x] Optimize for speed and minimal API calls.
 - [x] Ensure visually appealing ASCII output.
