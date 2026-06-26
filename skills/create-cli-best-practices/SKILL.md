@@ -1,13 +1,13 @@
 ---
 name: create-cli-best-practices
-description: Rules to create and maintain a GOOD CLI
+description: Rules to create and maintain a GOOD CLI. Do not use for GUI-only design rules, web apps, or backend REST APIs.
 compatibility: Antigravity / Gemini CLI
 metadata:
-  version: 0.1.6
+  version: 0.1.7
 ---
 
-A good CLI should be implemented in `rust` or `go`.
-A carlessian CLI should also be documented in $GIC/ under installables.
+Implement the CLI in `rust` or `go`.
+Document any carlessian CLI in $GIC/ under installables.
 
 # Language-Specific Recommendations
 
@@ -24,7 +24,7 @@ Recommended tools and libraries:
 * **Watch Mode Compatibility:** Make sure the CLI works well in `watch` scenarios (e.g., handling rapid polling, disabling terminal clearing or color escape sequences if they break watch mode).
 * **Deterministic Ordering:** Always sort outputs (sets/lists/fields) deterministically to prevent glitches in `watch <cli>` and noisy diffs in structured output (JSON/YAML).
 
-All commands should have:
+Ensure all commands support the following flags:
 
 * `--help` / `-h`: Shows comprehensive usage and help.
 * `--version` / `-v`: Shows the version. Ideally, check if the version is the latest at startup (if this can be done extremely fast, e.g., local version file or quick curl from public GitHub).
@@ -47,7 +47,7 @@ Since AI agents are prime consumers of command-line tools, design the CLI to be 
 * **Idempotency & exit codes:** Make commands idempotent (e.g., like `kubectl apply`). If a conflict exists, return unique exit codes (like `5` for "already exists") to facilitate programmatic recovery.
 * **Composability (`--quiet` / `-q`):** Output bare values (one per line, no decorative borders, no tables) for easy piping into other commands or shell scripts.
 * **Non-Interactive Bypasses (`--yes` / `--force`):** Allow bypassing human prompt queries. Always fail-fast or auto-bypass prompts when stdin is not a TTY (non-interactive terminals) to avoid hanging the agent.
-* **Actionable Errors:** Errors should return machine-parseable strings (like `image_not_found` in the JSON/stderr payload), output the failing input, and provide suggestions/remediation commands.
+* **Actionable Errors:** Ensure errors return machine-parseable strings (like `image_not_found` in the JSON/stderr payload), output the failing input, and provide suggestions/remediation commands.
 * **AI-Specific Help (`--ai-help`):** Provide a dedicated help option designed specifically for AI agents (explaining API structures, schemas, integration constraints, and formatting rules). The standard `--help` output should mention the availability of `--ai-help` so agents can easily discover it.
 
 # LLM Support

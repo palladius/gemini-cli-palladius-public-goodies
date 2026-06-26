@@ -1,5 +1,8 @@
 # Changelog - create-cli-best-practices
 
+## [0.1.7] - 2026-06-26
+- Refined description, implementation guidelines phrasing, and formatted watch commands as code block.
+
 ## [0.1.6] - 2026-06-26
 - Condensed the deterministic ordering recommendation to a concise single-line rule.
 

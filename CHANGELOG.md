@@ -1,3 +1,7 @@
+## [0.5.8] - 2026-06-26
+
+- 📖 Docs: Added watch command code block formatting and cleaned up validation warnings in the `create-cli-best-practices` skill.
+
 ## [0.5.7] - 2026-06-26
 
 - 📖 Docs: Condensed deterministic ordering guideline in `create-cli-best-practices` to 1 line, and bumped version to 0.5.7.

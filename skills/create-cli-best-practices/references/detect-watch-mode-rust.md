@@ -97,5 +97,8 @@ or skip detection (OSC-8 works in iTerm2/Terminal.app anyway).
 
 ## Origin
 
+<details>
+<summary>Historical Context</summary>
 Discovered while building `drc sheetless list` in devrel-cli (2026-06-25).
 Also lives as standalone skill: `detect-watch-mode` in palladius-public-goodies.
+</details>
