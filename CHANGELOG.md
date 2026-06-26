@@ -1,3 +1,7 @@
+## [0.5.7] - 2026-06-26
+
+- 📖 Docs: Condensed deterministic ordering guideline in `create-cli-best-practices` to 1 line, and bumped version to 0.5.7.
+
 ## [0.5.6] - 2026-06-26
 
 - 📖 Docs: Added deterministic ordering guideline to the `create-cli-best-practices` skill to prevent watch glitches and noisy diffs, and bumped version to 0.5.6.

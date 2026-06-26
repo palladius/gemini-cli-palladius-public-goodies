@@ -1,5 +1,8 @@
 # Changelog - create-cli-best-practices
 
+## [0.1.6] - 2026-06-26
+- Condensed the deterministic ordering recommendation to a concise single-line rule.
+
 ## [0.1.5] - 2026-06-26
 - Added recommendation for deterministic ordering of outputs to avoid watch glitches and noisy diffs.
 
