@@ -7,9 +7,23 @@ import subprocess
 
 def main():
     # 1. Say voice line in Italian
+    spd_say_result = {}
     try:
-        subprocess.run(["spd-say", "-l", "it", "Sto uscendo da anti gravita permanente"], check=False)
+        res = subprocess.run(
+            ["spd-say", "-l", "it", "Sto uscendo da anti gravita permanente"],
+            capture_output=True,
+            text=True,
+            check=False
+        )
+        spd_say_result = {
+            "exit_code": res.returncode,
+            "stdout": res.stdout,
+            "stderr": res.stderr
+        }
     except Exception as e:
+        spd_say_result = {
+            "error": str(e)
+        }
         sys.stderr.write(f"Failed to play sound: {e}\n")
 
     # 2. Print 'Chumbia!' to terminal
@@ -41,6 +55,7 @@ def main():
 
     log_content = {
         "timestamp": now.isoformat(),
+        "spd_say_result": spd_say_result,
         "session_details": payload,
         "environment_variables": env_vars
     }
