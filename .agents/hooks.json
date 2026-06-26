@@ -1,11 +1,1 @@
-{
-  "exit-notification": {
-    "enabled": true,
-    "Stop": [
-      {
-        "type": "command",
-        "command": "python3 .agents/on_terminate.py"
-      }
-    ]
-  }
-}
+{}
