@@ -1,3 +1,7 @@
+## [0.5.10] - 2026-06-26
+
+- 📖 Docs: Enriched execution speed and performance conventions in the `create-cli-best-practices` skill and bumped version to 0.5.10.
+
 ## [0.5.9] - 2026-06-26
 
 - 📖 Docs: Added execution speed and performance guidelines to the `create-cli-best-practices` skill and bumped version to 0.5.9.

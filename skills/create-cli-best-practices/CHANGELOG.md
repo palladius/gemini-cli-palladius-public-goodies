@@ -1,5 +1,8 @@
 # Changelog - create-cli-best-practices
 
+## [0.1.9] - 2026-06-26
+- Detailed the execution speed and performance conventions (blazing fast, caching, default help redirection for slow commands, and explicit long-running naming).
+
 ## [0.1.8] - 2026-06-26
 - Added execution speed and performance conventions (target <100ms startup, avoid blocking network/expensive operations).
 

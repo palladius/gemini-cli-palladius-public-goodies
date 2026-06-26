@@ -3,7 +3,7 @@ name: create-cli-best-practices
 description: Rules to create and maintain a GOOD CLI. Do not use for GUI-only design rules, web apps, or backend REST APIs.
 compatibility: Antigravity / Gemini CLI
 metadata:
-  version: 0.1.8
+  version: 0.1.9
 ---
 
 Implement the CLI in `rust` or `go`.
@@ -23,7 +23,7 @@ Recommended tools and libraries:
 * **Honor NO_COLOR:** Always honor the `NO_COLOR` environment variable (as per [no-color.org](https://no-color.org)).
 * **Watch Mode Compatibility:** Make sure the CLI works well in `watch` scenarios (e.g., handling rapid polling, disabling terminal clearing or color escape sequences if they break watch mode).
 * **Deterministic Ordering:** Always sort outputs (sets/lists/fields) deterministically to prevent glitches in `watch <cli>` and noisy diffs in structured output (JSON/YAML).
-* **Execution Speed & Performance:** Optimize startup and runtime (target < 100ms startup). Never make blocking network calls or run expensive operations on critical paths or startup unless cached, asynchronous, or explicitly requested.
+* **Execution Speed & Performance:** The CLI must be BLAZING FAST (we choose Rust/Go for this reason). Optimize startup and runtime (target < 100ms). List and default/no-arg commands must be instantaneous; if a default invocation takes 10s, have no-arg print help, prompting the user to call a specific sub-command. For slow tasks, cache locally with a meaningful duration (1h, 1d) or put long-running operations explicitly in the command name.
 
 Ensure all commands support the following flags:
 
