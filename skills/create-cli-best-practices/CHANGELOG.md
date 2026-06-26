@@ -1,5 +1,8 @@
 # Changelog - create-cli-best-practices
 
+## [0.1.8] - 2026-06-26
+- Added execution speed and performance conventions (target <100ms startup, avoid blocking network/expensive operations).
+
 ## [0.1.7] - 2026-06-26
 - Refined description, implementation guidelines phrasing, and formatted watch commands as code block.
 

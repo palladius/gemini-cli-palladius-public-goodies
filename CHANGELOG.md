@@ -1,3 +1,7 @@
+## [0.5.9] - 2026-06-26
+
+- 📖 Docs: Added execution speed and performance guidelines to the `create-cli-best-practices` skill and bumped version to 0.5.9.
+
 ## [0.5.8] - 2026-06-26
 
 - 📖 Docs: Added watch command code block formatting and cleaned up validation warnings in the `create-cli-best-practices` skill.
