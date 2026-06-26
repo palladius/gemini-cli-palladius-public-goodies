@@ -1,5 +1,8 @@
 # Changelog - create-cli-best-practices
 
+## [0.1.3] - 2026-06-26
+- Added Golang CLI recommendations from Daniela (Cobra, Viper, Bubble Tea).
+
 ## [0.1.2] - 2026-06-25
 - Added recommendation for `--ai-help` flag to provide specialized help for AI agents.
 

@@ -1,3 +1,7 @@
+## [0.5.4] - 2026-06-26
+
+- 📖 Docs: Added Golang CLI recommendations from Daniela (Cobra, Viper, Bubble Tea) to the `create-cli-best-practices` skill.
+
 ## [0.5.3] - 2026-06-25
 
 - 📖 Docs: Added `--ai-help` best practice to `create-cli-best-practices` skill and updated TODO.md.

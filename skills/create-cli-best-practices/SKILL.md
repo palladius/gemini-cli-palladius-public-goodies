@@ -3,11 +3,19 @@ name: create-cli-best-practices
 description: Rules to create and maintain a GOOD CLI
 compatibility: Antigravity / Gemini CLI
 metadata:
-  version: 0.1.2
+  version: 0.1.3
 ---
 
 A good CLI should be implemented in `rust` or `go`.
 A carlessian CLI should also be documented in $GIC/ under installables.
+
+# Language-Specific Recommendations
+
+## Golang (Go)
+
+Recommended tools and libraries:
+* **Flags & Config:** Use [Cobra](https://github.com/spf13/cobra) (potentially combined with [Viper](https://github.com/spf13/viper) for configuration management) if you want to have subcommands, multiple flags, config file support, etc.
+* **Terminal UIs (TUIs):** Use [Bubble Tea](https://github.com/charmbracelet/bubbletea) from Charm if you want to build nicer, rich, interactive terminal UIs.
 
 # Convention on CLI
 
