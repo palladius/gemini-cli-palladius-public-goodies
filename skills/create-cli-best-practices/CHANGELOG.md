@@ -1,5 +1,8 @@
 # Changelog - create-cli-best-practices
 
+## [0.1.4] - 2026-06-26
+- Made Bubble Tea from Charm highly suggested for Go CLI/TUI creation.
+
 ## [0.1.3] - 2026-06-26
 - Added Golang CLI recommendations from Daniela (Cobra, Viper, Bubble Tea).
 

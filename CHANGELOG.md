@@ -1,3 +1,7 @@
+## [0.5.5] - 2026-06-26
+
+- 📖 Docs: Highly suggested Bubble Tea for Go CLIs in the `create-cli-best-practices` skill and bumped version to 0.5.5.
+
 ## [0.5.4] - 2026-06-26
 
 - 📖 Docs: Added Golang CLI recommendations from Daniela (Cobra, Viper, Bubble Tea) to the `create-cli-best-practices` skill.
