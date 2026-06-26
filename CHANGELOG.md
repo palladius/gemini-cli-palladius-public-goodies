@@ -1,3 +1,7 @@
+## [0.5.11] - 2026-06-26
+
+- 📖 Docs: Condensed execution speed and performance conventions in the `create-cli-best-practices` skill to a single sentence and bumped version to 0.5.11.
+
 ## [0.5.10] - 2026-06-26
 
 - 📖 Docs: Enriched execution speed and performance conventions in the `create-cli-best-practices` skill and bumped version to 0.5.10.
