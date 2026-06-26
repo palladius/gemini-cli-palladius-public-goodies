@@ -3,7 +3,7 @@ name: create-cli-best-practices
 description: Rules to create and maintain a GOOD CLI. Do not use for GUI-only design rules, web apps, or backend REST APIs.
 compatibility: Antigravity / Gemini CLI
 metadata:
-  version: 0.1.10
+  version: 0.1.11
 ---
 
 Implement the CLI in `rust` or `go`.

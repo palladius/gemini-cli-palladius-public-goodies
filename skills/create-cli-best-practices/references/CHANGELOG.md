@@ -1,5 +1,8 @@
 # Changelog - create-cli-best-practices
 
+## [0.1.11] - 2026-06-26
+- Moved CHANGELOG.md to references/ subdirectory to satisfy skill-lint constraints and optimize context usage.
+
 ## [0.1.10] - 2026-06-26
 - Condensed the execution speed and performance guidelines into a single sentence.
 

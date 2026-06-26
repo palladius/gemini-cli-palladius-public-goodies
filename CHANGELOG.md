@@ -1,3 +1,7 @@
+## [0.5.12] - 2026-06-26
+
+- 📖 Docs: Moved the skill's CHANGELOG.md to references/ to comply with skill-lint, and bumped version to 0.5.12.
+
 ## [0.5.11] - 2026-06-26
 
 - 📖 Docs: Condensed execution speed and performance conventions in the `create-cli-best-practices` skill to a single sentence and bumped version to 0.5.11.
