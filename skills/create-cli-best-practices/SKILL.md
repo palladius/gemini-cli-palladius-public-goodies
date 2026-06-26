@@ -3,7 +3,7 @@ name: create-cli-best-practices
 description: Rules to create and maintain a GOOD CLI
 compatibility: Antigravity / Gemini CLI
 metadata:
-  version: 0.1.4
+  version: 0.1.5
 ---
 
 A good CLI should be implemented in `rust` or `go`.
@@ -22,6 +22,7 @@ Recommended tools and libraries:
 * **Keep Files Small:** Prefer smaller files/modules to a single big monolithic file. It'll be harder to manage in rebases.
 * **Honor NO_COLOR:** Always honor the `NO_COLOR` environment variable (as per [no-color.org](https://no-color.org)).
 * **Watch Mode Compatibility:** Make sure the CLI works well in `watch` scenarios (e.g., handling rapid polling, disabling terminal clearing or color escape sequences if they break watch mode).
+* **Deterministic Ordering:** Always sort sets, lists, arrays, or fields deterministically (e.g., alphabetical order, chronological/time order, tenure, length) before outputting. This prevents flickering/glitches in `watch <cli exec>` outputs and avoids noisy/meaningless diffs when output is formatted as JSON/YAML (e.g., `"devrel_participants": "atamel,petruzalek"` vs `"petruzalek,atamel"`).
 
 All commands should have:
 

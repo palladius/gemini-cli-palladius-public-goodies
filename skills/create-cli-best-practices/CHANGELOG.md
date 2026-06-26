@@ -1,5 +1,8 @@
 # Changelog - create-cli-best-practices
 
+## [0.1.5] - 2026-06-26
+- Added recommendation for deterministic ordering of outputs to avoid watch glitches and noisy diffs.
+
 ## [0.1.4] - 2026-06-26
 - Made Bubble Tea from Charm highly suggested for Go CLI/TUI creation.
 

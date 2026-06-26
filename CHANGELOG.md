@@ -1,3 +1,7 @@
+## [0.5.6] - 2026-06-26
+
+- 📖 Docs: Added deterministic ordering guideline to the `create-cli-best-practices` skill to prevent watch glitches and noisy diffs, and bumped version to 0.5.6.
+
 ## [0.5.5] - 2026-06-26
 
 - 📖 Docs: Highly suggested Bubble Tea for Go CLIs in the `create-cli-best-practices` skill and bumped version to 0.5.5.
