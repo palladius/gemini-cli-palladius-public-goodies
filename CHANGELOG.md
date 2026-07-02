@@ -1,3 +1,7 @@
+## [0.5.13] - 2026-07-02
+
+- ✨ New: Added `openclaudio-host-monitoring` skill to automate the deployment of a zero-config CPU/RAM monitoring system (cron script + visualization) for `hermes`, `openclaw`, and `tailscale`.
+
 ## [0.5.12] - 2026-06-26
 
 - 📖 Docs: Moved the skill's CHANGELOG.md to references/ to comply with skill-lint, and bumped version to 0.5.12.
