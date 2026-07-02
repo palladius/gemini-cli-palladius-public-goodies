@@ -11,8 +11,27 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import sys
+import argparse
+
+def parse_time(time_str):
+    if not time_str or time_str.lower() == 'now':
+        return pd.Timestamp.now()
+    if time_str.endswith('.ago'):
+        time_str = time_str[:-4]
+    try:
+        # Try to parse as timedelta, e.g., '24h', '1d'
+        delta = pd.to_timedelta(time_str)
+        return pd.Timestamp.now() - delta
+    except:
+        # Try to parse as absolute datetime
+        return pd.to_datetime(time_str)
 
 def main():
+    parser = argparse.ArgumentParser(description='Plot agent CPU and RAM metrics.')
+    parser.add_argument('--from', dest='from_time', help='Start time (e.g., "24h.ago", "24h", "2026-07-01")')
+    parser.add_argument('--to', dest='to_time', help='End time (e.g., "now", "2026-07-02")')
+    args = parser.parse_args()
+
     log_file = os.path.expanduser('~/.hermes/logs/agent_metrics.csv')
     if not os.path.exists(log_file):
         print(f"Error: {log_file} does not exist.")
@@ -25,6 +44,18 @@ def main():
     except Exception as e:
         print(f"Error reading CSV: {e}")
         sys.exit(1)
+
+    if args.from_time:
+        start_time = parse_time(args.from_time)
+        df = df[df.index >= start_time]
+    
+    if args.to_time:
+        end_time = parse_time(args.to_time)
+        df = df[df.index <= end_time]
+
+    if df.empty:
+        print("No data available for the specified time range.")
+        sys.exit(0)
 
     output_file = os.path.expanduser('~/.hermes/logs/agent_metrics.png')
 
