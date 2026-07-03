@@ -90,7 +90,7 @@ def main():
     
     # Highlight large gaps
     for start, end in large_gaps:
-        plt.axvspan(start, end, color='lightcoral', alpha=0.3, label='Missing Data' if start == large_gaps[0][0] else "")
+        plt.axvspan(start, end, color='lightgray', alpha=0.3, label='Missing Data' if start == large_gaps[0][0] else "")
 
     plt.title('CPU Usage Over Time')
     plt.ylabel('% CPU')
@@ -106,7 +106,7 @@ def main():
     
     # Highlight large gaps
     for start, end in large_gaps:
-        plt.axvspan(start, end, color='lightcoral', alpha=0.3, label='Missing Data' if start == large_gaps[0][0] else "")
+        plt.axvspan(start, end, color='lightgray', alpha=0.3, label='Missing Data' if start == large_gaps[0][0] else "")
 
     plt.title('Memory Usage Over Time')
     plt.ylabel('% MEM')
