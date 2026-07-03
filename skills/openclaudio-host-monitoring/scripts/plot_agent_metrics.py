@@ -58,6 +58,19 @@ def main():
         print("No data available for the specified time range.")
         sys.exit(0)
 
+    # Detect large gaps (more than 5 consecutive missing minutes)
+    is_nan = df['total_cpu'].isna()
+    group = (is_nan != is_nan.shift()).cumsum()
+    nan_groups = df[is_nan].groupby(group)
+
+    large_gaps = []
+    for k, g in nan_groups:
+        if len(g) > 5:
+            large_gaps.append((g.index[0], g.index[-1]))
+
+    # Interpolate small gaps (up to 5 minutes)
+    df = df.interpolate(limit=5)
+
     output_file = os.path.expanduser('~/.hermes/logs/agent_metrics.png')
 
     plt.figure(figsize=(12, 10))
@@ -74,6 +87,11 @@ def main():
     if 'lobby_cpu' in df.columns: plt.plot(df.index, df['lobby_cpu'], label='Lobby CPU', color='orange', alpha=0.7)
     if 'tailscale_cpu' in df.columns: plt.plot(df.index, df['tailscale_cpu'], label='Tailscale CPU', color='green', alpha=0.7)
     if 'total_cpu' in df.columns: plt.plot(df.index, df['total_cpu'], label='Total CPU', color='red', linestyle='--', alpha=0.5)
+    
+    # Highlight large gaps
+    for start, end in large_gaps:
+        plt.axvspan(start, end, color='lightcoral', alpha=0.3, label='Missing Data' if start == large_gaps[0][0] else "")
+
     plt.title('CPU Usage Over Time')
     plt.ylabel('% CPU')
     plt.legend()
@@ -85,6 +103,11 @@ def main():
     if 'lobby_mem' in df.columns: plt.plot(df.index, df['lobby_mem'], label='Lobby Mem', color='orange', alpha=0.7)
     if 'tailscale_mem' in df.columns: plt.plot(df.index, df['tailscale_mem'], label='Tailscale Mem', color='green', alpha=0.7)
     if 'total_mem' in df.columns: plt.plot(df.index, df['total_mem'], label='Total Mem', color='red', linestyle='--', alpha=0.5)
+    
+    # Highlight large gaps
+    for start, end in large_gaps:
+        plt.axvspan(start, end, color='lightcoral', alpha=0.3, label='Missing Data' if start == large_gaps[0][0] else "")
+
     plt.title('Memory Usage Over Time')
     plt.ylabel('% MEM')
     plt.xlabel('Time')
