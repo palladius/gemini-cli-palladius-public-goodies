@@ -70,6 +70,9 @@ def main():
 
     # Interpolate small gaps (up to 5 minutes)
     df = df.interpolate(limit=5)
+    
+    # Smooth data to remove fuzziness (rolling average of 5 minutes)
+    df = df.rolling(window=5, min_periods=1).mean()
 
     output_file = os.path.expanduser('~/.hermes/logs/agent_metrics.png')
 
