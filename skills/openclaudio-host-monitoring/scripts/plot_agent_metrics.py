@@ -41,6 +41,7 @@ def main():
         df = pd.read_csv(log_file)
         df['timestamp'] = pd.to_datetime(df['timestamp'])
         df.set_index('timestamp', inplace=True)
+        df = df.resample('1min').mean()
     except Exception as e:
         print(f"Error reading CSV: {e}")
         sys.exit(1)
@@ -60,6 +61,12 @@ def main():
     output_file = os.path.expanduser('~/.hermes/logs/agent_metrics.png')
 
     plt.figure(figsize=(12, 10))
+
+    # Normalize CPU usage by number of cores
+    cpu_cols = [c for c in df.columns if 'cpu' in c]
+    num_cores = os.cpu_count() or 1
+    for col in cpu_cols:
+        df[col] = df[col] / num_cores
 
     # Plot CPU
     plt.subplot(2, 1, 1)
