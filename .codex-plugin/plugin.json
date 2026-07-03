@@ -1,0 +1,6 @@
+{
+  "name": "palladius-public-goodies",
+  "version": "0.5.13",
+  "description": "(💛) Riccardo's public Antigravity plugins and agent skills for inspiration.",
+  "skills": "./skills/"
+}

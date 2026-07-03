@@ -1,12 +1,9 @@
 ---
 name: demo-agentic-video
 description: Record browser-based video demos from YAML storyboards using shot-scraper.
-version: 1.0.0
-author: Ermete Bottazzi
-license: MIT
+compatibility: Antigravity / Gemini CLI
 metadata:
-  hermes:
-    tags: [video, demo, browser, automation, shot-scraper]
+  version: 1.0.0
 ---
 
 # Demo Agentic Video (`shot-scraper video`) 🎥🚛

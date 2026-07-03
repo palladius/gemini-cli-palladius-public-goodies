@@ -1,3 +1,8 @@
+## [0.5.14] - 2026-07-03
+
+- 🔌 Feat: Adapted README.md for the post-Gemini CLI world (Antigravity & Claude Code), added `plugin.json` manifests for Antigravity, Claude Code, and Codex.
+- 🐛 Fix: Repaired YAML frontmatter errors in `demo-agentic-video/SKILL.md` to pass validation tests.
+
 ## [0.5.13] - 2026-07-02
 
 - ✨ New: Added `openclaudio-host-monitoring` skill to automate the deployment of a zero-config CPU/RAM monitoring system (cron script + visualization) for `hermes`, `openclaw`, and `tailscale`.
