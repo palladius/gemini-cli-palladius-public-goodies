@@ -1,3 +1,7 @@
+## [0.5.15] - 2026-07-04
+
+- 🧹 Chore: Deleted legacy `lyria2-music-generation` skill in favor of unified `musicgen-lyria3` skill.
+
 ## [0.5.14] - 2026-07-03
 
 - 🔌 Feat: Adapted README.md for the post-Gemini CLI world (Antigravity & Claude Code), added `plugin.json` manifests for Antigravity, Claude Code, and Codex.
