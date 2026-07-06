@@ -4,6 +4,8 @@ description: Record browser-based video demos from YAML storyboards using shot-s
 compatibility: Antigravity / Gemini CLI
 metadata:
   version: 1.0.0
+  author: Ermete Bottazzi
+  license: MIT
 ---
 
 # Demo Agentic Video (`shot-scraper video`) 🎥🚛
