@@ -40,6 +40,7 @@ This extension includes the following **[Agent Skills](https://antigravity.googl
 
 *   **`add-to-portfolio-app`**: Adds a new Talk or Article to Riccardo's personal portfolio application.
 *   **`adk-python`**: Create and manage AI agents using Google's Agent Development Kit (ADK) for Python.
+*   **`article-creator`**: (🥑) Expert guide for authoring, building, testing, and publishing technical articles to ricc.rocks and Medium.
 *   **`carlessian-gog`**: Google Workspace CLI managed the Carlesso way—featuring isolated configurations, selective read-only security, and daily workflows (Gmail, Calendar, Drive).
 *   **`carlessian-obsidian`**: (💛) Expert guide for interacting with Riccardo's Obsidian vault (The Carlessian Vault).
 *   **`create-cli-best-practices`**: Rules to create and maintain a GOOD CLI. Do not use for GUI-only design rules, web apps, or backend REST APIs.

@@ -1,3 +1,7 @@
+## [0.5.16] - 2026-07-06
+
+- ✨ Feat: Added `article-creator` skill (v1.0) to compile, build, test, and publish ricc.rocks and Medium articles, including checklist templates and personal style reference files.
+
 ## [0.5.15] - 2026-07-04
 
 - 🧹 Chore: Deleted legacy `lyria2-music-generation` skill in favor of unified `musicgen-lyria3` skill.
