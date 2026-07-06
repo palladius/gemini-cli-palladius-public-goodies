@@ -22,10 +22,11 @@ This skill guides the preparation, compilation, validation, and post-publication
 
 ### Step 1: Pre-Publishing Compilation & Review
 Before finalizing, compile the article assets and check for spelling/readability:
-1.  **Readability & Slop Check**: Run `speedgrapher` linter checks on `ARTICLE.md`:
-    *   Target Gunning Fog Index: **12.0 - 15.0** (Optimal).
-    *   Target Slop Score: **< 40%** (Low lexical slop/AI clichés).
-2.  **Spelling Whitelist**: Ensure any technical terms, names, or jargon are whitelisted in `speedgrapher.json`.
+1.  **Readability & Slop Check**: Use Daniela's awesome [**`speedgrapher`** MCP server](https://github.com/danicat/speedgrapher) to lint and analyze the article. The MCP server provides the following tools:
+    *   `fog`: Calculates the Gunning Fog readability index (Optimal target: **12.0 - 15.0**).
+    *   `slop`: Analyzes text for common AI clichés, tropes, and structural patterns (Target: **< 40%**).
+    *   `vale`: Performs static style linting against project guidelines.
+2.  **Spelling Whitelist**: Ensure any technical terms, names, or jargon are whitelisted in the local `speedgrapher.json` config.
 3.  **Run Build**: Compile Dot diagrams and target formats:
     ```bash
     just build
