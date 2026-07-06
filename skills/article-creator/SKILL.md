@@ -9,6 +9,9 @@ tags: devrel, article, publishing, ricc.rocks, medium
 
 This skill guides the preparation, compilation, validation, and post-publication steps for articles targeted to **ricc.rocks** and **Medium**.
 
+> [!NOTE]
+> For **Riccardo**, new articles and drafts should always be initialized and managed under the root articles directory: [work/articles/](file:///usr/local/google/home/ricc/git/ricclife-with-gemini-pvt/work/articles/) (which is the parent folder relative to individual article projects).
+
 ## 📐 Authoring & Pipeline Rules
 
 1.  **Source of Truth**: Always edit `ARTICLE.md` only. Never manually edit files inside the generated `out/` or `ricc.rocks/` directories, as they are overwritten by `build.py`.
