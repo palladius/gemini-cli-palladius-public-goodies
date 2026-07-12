@@ -49,6 +49,7 @@ Additional scripts for obsidian-related tasks can be found (or should be placed)
 
 ## Carlessian Conventions
 
+* **Universal Router:** For general Harness logic, media generation, and script routing, always consult the `carlessian-harness-tool` skill (via `agc skills harness` or reading `~/git/gemini-cli-palladius-private-goodies/skills/carlessian-harness-tool/SKILL.md`) before executing complex tasks.
 * Generic TODOs should be characterized under `TODOz.md`
 * Try to fit todos by computer in which they're given to you (hostname or Pixel 10, ... under Computers/)
 * When something relevant happens on a computer (eg Riccardo installs a package, or a functionality, or changes something,) its IMPORTANT that you **log** it.
