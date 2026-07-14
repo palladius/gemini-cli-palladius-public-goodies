@@ -16,6 +16,14 @@ When helping the user code during rapid development or hackathons, enforce the f
 4.  **Scan for Leaks**: Remind the user to double-check their code for accidental secret leaks before pushing to public repositories like GitHub, as automated bots scan for them constantly.
 5.  **Use Secret Managers**: If possible, suggest using secure credential managers like Google Cloud Secret Manager instead of local files for production or shared environments.
 
+## Prerequisites
+
+Before utilizing the security goodies, ensure that the underlying scanning tools are installed on the user's system:
+
+* **Mac**: `brew install pre-commit gitleaks`
+* **Linux**: `brew install pre-commit gitleaks` (via Homebrew on Linux, or equivalent package managers)
+
+Once installed, remind the user to run `pre-commit install` in their repository to activate the git hooks.
 ## Repository Security Review
 
 You can review any existing repository to ensure it has the security "goodies" from Romin's `hackathon-safe-starter` template. 
