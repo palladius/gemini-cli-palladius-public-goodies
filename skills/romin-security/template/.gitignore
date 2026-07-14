@@ -1,0 +1,84 @@
+# =============================================
+# SECRETS & CREDENTIALS — NEVER COMMIT THESE
+# =============================================
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+!.env.template
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
+*.jks
+
+# Service account keys (Google Cloud / Firebase)
+serviceAccountKey.json
+service-account-credentials.json
+google-cloud-key.json
+*-firebase-adminsdk-*.json
+
+# SSH keys
+id_rsa
+id_ed25519
+
+# AWS credentials
+.aws/credentials
+aws-credentials.json
+
+# Terraform state (may contain secrets)
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# =============================================
+# NODE.JS
+# =============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+.npm
+.yarn-integrity
+package-lock.json
+
+# =============================================
+# PYTHON
+# =============================================
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+.pytest_cache/
+.coverage
+*.egg-info/
+dist/
+build/
+
+# =============================================
+# IDE & OS
+# =============================================
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# =============================================
+# LOGS
+# =============================================
+*.log
+firebase-debug.log

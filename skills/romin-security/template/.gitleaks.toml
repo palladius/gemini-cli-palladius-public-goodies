@@ -1,0 +1,69 @@
+# ============================================================
+# .gitleaks.toml — Gitleaks Custom Configuration
+# Tailored for hackathon projects using Google Cloud, Firebase,
+# Gemini, and common LLM/SaaS providers.
+# ============================================================
+
+# Extend the built-in default ruleset (catches AWS, Stripe, GitHub, etc.)
+[extend]
+useDefault = true
+
+# ============================================================
+# CUSTOM RULES
+# ============================================================
+
+# Rule: Google/Firebase API Key (AIzaSy prefix)
+[[rules]]
+id = "google-api-key"
+description = "Detects Google Cloud / Firebase API keys (AIzaSy prefix)"
+regex = '''AIza[0-9A-Za-z\-_]{35}'''
+keywords = ["AIza"]
+
+# Rule: GCP Service Account Private Key in JSON
+[[rules]]
+id = "gcp-service-account-private-key"
+description = "Detects GCP service account private key in JSON files"
+regex = '''"private_key"\s*:\s*"(-----BEGIN [A-Z ]*PRIVATE KEY-----[^"]+)"'''
+secretGroup = 1
+keywords = ["private_key"]
+
+# Rule: Firebase config apiKey in JavaScript/TypeScript
+[[rules]]
+id = "firebase-config-apikey"
+description = "Detects hardcoded Firebase apiKey in JS/TS config objects"
+regex = '''apiKey\s*:\s*['"]AIza[0-9A-Za-z\-_]{35}['"]'''
+keywords = ["apiKey", "AIza"]
+
+# Rule: AWS Access Key pattern (AKIA prefix)
+[[rules]]
+id = "aws-access-key-custom"
+description = "Detects AWS access keys (AKIA prefix)"
+regex = '''AKIA[0-9A-Z]{16}'''
+keywords = ["AKIA"]
+
+# Rule: GitHub Personal Access Token (ghp_ prefix)
+[[rules]]
+id = "github-pat-custom"
+description = "Detects GitHub Personal Access Tokens (ghp_ prefix)"
+regex = '''ghp_[0-9a-zA-Z]{36}'''
+keywords = ["ghp_"]
+
+# ============================================================
+# ALLOWLISTS — paths and patterns to ignore
+# ============================================================
+[[allowlists]]
+description = "Ignore safe files and directories"
+paths = [
+    '''\.gitleaks\.toml$''',
+    '''\.env\.example$''',
+    '''\.env\.template$''',
+    '''package-lock\.json$''',
+    '''yarn\.lock$''',
+    '''tests/test_secrets/.*''',
+    '''WALKTHROUGH\.md$''',
+    '''README\.md$'''
+]
+
+[[allowlists]]
+description = "Ignore known example/placeholder strings"
+stopwords = ["EXAMPLE", "example", "placeholder", "your_", "xxxx", "test-api-key", "YOUR_"]

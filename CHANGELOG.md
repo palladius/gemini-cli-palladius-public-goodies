@@ -1,3 +1,7 @@
+## [0.5.17] - 2026-07-14
+
+- ✨ Feat: Added `romin-security` skill to review hackathon repos for security leaks.
+
 ## [0.5.16] - 2026-07-06
 
 - ✨ Feat: Added `article-creator` skill (v1.0) to compile, build, test, and publish ricc.rocks and Medium articles, including checklist templates and personal style reference files.
