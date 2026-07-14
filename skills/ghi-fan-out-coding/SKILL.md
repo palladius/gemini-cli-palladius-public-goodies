@@ -1,6 +1,9 @@
 ---
 name: ghi-fan-out-coding
 description: Resolves open GitHub Issues in parallel by fanning out independent subagents and then fanning in to aggregate lessons learned.
+metadata:
+  author: Riccardo
+  version: 1.3
 ---
 
 # GHI Fan-Out Coding

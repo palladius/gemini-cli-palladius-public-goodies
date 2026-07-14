@@ -6,7 +6,7 @@ You are the dedicated agent for a specific GitHub Issue. Your execution UUID was
 Before beginning work, ensure you have received the following from the Main Agent:
 1. **GHI**: The GitHub Issue number (`<ISSUE_NUMBER>`).
 2. **UUID**: Both the `<SHORT_UUID>` and `<UUID>` for tagging and logging.
-3. **[Optional]**: Any custom requests or specifications passed down from the Main Agent.
+3. Read the pre-seeded log file at `.gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/state.md` inside the main repository directory. This file contains the forensic metadata and any custom requests or specifications passed down from the Main Agent.
 
 ## Execution Steps
 Follow these steps exactly:
@@ -38,17 +38,26 @@ Follow these steps exactly:
    - *Note*: It is 100% safe to do this while the PR is open because the code has already been pushed to GitHub. If this command fails due to uncommitted files, report the error as a comment in the GHI so it can be investigated by a human.
 
 6. **Log Execution Results**
-   - Create a log file at `.gemini/execution_logs/<UUID>/issue-<ISSUE_NUMBER>.md`. **IMPORTANT: You must write this file inside the MAIN repository directory, safely outside your isolated worktree.**
-   - Format the log exactly with the following 3 stanzas:
+   - **IMPORTANT**: Open the pre-seeded log file at `.gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/state.md` in the MAIN repository directory.
+   - Append the following stanza to the bottom of the file:
      ```markdown
-     fan_out_uuid: <SHORT_UUID>
-     
      ## What worked well
      <your notes here>
-     
-     ## Issues (Cosmetic/Curiosity)
-     <your notes here>
-     
-     ## Blocking things that broke the execution
-     <your notes here (only action this if a failure occurred)>
+     ```
+   - **If you encountered any issues or blocking problems**, you MUST create a new file at `.gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/problems.json` containing a JSON array of the problems. The schema must exactly match this format:
+     ```json
+     [
+       {
+         "id": "short_unique_id_no_spaces",
+         "description": "A lengthy markdown description of what the problem was.",
+         "proposed_resolution": "What we should do differently next time to avoid this."
+       }
+     ]
+     ```
+   - *Note*: The folder `.gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/` is your dedicated workspace for this execution. You are free to write any additional debug logs, scratch scripts, or investigation notes you need into this directory.
+
+7. **End Forensic Telemetry**
+   - As your final step, run the state manager script to stamp the end time into your log file:
+     ```bash
+     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh sub_end --issue <ISSUE_NUMBER> --uuid <UUID>
      ```

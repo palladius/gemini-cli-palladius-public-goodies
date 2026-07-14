@@ -7,6 +7,10 @@ Follow these steps exactly:
 1. **Initialize Bonanza**
    - Generate a unique `UUID` for this execution run (e.g., using `uuidgen` or standard formatting).
    - Extract the first 8 characters to form the `<SHORT_UUID>`.
+   - Run the state manager script to initialize the central `main.json` forensic log:
+     ```bash
+     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh main_start --uuid <UUID> --short-uuid <SHORT_UUID> --custom-prompt "<any extra instructions you received from the user>" --harness antigravity
+     ```
 
 2. **Setup Labels**
    - Ensure the necessary GitHub labels exist by running the following commands:
@@ -27,6 +31,10 @@ Follow these steps exactly:
 
 5. **Fan-Out (Subagent Creation)**
    - For *every* target GitHub issue found, tag it by adding a label: `gh issue edit <#> --add-label "fan_out_<SHORT_UUID>"`
+   - Before spawning the subagent, initialize its forensic log file:
+     ```bash
+     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh sub_start --issue <ISSUE_NUMBER> --uuid <UUID> --short-uuid <SHORT_UUID> --custom-prompt "<custom instructions for this subagent>"
+     ```
    - Use your `invoke_subagent` tool to spawn a separate subagent for each issue.
    - For each subagent, use the following exact prompt:
      > "You are the agent for GHI #<ISSUE_NUMBER>. Read the `references/SUB_AGENT_CHECKLIST.md` instructions from the `ghi-fan-out-coding` skill. The execution short UUID for logging is <SHORT_UUID> and the long UUID is <UUID>."
@@ -43,9 +51,15 @@ Follow these steps exactly:
 8. **Meta (Synoptic Reporting)**
    - Create a Meta GitHub issue summarizing the entire execution run.
    - The title must be exactly: `[META] <YYYYMMDD> ghi parallel resolution bonanza report [<SHORT_UUID>]`
-   - Read the subagent logs from the Main repository directory (`.gemini/execution_logs/<UUID>/`) to aggregate the 3 stanzas.
+   - Read the subagent logs from the Main repository directory (`.gemini/execution_logs/<UUID>/`). Scan the `ghi-*/` subdirectories for `state.md` and `problems.json` files.
+   - For issues and blockers, parse any `ghi-<ISSUE_NUMBER>/problems.json` files found in those directories.
    - In the Meta issue body, include:
      - Links to what has been done (PRs and Issues touched).
-     - Aggregated "What worked well".
-     - Aggregated "Issues (Cosmetic/Curiosity)".
-     - Aggregated "Blocking things that broke the execution".
+     - Aggregated "What worked well" (from the `state.md` files).
+     - An aggregated summary and count of all unique problems encountered, pulling their descriptions and proposed resolutions from the JSON files.
+
+9. **Finalize Bonanza**
+   - Run the state manager script to stamp the end time in the central forensic log:
+     ```bash
+     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh main_end --uuid <UUID>
+     ```
