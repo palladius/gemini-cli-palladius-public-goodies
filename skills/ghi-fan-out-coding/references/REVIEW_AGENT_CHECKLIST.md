@@ -43,8 +43,14 @@ Based on your review and the `hitl_threshold` defined in your prompt, make a dec
 - **If the code is flawless or minor issues can be auto-fixed**:
   1. Fix any minor issues (e.g. formatting, missing comments) if necessary.
   2. Rebase the branch against `main` and resolve any git conflicts.
-  3. Squash and merge the PR into `main`.
-  4. Write to `review.json` with `"outcome": "auto_merged"`.
+  3. **Aggregate `CHANGELOG_ADDON.md`**: If the PR branch contains a `CHANGELOG_ADDON.md` file:
+     - Read the `Size:` line to determine bump level (`patch`=0.0.1, `minor`=0.1.0, `major`=1.0.0).
+     - Read the current `VERSION` file (if it exists) and bump it accordingly.
+     - Prepend the addon content under a new version header in `CHANGELOG.md`.
+     - Remove the `CHANGELOG_ADDON.md` file before merging.
+     - Commit the VERSION + CHANGELOG.md update as part of the merge.
+  4. Squash and merge the PR into `main`.
+  5. Write to `review.json` with `"outcome": "auto_merged"`.
 
 - **If the code requires Human-In-The-Loop (HITL) intervention**:
   1. **Comment on BOTH the PR and the GHI**: Use `gh pr comment <PR_NUMBER>` AND `gh issue comment <ISSUE_NUMBER>` to explain why human review is needed (e.g. "Needs architectural decision on database schema"). Both must be updated so the human sees the context regardless of where they look.

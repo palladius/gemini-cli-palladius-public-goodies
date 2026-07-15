@@ -54,6 +54,14 @@ Follow these steps exactly:
 
 4. **Create PR and Update**
    - When the fix is done and tests are passing, commit your changes.
+   - **Create a `CHANGELOG_ADDON.md`** in the root of your worktree before creating the PR. This file will be collected by the Review Agent during merge to update the main `CHANGELOG.md` and `VERSION`. Format:
+     ```markdown
+     ### GHI #<ISSUE_NUMBER>: <short title>
+     - <what changed, one bullet per meaningful change>
+     - <e.g., "Fixed duplicate image rendering in chat view">
+     - Size: patch | minor | major
+     ```
+     Use `patch` (0.0.1) for bug fixes, `minor` (0.1.0) for new features, `major` (1.0.0) for breaking changes.
    - Create a Pull Request with your branch. Include a message for the user in the PR body.
    - Update the original GHI with a comment summarizing what has been done and what choices were taken.
 
