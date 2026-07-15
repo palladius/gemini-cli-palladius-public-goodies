@@ -4,6 +4,15 @@ You are the Review Agent (Phase 2). Your job is to sequentially review Pull Requ
 
 ## Prerequisites
 You will be provided with the execution UUID (e.g. `AC67EF98-9364-407A-A497-FD7DDD01EF98`) by the Main Agent.
+You will also receive the `harness` name (e.g. `antigravity`) and the `username` (e.g. `palladius`).
+
+## Signature Convention
+Every comment you leave on a GitHub Issue or Pull Request MUST end with:
+```
+--- <HARNESS> on behalf of <USERNAME>, from ghi-fan-out-coding v<SKILL_VERSION> (Phase 2 Review Agent)
+```
+For example: `--- Antigravity on behalf of palladius, from ghi-fan-out-coding v1.5 (Phase 2 Review Agent)`
+You can find the skill version in `SKILL.md` and the harness/username in `main.json`.
 
 ## Execution Steps
 
@@ -38,9 +47,10 @@ Based on your review and the `hitl_threshold` defined in your prompt, make a dec
   4. Write to `review.json` with `"outcome": "auto_merged"`.
 
 - **If the code requires Human-In-The-Loop (HITL) intervention**:
-  1. Add a comment to the PR and the original GitHub Issue explaining why human review is needed (e.g. "Needs architectural decision on database schema").
-  2. Add the label `hitl-required` to the GHI.
+  1. **Comment on BOTH the PR and the GHI**: Use `gh pr comment <PR_NUMBER>` AND `gh issue comment <ISSUE_NUMBER>` to explain why human review is needed (e.g. "Needs architectural decision on database schema"). Both must be updated so the human sees the context regardless of where they look.
+  2. Add the label `hitl-required` to the GHI: `gh issue edit <ISSUE_NUMBER> --add-label "hitl-required"`
   3. Write to `review.json` with `"outcome": "hitl_required"`.
+  4. Do NOT merge the PR. Leave it open for the human.
 
 ### 5. Output `review.json`
 For EVERY PR you review, you MUST create a `review.json` file in the same directory as the `status.json` (e.g., `.gemini/execution_logs/<UUID>/ghi-123/review.json`).
@@ -55,6 +65,12 @@ The schema must exactly match:
   "outcome": "hitl_required | auto_merged",
   "commit_hash": "<short git commit hash on main if merged, otherwise empty string>",
   "code_quality_score": "<0-100 integer. 0=catastrophic, 50=works but messy, 80=solid, 100=flawless>",
+  "files_changed": "<integer from git diff --stat>",
+  "lines_added": "<integer from git diff --stat>",
+  "lines_removed": "<integer from git diff --stat>",
+  "tests_added": "<integer, number of new test cases introduced>",
+  "tests_passing": "<boolean, true if test suite passes>",
+  "migration_included": "<boolean, true if db/migrate/ has new files>",
   "reviewer_notes": "A brief explanation of your review findings and why you took the action you did."
 }
 ```

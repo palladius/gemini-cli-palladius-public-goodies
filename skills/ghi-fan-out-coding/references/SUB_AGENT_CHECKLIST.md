@@ -14,6 +14,14 @@ You operate under a `hitl_threshold` on a 1-100 scale (default: **80**).
 - **100**: Never bother the human. Make best-effort guesses or skip entirely.
 - **1**: Ask the human for any choice that could possibly be wrong.
 
+## Signature Convention
+Every comment you leave on a GitHub Issue or Pull Request MUST end with:
+```
+--- <HARNESS> on behalf of <USERNAME>, from ghi-fan-out-coding v<SKILL_VERSION> (Phase 1 Builder Agent)
+```
+For example: `--- Antigravity on behalf of palladius, from ghi-fan-out-coding v1.5 (Phase 1 Builder Agent)`
+You can find the harness/username in the `state.md` forensic metadata, and the skill version in `SKILL.md`.
+
 ## Execution Steps
 Follow these steps exactly:
 
