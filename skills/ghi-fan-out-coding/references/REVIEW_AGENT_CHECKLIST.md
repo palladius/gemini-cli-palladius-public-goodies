@@ -24,8 +24,9 @@ grep -l '"state": "PR_CREATED"' .gemini/execution_logs/<UUID>/ghi-*/status.json
 For each issue identified above, perform the following steps:
 
 1. **Check out the code**: Fetch the PR branch and check it out locally.
-2. **Review the Diffs**: Analyze the code changes made by the Phase 1 subagent against the `main` branch. Check for "AI slop", poor architectural decisions, or security vulnerabilities.
-3. **Run Tests**: Ensure the test suite passes on the PR branch.
+2. **Capture start timestamp**: Run `date -u +"%Y-%m-%dT%H:%M:%SZ"` and record the output as `review_start_ts` for this issue's `review.json`.
+3. **Review the Diffs**: Analyze the code changes made by the Phase 1 subagent against the `main` branch. Check for "AI slop", poor architectural decisions, or security vulnerabilities.
+4. **Run Tests**: Ensure the test suite passes on the PR branch.
 
 ### 4. Decide Action & Merge
 Based on your review and the `hitl_threshold` defined in your prompt, make a decision:
@@ -47,15 +48,18 @@ For EVERY PR you review, you MUST create a `review.json` file in the same direct
 The schema must exactly match:
 ```json
 {
-  "review_start_ts": "<timestamp in UTC>",
-  "review_end_ts": "<timestamp in UTC>",
+  "review_start_ts": "<timestamp in UTC from date command>",
+  "review_end_ts": "<timestamp in UTC from date command>",
   "issue_number": "<e.g., 123>",
   "pr_url": "<the GitHub PR URL>",
   "outcome": "hitl_required | auto_merged",
   "commit_hash": "<short git commit hash on main if merged, otherwise empty string>",
+  "code_quality_score": "<0-100 integer. 0=catastrophic, 50=works but messy, 80=solid, 100=flawless>",
   "reviewer_notes": "A brief explanation of your review findings and why you took the action you did."
 }
 ```
+
+**IMPORTANT**: For `review_start_ts` and `review_end_ts`, you MUST run `date -u +"%Y-%m-%dT%H:%M:%SZ"` and use the actual output. Do NOT estimate or hallucinate timestamps.
 
 Repeat Steps 3-5 until all PRs in the queue have been reviewed.
 

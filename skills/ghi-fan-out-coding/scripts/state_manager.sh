@@ -56,7 +56,7 @@ if [[ "$ACTION" == "main_start" ]]; then
   "hitl_threshold": "$HITL_THRESHOLD"
 }
 EOF
-    echo "Main state initialized at $MAIN_JSON"
+    echo "[$CURRENT_TIME] Main state initialized at $MAIN_JSON"
 
 elif [[ "$ACTION" == "main_end" ]]; then
     MAIN_JSON="$LOG_DIR/main.json"
@@ -79,27 +79,27 @@ if '$RETRO_GHI':
     d['retrospective_ghi'] = '$RETRO_GHI'
 json.dump(d, open('$MAIN_JSON','w'), indent=2)
 "
-        echo "Main state finalized."
+        echo "[$CURRENT_TIME] Main state finalized."
     else
-        echo "Error: $MAIN_JSON not found."
+        echo "[$CURRENT_TIME] Error: $MAIN_JSON not found."
     fi
 
 elif [[ "$ACTION" == "review_start" ]]; then
     MAIN_JSON="$LOG_DIR/main.json"
     if [[ -f "$MAIN_JSON" ]]; then
         python3 -c "import json, sys; d=json.load(open('$MAIN_JSON')); d['review_start_time']='$CURRENT_TIME'; json.dump(d, open('$MAIN_JSON','w'), indent=2)"
-        echo "Review phase started."
+        echo "[$CURRENT_TIME] Review phase started."
     else
-        echo "Error: $MAIN_JSON not found."
+        echo "[$CURRENT_TIME] Error: $MAIN_JSON not found."
     fi
 
 elif [[ "$ACTION" == "review_end" ]]; then
     MAIN_JSON="$LOG_DIR/main.json"
     if [[ -f "$MAIN_JSON" ]]; then
         python3 -c "import json, sys; d=json.load(open('$MAIN_JSON')); d['review_end_time']='$CURRENT_TIME'; json.dump(d, open('$MAIN_JSON','w'), indent=2)"
-        echo "Review phase finalized."
+        echo "[$CURRENT_TIME] Review phase finalized."
     else
-        echo "Error: $MAIN_JSON not found."
+        echo "[$CURRENT_TIME] Error: $MAIN_JSON not found."
     fi
 
 elif [[ "$ACTION" == "sub_start" ]]; then
@@ -127,7 +127,7 @@ fan_out_uuid: $SHORT_UUID
 - **HITL Threshold**: $HITL_THRESHOLD
 
 EOF
-    echo "Subagent state initialized at $SUB_LOG"
+    echo "[$CURRENT_TIME] Subagent state initialized at $SUB_LOG"
 
 elif [[ "$ACTION" == "sub_end" ]]; then
     if [[ -z "$ISSUE" ]]; then
@@ -136,9 +136,9 @@ elif [[ "$ACTION" == "sub_end" ]]; then
     fi
     SUB_LOG="$LOG_DIR/ghi-$ISSUE/state.md"
     echo -e "\n## Execution End\n- **End Time (UTC)**: $CURRENT_TIME\n" >> "$SUB_LOG"
-    echo "Subagent state finalized."
+    echo "[$CURRENT_TIME] Subagent state finalized."
 
 else
-    echo "Unknown action: $ACTION. Valid actions: main_start, main_end, sub_start, sub_end"
+    echo "[$CURRENT_TIME] Unknown action: $ACTION. Valid actions: main_start, main_end, review_start, review_end, sub_start, sub_end"
     exit 1
 fi
