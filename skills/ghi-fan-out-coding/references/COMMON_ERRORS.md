@@ -17,7 +17,7 @@ For example: GHI #25 → port `48025`, GHI #123 → port `48123`. This ensures a
 
 ## 3. `missing_playwright`
 **Description**: The agent attempted to run UI tests or verify frontend changes but failed because it fell back to basic HTTP tools like `curl` and `web_fetch`, which cannot execute JavaScript or interact with the page.
-**Solution**: Ensure you are using the correct browser tools. If the task requires UI interaction (clicking, waiting for elements, taking screenshots), you must use the `browser_subagent` or Playwright MCP instead of basic HTTP fetching.
+**Solution**: Use the `scripts/playwright_hello.js` template from this skill as a starting point. Copy it into your worktree, adapt it for your GHI, and run it with `node`. Install dependencies first with `npm install playwright && npx playwright install chromium`. This works on both macOS and Linux without needing MCP configuration. Remember to use the deterministic port (`48000 + ISSUE_NUMBER`) when navigating. If login is needed, pass `--user` and `--pass` flags — check `.env` for `PLAYWRIGHT_USERNAME` and `PLAYWRIGHT_PASSWORD`.
 
 ## 4. `missing_context`
 **Description**: The issue requests creating documents (Google Docs, slide decks) or fixing a bug with an extremely vague description (e.g., "first chat unresponsive") without providing templates, content, or reproduction steps.
