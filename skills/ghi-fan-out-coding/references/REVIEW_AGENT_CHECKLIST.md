@@ -70,7 +70,7 @@ The schema must exactly match:
   "lines_removed": "<integer from git diff --stat>",
   "tests_added": "<integer, number of new test cases introduced>",
   "tests_passing": "<boolean, true if test suite passes>",
-  "migration_included": "<boolean, true if db/migrate/ has new files>",
+  "breaking_change_detected": "<boolean, true if DB migration, API change, or other potentially breaking change detected>",
   "reviewer_notes": "A brief explanation of your review findings and why you took the action you did."
 }
 ```
