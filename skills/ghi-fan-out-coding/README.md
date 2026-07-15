@@ -37,3 +37,7 @@ Each issue gets its very own folder, like:
 `.gemini/execution_logs/<UUID>/ghi-42/state.md`
 
 Sit back, relax, and watch the PRs roll in! 🍿
+
+## Future Enhancements
+
+- 🛡️ [Real-time command guardrails via Python SDK hooks](https://github.com/palladius/gemini-cli-palladius-public-goodies/issues/3) — Block dangerous commands (`git add .`, `rm -rf .gemini`) in real-time instead of post-hoc auditing.
