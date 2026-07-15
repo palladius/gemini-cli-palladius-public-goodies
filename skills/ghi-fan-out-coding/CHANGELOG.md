@@ -1,6 +1,26 @@
 # Changelog
 
 All notable changes to this skill will be documented in this file.
+## [1.6.0] - 2026-07-15
+### Added
+- 🛡️ **Postmortem GHI#89 remediation** (2/3 action items implemented):
+  - SA: NEVER commit `.gemini/` directory (rule 2 in CRITICAL RULES)
+  - SA: NEVER use `git add .`, `git add -A`, `git commit -a` — surgical commits only (rule 3)
+- 📜 **Transcript archival** (Step 8): subagents copy their `transcript.jsonl` into execution_logs for full audit trail
+- 🔍 **Command audit script** (`extract_command_history.py`): extracts all `run_command` calls from transcripts and flags dangerous patterns (`git add .`, `rm -rf .gemini`, `git reset --hard`, etc.)
+- 📊 **Strict scoring rubric** for `code_quality_score` — 6-tier scale (Broken to Exemplary) with additive checklist. No more lazy 50s!
+- 💎 Added "idiomatic code" criterion to scoring rubric
+- 🔮 **Future enhancement** GHI#3: SDK hooks for real-time command guardrails (linked in README)
+- 🆔 Main Agent now passes `conversationId` to subagents for transcript archival
+
+### Fixed
+- 📊 Dashboard: columnar `printf` layout with aligned status codes and quality bars
+- 📊 Dashboard: NOOP_GOOD emoji `♻️` with proper trailing space
+- 📊 Dashboard: `⚠️ FIXME: pr_id missing` when PR_CREATED but no pr_id
+- 🏷️ Subagent Role must include GHI number (`GHI #42 Resolver`) for UI disambiguation
+- 📝 CHANGELOG_ADDON.md pattern: SA creates, RA aggregates + VERSION bump
+- 📊 Pre-flight dashboard check as mandatory step 1 in MAIN_AGENT_CHECKLIST
+
 ## [1.5.4] - 2026-07-15
 ### Fixed
 - 🛡️ SA: symlink only the UUID subfolder (`ln -sfn .../<UUID>`), not the entire `execution_logs/` dir. No more `rm -rf`.
