@@ -13,6 +13,11 @@ Follow these steps exactly:
      ```bash
      bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh main_start --uuid <UUID> --short-uuid <SHORT_UUID> --custom-prompt "<any extra instructions you received from the user>" --harness antigravity --hitl-threshold 80
      ```
+   - **Persist the execution logs in git** so they survive branch switches (`.gemini/` is typically gitignored):
+     ```bash
+     git add -f .gemini/execution_logs/<UUID>/
+     git commit -m 'chore: initialize bonanza execution logs [<SHORT_UUID>]'
+     ```
 
 2. **Setup Labels**
    - Ensure the necessary GitHub labels exist by running the following commands:

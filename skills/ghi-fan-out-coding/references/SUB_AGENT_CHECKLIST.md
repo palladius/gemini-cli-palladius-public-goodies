@@ -39,8 +39,18 @@ Follow these steps exactly:
 
 3. **Implement Fix (If Feasible)**
    - If yes, add a GitHub label: `gh issue edit <ISSUE_NUMBER> --add-label "fanout-automation-possible"`
-   - Create a new isolated worktree: `git worktree add .worktrees/issue-<ISSUE_NUMBER>-fix -b feature/issue-<ISSUE_NUMBER>`
+   - Create a new isolated worktree: `git worktree add .worktrees/issue-<ISSUE_NUMBER>-fix-<SHORT_UUID> -b feature/issue-<ISSUE_NUMBER>`
    - Change your current working directory to the new worktree.
+   - **Symlink execution_logs back to main repo** so all agents write to ONE shared location (not scattered copies in each worktree):
+     ```bash
+     # In the worktree directory:
+     MAIN_REPO_ROOT="$(git worktree list | head -1 | awk '{print $1}')"
+     rm -rf .gemini/execution_logs
+     mkdir -p .gemini
+     ln -s "$MAIN_REPO_ROOT/.gemini/execution_logs" .gemini/execution_logs
+     # Exclude symlink from git tracking in this worktree:
+     mkdir -p "$(git rev-parse --git-dir)/info" && echo ".gemini/execution_logs" >> "$(git rev-parse --git-dir)/info/exclude"
+     ```
    - **TDD Requirement**: Write meaningful failing tests *first* to confirm the bug exists, and then implement the code to make them pass.
 
 4. **Create PR and Update**
