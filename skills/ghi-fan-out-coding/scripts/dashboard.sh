@@ -83,7 +83,7 @@ if [ "$total_dirs" -gt 0 ]; then
                     status_line="Completed"
                     outcome_line="Created PR #$json_pr"
                 elif [ "$json_state" == "NOOP_GOOD" ]; then
-                    emoji="🤷"
+                    emoji="♻️"
                     status_line="NOOP (Good)"
                     outcome_line="$json_outcome"
                 elif [ "$json_state" == "NOOP_BAD" ]; then
@@ -127,7 +127,7 @@ if [ "$total_dirs" -gt 0 ]; then
                 if [[ "$status_line" == *"Aborted"* ]]; then
                     emoji="🛑"
                 elif [[ "$status_line" == *"NOOP"* ]]; then
-                    emoji="🤷"
+                    emoji="♻️"
                 else
                     emoji="✅"
                 fi
