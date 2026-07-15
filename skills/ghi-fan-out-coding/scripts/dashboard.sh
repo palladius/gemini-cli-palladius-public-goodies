@@ -40,17 +40,19 @@ problems=$(find "$LOG_DIR" -name "problems.json" | wc -l | tr -d ' ')
 echo "Problem Reports (JSON): $problems"
 
 echo "====================================================="
-if [ "$completed" -gt 0 ]; then
-    echo "✅ Completed Agents:"
+if [ "$total_dirs" -gt 0 ]; then
+    echo "📊 Agent Status:"
     for state in $(ls "$LOG_DIR"/ghi-*/state.md 2>/dev/null); do
+        issue=$(basename $(dirname "$state"))
         if grep -q "Execution End" "$state"; then
-            issue=$(basename $(dirname "$state"))
             pr=$(grep -oE "(https://github.com/[^ ]+/pull/[0-9]+|PR #[0-9]+)" "$state" | head -n 1)
             if [ -n "$pr" ]; then
-                echo "  - ✅ $issue (with $pr)"
+                echo "  - ✅ $issue: Completed (with $pr)"
             else
-                echo "  - ✅ $issue"
+                echo "  - ✅ $issue: Completed"
             fi
+        else
+            echo "  - ⏳ $issue: In Progress / Interrupted"
         fi
     done
 fi
