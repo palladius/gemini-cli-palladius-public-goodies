@@ -44,7 +44,8 @@ Follow these steps exactly:
      ## What worked well
      <your notes here>
      ```
-   - **If you encountered any issues or blocking problems**, you MUST create a new file at `.gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/problems.json` containing a JSON array of the problems. The schema must exactly match this format:
+   - **If you encountered any issues or blocking problems**, first read the file `references/COMMON_ERRORS.md` to see if a known solution exists. If you can self-correct, do so!
+   - If the error is unknown or unrecoverable, you MUST create a new file at `.gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/problems.json` containing a JSON array of the problems. The schema must exactly match this format:
      ```json
      [
        {

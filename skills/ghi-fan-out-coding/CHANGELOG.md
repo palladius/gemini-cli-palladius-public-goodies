@@ -1,6 +1,13 @@
 # Changelog
 
 All notable changes to this skill will be documented in this file.
+## [1.4] - 2026-07-15
+### Added
+- Added `COMMON_ERRORS.md` to help subagents self-heal based on known failures.
+- Updated Main and Subagent checklists to ensure they read the common errors file before failing.
+- Added a new `scripts/dashboard.sh` to provide a live, terminal-based dashboard of the bonanza progress.
+*Note: This was done piggybacking off the successful execution of UUID `AC67EF98` with findings available at https://github.com/palladius/rails8-turbo-chat/issues/71.*
+
 ## [1.3] - 2026-07-14
 ### Added
 - Refactored the logging architecture to give each subagent its own dedicated folder (`.gemini/execution_logs/<UUID>/issue-<ISSUE_NUMBER>/`).

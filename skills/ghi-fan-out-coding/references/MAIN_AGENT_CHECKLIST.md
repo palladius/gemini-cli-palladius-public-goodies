@@ -24,6 +24,7 @@ Follow these steps exactly:
    - **Check Dependencies**: E.g., does `docker build` fail because the docker daemon isn't running?
    - **Check Rules**: Read `GEMINI.md` for any strict rules like "don't do X without asking the user first".
    - If you identify any blockers, interact with the user (back and forth as many times as needed) to resolve them *before* proceeding to the fan-out stage.
+   - Also, if you encounter any errors or blockers while orchestrating, always consult `references/COMMON_ERRORS.md` first to see if a known solution exists.
 
 4. **Fetch Issues**
    - Use `gh issue list` to find all open GitHub issues in the current repository.
