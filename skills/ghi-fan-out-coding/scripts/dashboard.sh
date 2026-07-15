@@ -42,7 +42,8 @@ echo "Problem Reports (JSON): $problems"
 echo "====================================================="
 if [ "$problems" -gt 0 ]; then
     echo "⚠️ Problems Found:"
-    for p in $(find "$LOG_DIR" -name "problems.json"); issue=$(basename $(dirname $p)); do
+    for p in $(find "$LOG_DIR" -name "problems.json"); do
+        issue=$(basename $(dirname $p))
         echo "  - $issue: " $(grep -o '"id": "[^"]*"' "$p" | cut -d'"' -f4 | paste -sd ", " -)
     done
 fi
