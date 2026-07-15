@@ -75,27 +75,27 @@ if [ "$total_dirs" -gt 0 ]; then
                 json_pr=$(python3 -c "import json, sys; d=json.load(open('$status_file')); print(d.get('pr_id', ''))" 2>/dev/null)
                 
                 if [ "$json_state" == "MERGED" ]; then
-                    emoji="🟣"
+                    bullet="🟢"; emoji="🟣"
                     status_line="MERGED"
                     outcome_line="$json_outcome"
                 elif [ "$json_state" == "PR_CREATED" ]; then
-                    emoji="✅"
+                    bullet="🟢"; emoji="✅"
                     status_line="Completed"
                     outcome_line="Created PR #$json_pr"
                 elif [ "$json_state" == "NOOP_GOOD" ]; then
-                    emoji="♻️"
+                    bullet="🟢"; emoji="♻️ "
                     status_line="NOOP (Good)"
                     outcome_line="$json_outcome"
                 elif [ "$json_state" == "NOOP_BAD" ]; then
-                    emoji="🛑"
+                    bullet="🔴"; emoji="🛑"
                     status_line="Aborted (NOOP_BAD)"
                     outcome_line="Requires human intervention: $json_outcome"
                 else
-                    emoji="✅"
+                    bullet="🟢"; emoji="✅"
                     status_line="Completed"
                     outcome_line="$json_outcome"
                 fi
-                echo "  - $emoji $issue: $status_line ($outcome_line)$review_suffix"
+                echo "  $bullet $emoji $issue: $status_line ($outcome_line)$review_suffix"
                 continue
             fi
             
@@ -125,17 +125,17 @@ if [ "$total_dirs" -gt 0 ]; then
 
             if [ -n "$status_line" ]; then
                 if [[ "$status_line" == *"Aborted"* ]]; then
-                    emoji="🛑"
+                    bullet="🔴"; emoji="🛑"
                 elif [[ "$status_line" == *"NOOP"* ]]; then
-                    emoji="♻️"
+                    bullet="🟢"; emoji="♻️ "
                 else
-                    emoji="✅"
+                    bullet="🟢"; emoji="✅"
                 fi
-                echo "  - $emoji $issue: $status_line ($outcome_line)$review_suffix"
+                echo "  $bullet $emoji $issue: $status_line ($outcome_line)$review_suffix"
             elif [ -n "$pr" ]; then
-                echo "  - ✅ $issue: Completed (with $pr)$review_suffix"
+                echo "  🟢 ✅ $issue: Completed (with $pr)$review_suffix"
             else
-                echo "  - ✅ $issue: Completed$review_suffix"
+                echo "  🟢 ✅ $issue: Completed$review_suffix"
             fi
         else
             # Is the bonanza still running or has it ended?
@@ -144,9 +144,9 @@ if [ "$total_dirs" -gt 0 ]; then
                 bonanza_ended=$(python3 -c "import json; d=json.load(open('$MAIN_JSON')); print(d.get('fanout_end_time',''))" 2>/dev/null)
             fi
             if [ -n "$bonanza_ended" ]; then
-                echo "  - 💀 $issue: Abandoned (no status.json)"
+                echo "  ⚪ 💀 $issue: Abandoned (no status.json)"
             else
-                echo "  - ⏳ $issue: Pending"
+                echo "  ⚪ ⏳ $issue: Pending"
             fi
         fi
     done
