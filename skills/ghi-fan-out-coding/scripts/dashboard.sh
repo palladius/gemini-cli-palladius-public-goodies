@@ -33,13 +33,28 @@ echo "Total Issue Folders Created: $total_dirs"
 completed=$(grep -r "Execution End" "$LOG_DIR"/ghi-*/state.md 2>/dev/null | wc -l | tr -d ' ')
 echo "Subagents Completed: $completed / $total_dirs"
 
-prs_created=$(grep -r "pull/" "$LOG_DIR"/ghi-*/state.md 2>/dev/null | wc -l | tr -d ' ')
+prs_created=$(grep -rE "pull/|PR #[0-9]+" "$LOG_DIR"/ghi-*/state.md 2>/dev/null | wc -l | tr -d ' ')
 echo "PRs Created: $prs_created"
 
 problems=$(find "$LOG_DIR" -name "problems.json" | wc -l | tr -d ' ')
 echo "Problem Reports (JSON): $problems"
 
 echo "====================================================="
+if [ "$completed" -gt 0 ]; then
+    echo "✅ Completed Agents:"
+    for state in $(ls "$LOG_DIR"/ghi-*/state.md 2>/dev/null); do
+        if grep -q "Execution End" "$state"; then
+            issue=$(basename $(dirname "$state"))
+            pr=$(grep -oE "(https://github.com/[^ ]+/pull/[0-9]+|PR #[0-9]+)" "$state" | head -n 1)
+            if [ -n "$pr" ]; then
+                echo "  - ✅ $issue (with $pr)"
+            else
+                echo "  - ✅ $issue"
+            fi
+        fi
+    done
+fi
+
 if [ "$problems" -gt 0 ]; then
     echo "⚠️ Problems Found:"
     for p in $(find "$LOG_DIR" -name "problems.json"); do
