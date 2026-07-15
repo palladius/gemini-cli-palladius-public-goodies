@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this skill will be documented in this file.
+## [1.5.1] - 2026-07-15
+### Improved
+- All `state_manager.sh` echo statements now print `[$CURRENT_TIME]` so agents never hallucinate timestamps.
+- `review.json` gains: `code_quality_score`, `files_changed`, `lines_added`, `lines_removed`, `tests_added`, `tests_passing`, `breaking_change_detected`.
+- Added signature convention to both Phase 1 and Phase 2 checklists.
+- HITL path now explicitly requires commenting on BOTH the PR and the GHI.
+- `main.json` timestamps renamed to `fanout_start_time`/`fanout_end_time`, added `review_start_time`/`review_end_time`.
+
 ## [1.5] - 2026-07-15
 ### Added
 - Implemented `REVIEW_AGENT_CHECKLIST.md` for the Phase 2 sequential review workflow.
