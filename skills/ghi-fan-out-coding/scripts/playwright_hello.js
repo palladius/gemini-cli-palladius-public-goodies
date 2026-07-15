@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // Playwright Hello World — a template for subagents doing UI verification.
 // Usage: node playwright_hello.js --port 48025 --user admin --pass secret123
+//        node playwright_hello.js --url https://my-app.run.app --user admin --pass secret123
 //
 // This script:
-// 1. Navigates to http://localhost:<port>
+// 1. Navigates to http://localhost:<port> or the given --url
 // 2. Checks the page loads (HTTP 200)
 // 3. Optionally logs in if --user and --pass are provided
 //
@@ -22,7 +23,7 @@ function getArg(name) {
 const PORT = getArg('port') || '8080';
 const USERNAME = getArg('user');
 const PASSWORD = getArg('pass');
-const BASE_URL = `http://localhost:${PORT}`;
+const BASE_URL = getArg('url') || `http://localhost:${PORT}`;
 
 (async () => {
   console.log(`[Playwright] Launching browser for ${BASE_URL}...`);
