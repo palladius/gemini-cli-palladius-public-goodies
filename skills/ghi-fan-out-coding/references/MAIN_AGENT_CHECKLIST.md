@@ -44,6 +44,7 @@ Follow these steps exactly:
      bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh sub_start --issue <ISSUE_NUMBER> --uuid <UUID> --short-uuid <SHORT_UUID> --custom-prompt "<custom instructions for this subagent>"
      ```
    - Use your `invoke_subagent` tool to spawn a separate subagent for each issue.
+   - **Set the subagent `Role`** to `GHI #<ISSUE_NUMBER> Resolver` so each agent is distinguishable in the UI (not just generic "GHI Resolver").
    - For each subagent, use the following exact prompt:
      > "You are the agent for GHI #<ISSUE_NUMBER>. Read the `references/SUB_AGENT_CHECKLIST.md` instructions from the `ghi-fan-out-coding` skill. The execution short UUID for logging is <SHORT_UUID> and the long UUID is <UUID>."
    - Let the subagents run autonomously in the background.
