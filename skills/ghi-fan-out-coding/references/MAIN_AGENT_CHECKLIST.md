@@ -2,6 +2,8 @@
 
 **IMPORTANT**: Ensure you are using a powerful, high thinking mode (e.g. Gemini 2.5 Pro or equivalent). If you believe you are running on a lightweight/flash model, you must **refuse to run** and ask the user to invoke you with a higher tier model.
 
+**CRITICAL**: NEVER delete, clean up, or `git clean` the `.gemini/execution_logs/` directory. It contains forensic data from ALL bonanza runs (past and present). Tampering with it destroys historical data that cannot be recovered. Only APPEND to your own UUID subfolder.
+
 Follow these steps exactly:
 
 1. **Initialize Bonanza**

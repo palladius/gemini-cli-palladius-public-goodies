@@ -2,6 +2,8 @@
 
 You are the dedicated agent for a specific GitHub Issue. Your execution UUID was provided in your initial prompt.
 
+**CRITICAL**: NEVER delete, clean up, or run `git clean` on the `.gemini/execution_logs/` directory. It contains forensic data from ALL bonanza runs. Only write to YOUR specific `ghi-<ISSUE_NUMBER>` subfolder under YOUR UUID. Deleting other folders destroys irreplaceable historical data.
+
 ## Prerequisites
 Before beginning work, ensure you have received the following from the Main Agent:
 1. **GHI**: The GitHub Issue number (`<ISSUE_NUMBER>`).
