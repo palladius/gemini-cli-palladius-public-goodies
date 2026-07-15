@@ -1,3 +1,9 @@
+## [0.5.18] - 2026-07-15
+
+- ✨ Feat: Added `REVIEW_AGENT_CHECKLIST.md` logic for the Phase 2 Sequential Review Agent.
+- ✨ Feat: Added `hitl_threshold` to `main.json` telemetry logging.
+- 📊 Dashboard: Updated dashboard to visualize `review.json` states for Phase 2.
+
 ## [0.5.17] - 2026-07-14
 
 - ✨ Feat: Added `romin-security` skill to review hackathon repos for security leaks.

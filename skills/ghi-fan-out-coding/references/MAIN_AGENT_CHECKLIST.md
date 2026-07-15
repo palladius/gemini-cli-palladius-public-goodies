@@ -9,7 +9,7 @@ Follow these steps exactly:
    - Extract the first 8 characters to form the `<SHORT_UUID>`.
    - Run the state manager script to initialize the central `main.json` forensic log:
      ```bash
-     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh main_start --uuid <UUID> --short-uuid <SHORT_UUID> --custom-prompt "<any extra instructions you received from the user>" --harness antigravity
+     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh main_start --uuid <UUID> --short-uuid <SHORT_UUID> --custom-prompt "<any extra instructions you received from the user>" --harness antigravity --hitl-threshold 80
      ```
 
 2. **Setup Labels**
@@ -60,7 +60,7 @@ Follow these steps exactly:
      - An aggregated summary and count of all unique problems encountered, pulling their descriptions and proposed resolutions from the JSON files.
 
 9. **Finalize Bonanza**
-   - Run the state manager script to stamp the end time in the central forensic log:
+   - Run the state manager script to stamp the end time in the central forensic log. Ensure you pass the URL of the Meta Issue you created in Step 8:
      ```bash
-     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh main_end --uuid <UUID>
+     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh main_end --uuid <UUID> --retro-ghi "<META_GHI_URL>"
      ```

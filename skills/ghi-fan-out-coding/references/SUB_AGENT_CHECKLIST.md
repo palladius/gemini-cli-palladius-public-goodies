@@ -8,6 +8,12 @@ Before beginning work, ensure you have received the following from the Main Agen
 2. **UUID**: Both the `<SHORT_UUID>` and `<UUID>` for tagging and logging.
 3. Read the pre-seeded log file at `.gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/state.md` inside the main repository directory. This file contains the forensic metadata and any custom requests or specifications passed down from the Main Agent.
 
+## HITL Threshold (Human-In-The-Loop)
+You operate under a `hitl_threshold` on a 1-100 scale (default: **80**).
+- **80 (Default)**: High threshold. MINIMIZE human intervention. Bother the human ONLY for super important architectural choices, severe security issues, or hard blockers (e.g., missing credentials). Drive everything else to resolution autonomously.
+- **100**: Never bother the human. Make best-effort guesses or skip entirely.
+- **1**: Ask the human for any choice that could possibly be wrong.
+
 ## Execution Steps
 Follow these steps exactly:
 
@@ -44,6 +50,22 @@ Follow these steps exactly:
      ## What worked well
      <your notes here>
      ```
+   - **Crucial JSON Status**: In addition to `state.md`, you MUST create a `status.json` file in the exact same directory: `.gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/status.json`.
+   - The `status.json` must exactly match this schema based on what you accomplished:
+     ```json
+     {
+       "state": "MERGED | PR_CREATED | NOOP_GOOD | NOOP_BAD",
+       "explanation": "Brief explanation of what happened or why a NOOP was triggered",
+       "commit_hash": "12ab34",  // Required if state is MERGED
+       "pr_id": "69",            // Required if state is PR_CREATED
+       "ghi_tags_added": ["fanout-couldnt-complete"] // Required if state is NOOP_BAD (waiting for user input)
+     }
+     ```
+     *Definitions:*
+     - `MERGED`: Issue resolved and merged directly to main.
+     - `PR_CREATED`: You successfully created a PR (default success path).
+     - `NOOP_GOOD`: The issue is already fixed or invalid, no code changes needed.
+     - `NOOP_BAD`: You hit a blocker (missing credentials, vague issue) and are waiting for human input.
    - **If you encountered any issues or blocking problems**, first read the file `references/COMMON_ERRORS.md` to see if a known solution exists. If you can self-correct, do so!
    - If the error is unknown or unrecoverable, you MUST create a new file at `.gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/problems.json` containing a JSON array of the problems. The schema must exactly match this format:
      ```json

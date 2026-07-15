@@ -45,11 +45,88 @@ if [ "$total_dirs" -gt 0 ]; then
     for state in $(ls "$LOG_DIR"/ghi-*/state.md 2>/dev/null); do
         issue=$(basename $(dirname "$state"))
         if grep -q "Execution End" "$state"; then
+            status_file="$(dirname "$state")/status.json"
+            review_file="$(dirname "$state")/review.json"
+            
+            review_suffix=""
+            if [ -f "$review_file" ]; then
+                json_rev_outcome=$(python3 -c "import json, sys; d=json.load(open('$review_file')); print(d.get('outcome', ''))" 2>/dev/null)
+                if [ "$json_rev_outcome" == "auto_merged" ]; then
+                    review_suffix=" [🕵️ Review: Auto-Merged]"
+                elif [ "$json_rev_outcome" == "hitl_required" ]; then
+                    review_suffix=" [🕵️ Review: HITL Required]"
+                else
+                    review_suffix=" [🕵️ Reviewed]"
+                fi
+            fi
+
+            if [ -f "$status_file" ]; then
+                json_state=$(python3 -c "import json, sys; d=json.load(open('$status_file')); print(d.get('state', ''))" 2>/dev/null)
+                json_outcome=$(python3 -c "import json, sys; d=json.load(open('$status_file')); print(d.get('explanation', ''))" 2>/dev/null)
+                json_pr=$(python3 -c "import json, sys; d=json.load(open('$status_file')); print(d.get('pr_id', ''))" 2>/dev/null)
+                
+                if [ "$json_state" == "MERGED" ]; then
+                    emoji="🟣"
+                    status_line="MERGED"
+                    outcome_line="$json_outcome"
+                elif [ "$json_state" == "PR_CREATED" ]; then
+                    emoji="✅"
+                    status_line="Completed"
+                    outcome_line="Created PR #$json_pr"
+                elif [ "$json_state" == "NOOP_GOOD" ]; then
+                    emoji="🤷"
+                    status_line="NOOP (Good)"
+                    outcome_line="$json_outcome"
+                elif [ "$json_state" == "NOOP_BAD" ]; then
+                    emoji="🛑"
+                    status_line="Aborted (NOOP_BAD)"
+                    outcome_line="Requires human intervention: $json_outcome"
+                else
+                    emoji="✅"
+                    status_line="Completed"
+                    outcome_line="$json_outcome"
+                fi
+                echo "  - $emoji $issue: $status_line ($outcome_line)$review_suffix"
+                continue
+            fi
+            
             pr=$(grep -oE "(https://github.com/[^ ]+/pull/[0-9]+|PR #[0-9]+)" "$state" | head -n 1)
-            if [ -n "$pr" ]; then
-                echo "  - ✅ $issue: Completed (with $pr)"
+            status_line=$(grep -E "^\- \*\*Status\*\*:" "$state" | sed 's/^- \*\*Status\*\*: *//' | head -n 1)
+            outcome_line=$(grep -E "^\- \*\*Outcome\*\*:" "$state" | sed 's/^- \*\*Outcome\*\*: *//' | head -n 1)
+            
+            # Legacy heuristics if structured fields are missing
+            if [ -z "$status_line" ] || [ -z "$outcome_line" ]; then
+                if grep -qi "fanout-couldnt-complete\|human intervention" "$state"; then
+                    status_line="Aborted"
+                    outcome_line="Requires human intervention"
+                elif grep -qi "already successfully implemented\|already fixed\|closed issue" "$state"; then
+                    status_line="NOOP"
+                    outcome_line="Already fixed/closed"
+                elif grep -qi "permission to push\|user confirmation" "$state"; then
+                    status_line="Completed"
+                    outcome_line="Pending push approval"
+                elif [ -n "$pr" ]; then
+                    status_line="Completed"
+                    outcome_line="Created $pr"
+                else
+                    [ -z "$status_line" ] && status_line="Completed"
+                    [ -z "$outcome_line" ] && outcome_line="Work finished (no explicit PR link)"
+                fi
+            fi
+
+            if [ -n "$status_line" ]; then
+                if [[ "$status_line" == *"Aborted"* ]]; then
+                    emoji="🛑"
+                elif [[ "$status_line" == *"NOOP"* ]]; then
+                    emoji="🤷"
+                else
+                    emoji="✅"
+                fi
+                echo "  - $emoji $issue: $status_line ($outcome_line)$review_suffix"
+            elif [ -n "$pr" ]; then
+                echo "  - ✅ $issue: Completed (with $pr)$review_suffix"
             else
-                echo "  - ✅ $issue: Completed"
+                echo "  - ✅ $issue: Completed$review_suffix"
             fi
         else
             echo "  - ⏳ $issue: In Progress / Interrupted"

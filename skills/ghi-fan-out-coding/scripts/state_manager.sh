@@ -10,6 +10,7 @@ UUID=""
 SHORT_UUID=""
 CUSTOM_PROMPT=""
 HARNESS=""
+HITL_THRESHOLD="80"
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -18,6 +19,7 @@ while [[ "$#" -gt 0 ]]; do
         --short-uuid) SHORT_UUID="$2"; shift ;;
         --custom-prompt) CUSTOM_PROMPT="$2"; shift ;;
         --harness) HARNESS="$2"; shift ;;
+        --hitl-threshold) HITL_THRESHOLD="$2"; shift ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
@@ -37,6 +39,10 @@ if [[ "$ACTION" == "main_start" ]]; then
     MAIN_JSON="$LOG_DIR/main.json"
     GIT_REPO=$(git config --get remote.origin.url || echo "unknown")
     
+    SKILL_DIR=$(dirname "$(dirname "$0")")
+    SKILL_VERSION=$(grep -o '"version": *"[^"]*"' "$SKILL_DIR/../../plugin.json" 2>/dev/null | cut -d '"' -f 4 || echo "unknown")
+    SKILL_COMMIT=$(git -C "$SKILL_DIR" rev-parse HEAD 2>/dev/null || echo "unknown")
+    
     cat <<EOF > "$MAIN_JSON"
 {
   "start_time": "$CURRENT_TIME",
@@ -44,7 +50,10 @@ if [[ "$ACTION" == "main_start" ]]; then
   "github_repo": "$GIT_REPO",
   "username": "$USER",
   "hostname": "$HOSTNAME",
-  "harness": "$HARNESS"
+  "harness": "$HARNESS",
+  "skill_version": "$SKILL_VERSION",
+  "skill_commit": "$SKILL_COMMIT",
+  "hitl_threshold": "$HITL_THRESHOLD"
 }
 EOF
     echo "Main state initialized at $MAIN_JSON"
@@ -52,8 +61,24 @@ EOF
 elif [[ "$ACTION" == "main_end" ]]; then
     MAIN_JSON="$LOG_DIR/main.json"
     if [[ -f "$MAIN_JSON" ]]; then
-        # Use jq to append end_time or python if jq not available, let's just use python to be safe
-        python3 -c "import json, sys; d=json.load(open('$MAIN_JSON')); d['end_time']='$CURRENT_TIME'; json.dump(d, open('$MAIN_JSON','w'), indent=2)"
+        # Extract retro ghi if passed
+        RETRO_GHI=""
+        while [[ "$#" -gt 0 ]]; do
+            case $1 in
+                --retro-ghi) RETRO_GHI="$2"; shift ;;
+            esac
+            shift
+        done
+        
+        # Use python to safely update the json
+        python3 -c "
+import json, sys
+d = json.load(open('$MAIN_JSON'))
+d['end_time'] = '$CURRENT_TIME'
+if '$RETRO_GHI':
+    d['retrospective_ghi'] = '$RETRO_GHI'
+json.dump(d, open('$MAIN_JSON','w'), indent=2)
+"
         echo "Main state finalized."
     else
         echo "Error: $MAIN_JSON not found."
@@ -81,6 +106,7 @@ fan_out_uuid: $SHORT_UUID
 - **Git Branch**: $GIT_BRANCH
 - **Git Commit**: $GIT_COMMIT
 - **Custom Prompt**: $CUSTOM_PROMPT
+- **HITL Threshold**: $HITL_THRESHOLD
 
 EOF
     echo "Subagent state initialized at $SUB_LOG"
