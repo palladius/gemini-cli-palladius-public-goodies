@@ -70,7 +70,7 @@ The schema must exactly match:
   "pr_url": "<the GitHub PR URL>",
   "outcome": "hitl_required | auto_merged",
   "commit_hash": "<short git commit hash on main if merged, otherwise empty string>",
-  "code_quality_score": "<0-100 integer. 0=catastrophic, 50=works but messy, 80=solid, 100=flawless>",
+  "code_quality_score": "<integer 0-100, see SCORING RUBRIC below>",
   "files_changed": "<integer from git diff --stat>",
   "lines_added": "<integer from git diff --stat>",
   "lines_removed": "<integer from git diff --stat>",
@@ -82,6 +82,26 @@ The schema must exactly match:
 ```
 
 **IMPORTANT**: For `review_start_ts` and `review_end_ts`, you MUST run `date -u +"%Y-%m-%dT%H:%M:%SZ"` and use the actual output. Do NOT estimate or hallucinate timestamps.
+
+**SCORING RUBRIC for `code_quality_score`** — Do NOT default to 50. Score each PR honestly based on these criteria:
+
+| Score | Meaning | Criteria |
+|-------|---------|----------|
+| 10-20 | 💀 Broken | Code doesn't compile/run, introduces regressions |
+| 30-40 | 🟠 Poor | Works but major issues: no tests, hardcoded values, security concerns |
+| 50-60 | 🟡 Acceptable | Works, basic tests, but messy code or missing edge cases |
+| 70-79 | 🔵 Good | Clean code, tests pass, handles edge cases, follows conventions |
+| 80-89 | 🟢 Solid | Well-tested, good architecture, clear naming, no code smells |
+| 90-100 | ⭐ Exemplary | Production-ready, comprehensive tests, excellent documentation |
+
+**Checklist for scoring** (each adds ~10-15 points):
+- Tests added and passing (+15)
+- No hardcoded values or magic strings (+10)
+- Handles edge cases (+10)
+- Clean, readable code with good naming (+10)
+- No security vulnerabilities (+10)
+- Documentation updated (+10)
+- No unnecessary changes / scope creep (+10)
 
 Repeat Steps 3-5 until all PRs in the queue have been reviewed.
 
