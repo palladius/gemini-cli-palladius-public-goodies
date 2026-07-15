@@ -6,7 +6,14 @@
 
 Follow these steps exactly:
 
-1. **Initialize Bonanza**
+1. **Pre-Flight Check**
+   - If a previous bonanza UUID exists, run the dashboard to review the current state:
+     ```bash
+     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/dashboard.sh <PREVIOUS_UUID>
+     ```
+   - This gives you context on what was already done, what's pending, and what failed.
+
+2. **Initialize Bonanza**
    - Generate a unique `UUID` for this execution run (e.g., using `uuidgen` or standard formatting).
    - Extract the first 8 characters to form the `<SHORT_UUID>`.
    - Run the state manager script to initialize the central `main.json` forensic log:
@@ -19,13 +26,13 @@ Follow these steps exactly:
      git commit -m 'chore: initialize bonanza execution logs [<SHORT_UUID>]'
      ```
 
-2. **Setup Labels**
+3. **Setup Labels**
    - Ensure the necessary GitHub labels exist by running the following commands:
      - `gh label create "fan_out_<SHORT_UUID>" --force`
      - `gh label create "fanout-automation-possible" --force`
      - `gh label create "fanout-couldnt-complete" --force`
 
-3. **Pre-Flight Checks (Anticipate Blockers)**
+4. **Pre-Flight Checks (Anticipate Blockers)**
    - The goal is for the subagents to run completely autonomously while the user is away. You must anticipate any environmental or policy blockers *before* you fan out.
    - **Check Auth**: E.g., is `gcloud auth login` required?
    - **Check Dependencies**: E.g., does `docker build` fail because the docker daemon isn't running?
@@ -33,11 +40,11 @@ Follow these steps exactly:
    - If you identify any blockers, interact with the user (back and forth as many times as needed) to resolve them *before* proceeding to the fan-out stage.
    - Also, if you encounter any errors or blockers while orchestrating, always consult `references/COMMON_ERRORS.md` first to see if a known solution exists.
 
-4. **Fetch Issues**
+5. **Fetch Issues**
    - Use `gh issue list` to find all open GitHub issues in the current repository.
    - **Important**: Filter out and ignore any issues that contain `[META]` in the title to avoid recursion.
 
-5. **Fan-Out (Subagent Creation)**
+6. **Fan-Out (Subagent Creation)**
    - For *every* target GitHub issue found, tag it by adding a label: `gh issue edit <#> --add-label "fan_out_<SHORT_UUID>"`
    - Before spawning the subagent, initialize its forensic log file:
      ```bash
@@ -49,15 +56,15 @@ Follow these steps exactly:
      > "You are the agent for GHI #<ISSUE_NUMBER>. Read the `references/SUB_AGENT_CHECKLIST.md` instructions from the `ghi-fan-out-coding` skill. The execution short UUID for logging is <SHORT_UUID> and the long UUID is <UUID>."
    - Let the subagents run autonomously in the background.
 
-6. **Monitor & Wait**
+7. **Monitor & Wait**
    - Wait until ALL subagents have completed their execution and reported back.
 
-7. **Fan-In (Reconcile)**
+8. **Fan-In (Reconcile)**
    - Check the status of the PRs and GHIs that were worked on.
    - For each issue, check: "Did the subagent close the PR and GHI, and is it merged into main?"
    - If yes, append "Chumbia! 💥" next to the issue's status in your internal list.
 
-8. **Meta (Synoptic Reporting)**
+9. **Meta (Synoptic Reporting)**
    - Create a Meta GitHub issue summarizing the entire execution run.
    - The title must be exactly: `[META] <YYYYMMDD> ghi parallel resolution bonanza report [<SHORT_UUID>]`
    - Read the subagent logs from the Main repository directory (`.gemini/execution_logs/<UUID>/`). Scan the `ghi-*/` subdirectories for `state.md` and `problems.json` files.
@@ -67,7 +74,7 @@ Follow these steps exactly:
      - Aggregated "What worked well" (from the `state.md` files).
      - An aggregated summary and count of all unique problems encountered, pulling their descriptions and proposed resolutions from the JSON files.
 
-9. **Finalize Bonanza**
+10. **Finalize Bonanza**
    - Run the state manager script to stamp the end time in the central forensic log. Ensure you pass the URL of the Meta Issue you created in Step 8:
      ```bash
      bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh main_end --uuid <UUID> --retro-ghi "<META_GHI_URL>"

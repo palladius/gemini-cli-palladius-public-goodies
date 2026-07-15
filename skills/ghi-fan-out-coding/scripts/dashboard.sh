@@ -84,7 +84,7 @@ if [ "$total_dirs" -gt 0 ]; then
                     if [ -n "$json_pr" ]; then
                         outcome_line="Created PR #$json_pr"
                     else
-                        outcome_line="${json_outcome:-PR created (no ID)}"
+                        outcome_line="⚠️ FIXME: pr_id missing in status.json"
                     fi
                 elif [ "$json_state" == "NOOP_GOOD" ]; then
                     bullet="🟢"; emoji="♻️ "
