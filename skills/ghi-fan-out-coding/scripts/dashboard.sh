@@ -81,7 +81,11 @@ if [ "$total_dirs" -gt 0 ]; then
                 elif [ "$json_state" == "PR_CREATED" ]; then
                     bullet="🟢"; emoji="✅"
                     status_line="Completed"
-                    outcome_line="Created PR #$json_pr"
+                    if [ -n "$json_pr" ]; then
+                        outcome_line="Created PR #$json_pr"
+                    else
+                        outcome_line="${json_outcome:-PR created (no ID)}"
+                    fi
                 elif [ "$json_state" == "NOOP_GOOD" ]; then
                     bullet="🟢"; emoji="♻️ "
                     status_line="NOOP (Good)"
