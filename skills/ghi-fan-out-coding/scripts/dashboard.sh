@@ -138,7 +138,16 @@ if [ "$total_dirs" -gt 0 ]; then
                 echo "  - ✅ $issue: Completed$review_suffix"
             fi
         else
-            echo "  - ⏳ $issue: In Progress / Interrupted"
+            # Is the bonanza still running or has it ended?
+            bonanza_ended=""
+            if [ -f "$MAIN_JSON" ]; then
+                bonanza_ended=$(python3 -c "import json; d=json.load(open('$MAIN_JSON')); print(d.get('fanout_end_time',''))" 2>/dev/null)
+            fi
+            if [ -n "$bonanza_ended" ]; then
+                echo "  - 💀 $issue: Abandoned (no status.json)"
+            else
+                echo "  - ⏳ $issue: In Progress"
+            fi
         fi
     done
 fi
