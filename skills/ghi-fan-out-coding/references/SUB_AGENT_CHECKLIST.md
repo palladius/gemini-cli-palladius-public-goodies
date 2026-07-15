@@ -111,7 +111,21 @@ Follow these steps exactly:
    - *Note*: The folder `.gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/` is your dedicated workspace for this execution. You are free to write any additional debug logs, scratch scripts, or investigation notes you need into this directory.
 
 7. **End Forensic Telemetry**
-   - As your final step, run the state manager script to stamp the end time into your log file:
+   - Run the state manager script to stamp the end time into your log file:
      ```bash
      bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh sub_end --issue <ISSUE_NUMBER> --uuid <UUID>
      ```
+
+8. **Archive Transcript** *(final step)*
+   - If you were given a `<CONVERSATION_ID>` in your initial prompt, copy your full conversation transcript into the execution logs:
+     ```bash
+     cp ~/.gemini/antigravity/brain/<CONVERSATION_ID>/.system_generated/logs/transcript.jsonl \
+        .gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/transcript.jsonl
+     ```
+   - Then run the command audit script to flag any dangerous commands:
+     ```bash
+     python3 ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/extract_command_history.py \
+        .gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/transcript.jsonl --audit \
+        > .gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/command_history.txt
+     ```
+   - This creates a full audit trail of every command you executed, with dangerous patterns flagged.

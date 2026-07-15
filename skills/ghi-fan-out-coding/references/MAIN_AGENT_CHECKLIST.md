@@ -53,7 +53,8 @@ Follow these steps exactly:
    - Use your `invoke_subagent` tool to spawn a separate subagent for each issue.
    - **Set the subagent `Role`** to `GHI #<ISSUE_NUMBER> Resolver` so each agent is distinguishable in the UI (not just generic "GHI Resolver").
    - For each subagent, use the following exact prompt:
-     > "You are the agent for GHI #<ISSUE_NUMBER>. Read the `references/SUB_AGENT_CHECKLIST.md` instructions from the `ghi-fan-out-coding` skill. The execution short UUID for logging is <SHORT_UUID> and the long UUID is <UUID>."
+     > "You are the agent for GHI #<ISSUE_NUMBER>. Read the `references/SUB_AGENT_CHECKLIST.md` instructions from the `ghi-fan-out-coding` skill. The execution short UUID for logging is <SHORT_UUID> and the long UUID is <UUID>. Your conversation ID is <CONVERSATION_ID> (use this for transcript archival)."
+   - **Important**: After calling `invoke_subagent`, you will receive a `conversationId` in the response. Use that value to fill `<CONVERSATION_ID>` above. If you cannot inject it post-hoc, record the mapping `GHI# → conversationId` so you can copy transcripts during fan-in.
    - Let the subagents run autonomously in the background.
 
 7. **Monitor & Wait**
