@@ -45,7 +45,7 @@ if [[ "$ACTION" == "main_start" ]]; then
     
     cat <<EOF > "$MAIN_JSON"
 {
-  "start_time": "$CURRENT_TIME",
+  "fanout_start_time": "$CURRENT_TIME",
   "custom_prompt": "$CUSTOM_PROMPT",
   "github_repo": "$GIT_REPO",
   "username": "$USER",
@@ -74,12 +74,30 @@ elif [[ "$ACTION" == "main_end" ]]; then
         python3 -c "
 import json, sys
 d = json.load(open('$MAIN_JSON'))
-d['end_time'] = '$CURRENT_TIME'
+d['fanout_end_time'] = '$CURRENT_TIME'
 if '$RETRO_GHI':
     d['retrospective_ghi'] = '$RETRO_GHI'
 json.dump(d, open('$MAIN_JSON','w'), indent=2)
 "
         echo "Main state finalized."
+    else
+        echo "Error: $MAIN_JSON not found."
+    fi
+
+elif [[ "$ACTION" == "review_start" ]]; then
+    MAIN_JSON="$LOG_DIR/main.json"
+    if [[ -f "$MAIN_JSON" ]]; then
+        python3 -c "import json, sys; d=json.load(open('$MAIN_JSON')); d['review_start_time']='$CURRENT_TIME'; json.dump(d, open('$MAIN_JSON','w'), indent=2)"
+        echo "Review phase started."
+    else
+        echo "Error: $MAIN_JSON not found."
+    fi
+
+elif [[ "$ACTION" == "review_end" ]]; then
+    MAIN_JSON="$LOG_DIR/main.json"
+    if [[ -f "$MAIN_JSON" ]]; then
+        python3 -c "import json, sys; d=json.load(open('$MAIN_JSON')); d['review_end_time']='$CURRENT_TIME'; json.dump(d, open('$MAIN_JSON','w'), indent=2)"
+        echo "Review phase finalized."
     else
         echo "Error: $MAIN_JSON not found."
     fi

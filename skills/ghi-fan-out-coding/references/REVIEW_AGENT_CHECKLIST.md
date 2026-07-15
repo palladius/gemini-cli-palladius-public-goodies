@@ -7,21 +7,27 @@ You will be provided with the execution UUID (e.g. `AC67EF98-9364-407A-A497-FD7D
 
 ## Execution Steps
 
-### 1. Identify "Ready for Review" PRs
+### 1. Initialize Review Phase
+Log the start of the review phase in the central telemetry:
+```bash
+bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh review_start --uuid <UUID>
+```
+
+### 2. Identify "Ready for Review" PRs
 Scan the telemetry directories to find PRs that are ready for review:
 ```bash
 # Find all issues where Phase 1 successfully created a PR
 grep -l '"state": "PR_CREATED"' .gemini/execution_logs/<UUID>/ghi-*/status.json
 ```
 
-### 2. Review Each PR Sequentially
+### 3. Review Each PR Sequentially
 For each issue identified above, perform the following steps:
 
 1. **Check out the code**: Fetch the PR branch and check it out locally.
 2. **Review the Diffs**: Analyze the code changes made by the Phase 1 subagent against the `main` branch. Check for "AI slop", poor architectural decisions, or security vulnerabilities.
 3. **Run Tests**: Ensure the test suite passes on the PR branch.
 
-### 3. Decide Action & Merge
+### 4. Decide Action & Merge
 Based on your review and the `hitl_threshold` defined in your prompt, make a decision:
 
 - **If the code is flawless or minor issues can be auto-fixed**:
@@ -35,13 +41,15 @@ Based on your review and the `hitl_threshold` defined in your prompt, make a dec
   2. Add the label `hitl-required` to the GHI.
   3. Write to `review.json` with `"outcome": "hitl_required"`.
 
-### 4. Output `review.json`
+### 5. Output `review.json`
 For EVERY PR you review, you MUST create a `review.json` file in the same directory as the `status.json` (e.g., `.gemini/execution_logs/<UUID>/ghi-123/review.json`).
 
 The schema must exactly match:
 ```json
 {
   "review_start_ts": "<timestamp in UTC>",
+  "review_end_ts": "<timestamp in UTC>",
+  "issue_number": "<e.g., 123>",
   "pr_url": "<the GitHub PR URL>",
   "outcome": "hitl_required | auto_merged",
   "commit_hash": "<short git commit hash on main if merged, otherwise empty string>",
@@ -49,4 +57,10 @@ The schema must exactly match:
 }
 ```
 
-Repeat Steps 2-4 until all PRs in the queue have been reviewed.
+Repeat Steps 3-5 until all PRs in the queue have been reviewed.
+
+### 6. Finalize Review Phase
+Log the completion of the review phase in the central telemetry:
+```bash
+bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh review_end --uuid <UUID>
+```
