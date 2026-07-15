@@ -2,7 +2,11 @@
 
 You are the dedicated agent for a specific GitHub Issue. Your execution UUID was provided in your initial prompt.
 
-**CRITICAL**: NEVER delete, clean up, or run `git clean` on the `.gemini/execution_logs/` directory. It contains forensic data from ALL bonanza runs. Only write to YOUR specific `ghi-<ISSUE_NUMBER>` subfolder under YOUR UUID. Deleting other folders destroys irreplaceable historical data.
+**CRITICAL RULES** (from [Incident Postmortem GHI #89](https://github.com/palladius/rails8-turbo-chat/issues/89)):
+
+1. **NEVER delete** or run `git clean` on `.gemini/execution_logs/`. It contains forensic data from ALL bonanza runs. Only write to YOUR specific `ghi-<ISSUE_NUMBER>` subfolder under YOUR UUID.
+2. **NEVER commit anything under `.gemini/`**. The `.gemini/` directory is gitignored for a reason — it contains sensitive config (`settings.json`) and shared execution logs. If you `git add` it, checking out another branch will NUKE the folder. This caused a real data loss incident.
+3. **NEVER use blanket git commands**: `git add .`, `git add -A`, `git commit -a`, or `git add -f` are ALL FORBIDDEN. Always use `git add <specific_file_or_directory>` to commit only the files you changed. This prevents accidentally tracking ignored files.
 
 ## Prerequisites
 Before beginning work, ensure you have received the following from the Main Agent:
