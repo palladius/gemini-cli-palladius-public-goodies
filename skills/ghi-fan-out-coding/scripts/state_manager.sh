@@ -40,7 +40,7 @@ if [[ "$ACTION" == "main_start" ]]; then
     GIT_REPO=$(git config --get remote.origin.url || echo "unknown")
     
     SKILL_DIR=$(dirname "$(dirname "$0")")
-    SKILL_VERSION=$(grep -o '"version": *"[^"]*"' "$SKILL_DIR/../../plugin.json" 2>/dev/null | cut -d '"' -f 4 || echo "unknown")
+    SKILL_VERSION=$(grep -E "^  version:" "$SKILL_DIR/SKILL.md" 2>/dev/null | awk '{print $2}' || echo "unknown")
     SKILL_COMMIT=$(git -C "$SKILL_DIR" rev-parse HEAD 2>/dev/null || echo "unknown")
     
     cat <<EOF > "$MAIN_JSON"
