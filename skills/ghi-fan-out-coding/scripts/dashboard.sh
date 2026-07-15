@@ -22,9 +22,18 @@ else
     exit 1
 fi
 
+MAIN_JSON="$LOG_DIR/main.json"
+SKILL_VERSION=""
+SKILL_COMMIT=""
+if [ -f "$MAIN_JSON" ]; then
+    SKILL_VERSION=$(python3 -c "import json; d=json.load(open('$MAIN_JSON')); print(d.get('skill_version','?'))" 2>/dev/null)
+    SKILL_COMMIT=$(python3 -c "import json; d=json.load(open('$MAIN_JSON')); print(d.get('skill_commit','?')[:7])" 2>/dev/null)
+fi
 
 echo "====================================================="
-echo "🚀 GHI Fan-Out Bonanza Dashboard | UUID: $UUID"
+echo -e "🚀 GHI Fan-Out Bonanza Dashboard | UUID: $UUID"
+echo -e "   Skill: \033[1;37mv${SKILL_VERSION}\033[0m  \033[90m#${SKILL_COMMIT}\033[0m"
+echo -e "   \033[90mhttps://github.com/palladius/gemini-cli-palladius-public-goodies/tree/${SKILL_COMMIT}/skills/ghi-fan-out-coding\033[0m"
 echo "====================================================="
 
 total_dirs=$(find "$LOG_DIR" -type d -name "ghi-*" | wc -l | tr -d ' ')

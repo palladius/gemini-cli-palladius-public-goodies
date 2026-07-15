@@ -20,6 +20,7 @@ while [[ "$#" -gt 0 ]]; do
         --custom-prompt) CUSTOM_PROMPT="$2"; shift ;;
         --harness) HARNESS="$2"; shift ;;
         --hitl-threshold) HITL_THRESHOLD="$2"; shift ;;
+        --retro-ghi) RETRO_GHI_TEMP="$2"; shift ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
@@ -61,14 +62,7 @@ EOF
 elif [[ "$ACTION" == "main_end" ]]; then
     MAIN_JSON="$LOG_DIR/main.json"
     if [[ -f "$MAIN_JSON" ]]; then
-        # Extract retro ghi if passed
-        RETRO_GHI=""
-        while [[ "$#" -gt 0 ]]; do
-            case $1 in
-                --retro-ghi) RETRO_GHI="$2"; shift ;;
-            esac
-            shift
-        done
+        RETRO_GHI="$RETRO_GHI_TEMP"
         
         # Use python to safely update the json
         python3 -c "
