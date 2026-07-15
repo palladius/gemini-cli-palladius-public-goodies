@@ -1,6 +1,12 @@
 # Changelog
 
 All notable changes to this skill will be documented in this file.
+## [1.5] - 2026-07-15
+### Added
+- Implemented `REVIEW_AGENT_CHECKLIST.md` for the Phase 2 sequential review workflow.
+- Updated `dashboard.sh` to parse and visualize `review.json` states (`hitl_required` vs `auto_merged`).
+- Updated `state_manager.sh` and Main Agent checklist to inject `hitl_threshold` and `retrospective_ghi` into `main.json` telemetry.
+
 ## [1.4] - 2026-07-15
 ### Added
 - Added `COMMON_ERRORS.md` to help subagents self-heal based on known failures.
