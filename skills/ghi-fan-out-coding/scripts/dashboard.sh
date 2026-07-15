@@ -60,12 +60,24 @@ if [ "$total_dirs" -gt 0 ]; then
             review_suffix=""
             if [ -f "$review_file" ]; then
                 json_rev_outcome=$(python3 -c "import json, sys; d=json.load(open('$review_file')); print(d.get('outcome', ''))" 2>/dev/null)
+                json_quality=$(python3 -c "import json, sys; d=json.load(open('$review_file')); print(d.get('code_quality_score', ''))" 2>/dev/null)
+                
+                # Build quality bar: 8 chars wide, █ for filled, ░ for empty
+                quality_bar=""
+                if [ -n "$json_quality" ] && [ "$json_quality" -gt 0 ] 2>/dev/null; then
+                    filled=$(( json_quality * 8 / 100 ))
+                    [ "$filled" -gt 8 ] && filled=8
+                    [ "$filled" -lt 0 ] && filled=0
+                    empty=$(( 8 - filled ))
+                    quality_bar=" $(printf '█%.0s' $(seq 1 $filled 2>/dev/null))$(printf '░%.0s' $(seq 1 $empty 2>/dev/null)) ${json_quality}%"
+                fi
+
                 if [ "$json_rev_outcome" == "auto_merged" ]; then
-                    review_suffix=" [🕵️ Review: Auto-Merged]"
+                    review_suffix=" [🕵️ Auto-Merged${quality_bar}]"
                 elif [ "$json_rev_outcome" == "hitl_required" ]; then
-                    review_suffix=" [🕵️ Review: HITL Required]"
+                    review_suffix=" [🕵️ HITL${quality_bar}]"
                 else
-                    review_suffix=" [🕵️ Reviewed]"
+                    review_suffix=" [🕵️ Reviewed${quality_bar}]"
                 fi
             fi
 
