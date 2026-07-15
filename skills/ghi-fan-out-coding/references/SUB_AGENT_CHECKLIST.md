@@ -45,10 +45,9 @@ Follow these steps exactly:
      ```bash
      # In the worktree directory:
      MAIN_REPO_ROOT="$(git worktree list | head -1 | awk '{print $1}')"
-     rm -rf .gemini/execution_logs
-     mkdir -p .gemini
-     ln -s "$MAIN_REPO_ROOT/.gemini/execution_logs" .gemini/execution_logs
-     # Exclude symlink from git tracking in this worktree:
+     mkdir -p .gemini/execution_logs
+     ln -sfn "$MAIN_REPO_ROOT/.gemini/execution_logs/<UUID>" .gemini/execution_logs/<UUID>
+     # Exclude from git tracking in this worktree:
      mkdir -p "$(git rev-parse --git-dir)/info" && echo ".gemini/execution_logs" >> "$(git rev-parse --git-dir)/info/exclude"
      ```
    - **TDD Requirement**: Write meaningful failing tests *first* to confirm the bug exists, and then implement the code to make them pass.
