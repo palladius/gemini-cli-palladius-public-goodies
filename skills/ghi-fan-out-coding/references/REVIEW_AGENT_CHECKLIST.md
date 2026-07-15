@@ -99,6 +99,7 @@ The schema must exactly match:
 - No hardcoded values or magic strings (+10)
 - Handles edge cases (+10)
 - Clean, readable code with good naming (+10)
+- Idiomatic, minimalistic code for the language (e.g. idiomatic Ruby, not Java-in-Ruby) (+10)
 - No security vulnerabilities (+10)
 - Documentation updated (+10)
 - No unnecessary changes / scope creep (+10)
