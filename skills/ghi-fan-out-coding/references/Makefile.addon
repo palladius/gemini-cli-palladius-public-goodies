@@ -1,0 +1,4 @@
+# Add this to your project's Makefile to monitor the GHI Fan-Out Bonanza!
+show-fanout-execution:
+	@if [ -z "$(UUID)" ]; then echo "Usage: make show-fanout-execution UUID=123"; exit 1; fi
+	bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/dashboard.sh $(UUID)

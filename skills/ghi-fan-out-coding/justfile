@@ -1,6 +1,0 @@
-default:
-	@just --list
-
-# Show the live dashboard for a specific execution UUID
-show-fanout-execution UUID:
-	bash scripts/dashboard.sh {{UUID}}
