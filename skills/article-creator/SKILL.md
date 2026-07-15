@@ -39,12 +39,12 @@ Verify that generated HTML builds correctly and links are functional:
     just test-ricc-rocks-articles
     ```
 2.  Inspect output folder contents:
-    *   `out/ricc.rocks/index.md` (Hugo compatible output).
-    *   `out/medium/article.md` (Clean Markdown copy for Medium).
+    *   `out/ricc.rocks/index.md` (Hugo compatible Markdown output for ricc.rocks).
+    *   `out/medium/index.html` (Compiled HTML output ready for Medium).
     *   `out/apps-portfolio/` (Copy of index & assets for the portfolio).
 
 ### Step 3: Medium Manual Upload (One-time)
-1.  Open the Medium editor and paste the clean markdown from `out/medium/article.md`.
+1.  Open the Medium editor and paste the content from `out/medium/index.html`.
 2.  **CRITICAL SEO STEP**: Open Medium Story Settings -> Advanced Settings -> **Canonical URL**.
     *   Set the Canonical URL to: `https://ricc.rocks/en/posts/technology/<SLUG>/`
 3.  Publish the article on Medium.
