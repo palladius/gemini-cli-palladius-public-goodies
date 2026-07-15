@@ -146,7 +146,7 @@ if [ "$total_dirs" -gt 0 ]; then
             if [ -n "$bonanza_ended" ]; then
                 echo "  - 💀 $issue: Abandoned (no status.json)"
             else
-                echo "  - ⏳ $issue: In Progress"
+                echo "  - ⏳ $issue: Pending"
             fi
         fi
     done
