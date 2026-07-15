@@ -1,6 +1,23 @@
 # Changelog
 
 All notable changes to this skill will be documented in this file.
+## [1.5.4] - 2026-07-15
+### Fixed
+- 🛡️ SA: symlink only the UUID subfolder (`ln -sfn .../<UUID>`), not the entire `execution_logs/` dir. No more `rm -rf`.
+
+## [1.5.3] - 2026-07-15
+### Fixed
+- 🛡️ MA: `git add -f` execution_logs after init so they persist past `.gitignore` across branch switches.
+- 🛡️ SA: symlink `execution_logs` back to main repo root so all worktrees write to one shared location.
+- Worktree dir names now include `<SHORT_UUID>` for traceability.
+
+## [1.5.2] - 2026-07-15
+### Fixed
+- 🛡️ Added **CRITICAL** rule to both MA and SA checklists: NEVER delete `.gemini/execution_logs/`.
+- 📊 Dashboard: disambiguated `⏳ Pending` (bonanza running) vs `💀 Abandoned` (bonanza ended, no status).
+- 📊 Dashboard: shows skill version (bold white), commit hash (gray), and permalink to skill repo.
+- 🎭 Added `playwright_hello.js` generic template and `--url` flag for Cloud Run testing.
+
 ## [1.5.1] - 2026-07-15
 ### Improved
 - All `state_manager.sh` echo statements now print `[$CURRENT_TIME]` so agents never hallucinate timestamps.
