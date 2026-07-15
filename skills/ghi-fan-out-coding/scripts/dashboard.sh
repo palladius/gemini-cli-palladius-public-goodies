@@ -57,27 +57,29 @@ if [ "$total_dirs" -gt 0 ]; then
             status_file="$(dirname "$state")/status.json"
             review_file="$(dirname "$state")/review.json"
             
-            review_suffix=""
+            # Parse review data
+            quality_bar="          "  # 10 chars blank placeholder
+            review_detail=""
             if [ -f "$review_file" ]; then
                 json_rev_outcome=$(python3 -c "import json, sys; d=json.load(open('$review_file')); print(d.get('outcome', ''))" 2>/dev/null)
                 json_quality=$(python3 -c "import json, sys; d=json.load(open('$review_file')); print(d.get('code_quality_score', ''))" 2>/dev/null)
                 
                 # Build quality bar: 8 chars wide, █ for filled, ░ for empty
-                quality_bar=""
                 if [ -n "$json_quality" ] && [ "$json_quality" -gt 0 ] 2>/dev/null; then
                     filled=$(( json_quality * 8 / 100 ))
                     [ "$filled" -gt 8 ] && filled=8
                     [ "$filled" -lt 0 ] && filled=0
                     empty=$(( 8 - filled ))
-                    quality_bar=" $(printf '█%.0s' $(seq 1 $filled 2>/dev/null))$(printf '░%.0s' $(seq 1 $empty 2>/dev/null)) ${json_quality}%"
+                    bar_str="$(printf '█%.0s' $(seq 1 $filled 2>/dev/null))$(printf '░%.0s' $(seq 1 $empty 2>/dev/null))"
+                    quality_bar=$(printf '%-10s' "$bar_str ${json_quality}%")
                 fi
 
                 if [ "$json_rev_outcome" == "auto_merged" ]; then
-                    review_suffix=" [🕵️ Auto-Merged${quality_bar}]"
+                    review_detail="🕵️ Auto-Merged"
                 elif [ "$json_rev_outcome" == "hitl_required" ]; then
-                    review_suffix=" [🕵️ HITL${quality_bar}]"
+                    review_detail="🕵️ HITL"
                 else
-                    review_suffix=" [🕵️ Reviewed${quality_bar}]"
+                    review_detail="🕵️ Reviewed"
                 fi
             fi
 
@@ -87,31 +89,27 @@ if [ "$total_dirs" -gt 0 ]; then
                 json_pr=$(python3 -c "import json, sys; d=json.load(open('$status_file')); print(d.get('pr_id', ''))" 2>/dev/null)
                 
                 if [ "$json_state" == "MERGED" ]; then
-                    bullet="🟢"; emoji="🟣"
-                    status_line="MERGED"
-                    outcome_line="$json_outcome"
+                    bullet="🟢"; emoji="🟣"; state_code="MERGED"
+                    detail="$json_outcome"
                 elif [ "$json_state" == "PR_CREATED" ]; then
-                    bullet="🟢"; emoji="✅"
-                    status_line="Completed"
+                    bullet="🟢"; emoji="✅"; state_code="PR_CREATED"
                     if [ -n "$json_pr" ]; then
-                        outcome_line="Created PR #$json_pr"
+                        detail="PR #$json_pr"
                     else
-                        outcome_line="⚠️ FIXME: pr_id missing in status.json"
+                        detail="⚠️ FIXME: pr_id missing in status.json"
                     fi
                 elif [ "$json_state" == "NOOP_GOOD" ]; then
-                    bullet="🟢"; emoji="♻️ "
-                    status_line="NOOP (Good)"
-                    outcome_line="$json_outcome"
+                    bullet="🟢"; emoji="♻️ "; state_code="NOOP_GOOD"
+                    detail="$json_outcome"
                 elif [ "$json_state" == "NOOP_BAD" ]; then
-                    bullet="🔴"; emoji="🛑"
-                    status_line="Aborted (NOOP_BAD)"
-                    outcome_line="Requires human intervention: $json_outcome"
+                    bullet="🔴"; emoji="🛑"; state_code="NOOP_BAD"
+                    detail="$json_outcome"
                 else
-                    bullet="🟢"; emoji="✅"
-                    status_line="Completed"
-                    outcome_line="$json_outcome"
+                    bullet="🟢"; emoji="✅"; state_code="$json_state"
+                    detail="$json_outcome"
                 fi
-                echo "  $bullet $emoji $issue: $status_line ($outcome_line)$review_suffix"
+                [ -n "$review_detail" ] && detail="$detail $review_detail"
+                printf "  %s %s %-8s %-12s %s  %s\n" "$bullet" "$emoji" "$issue" "$state_code" "$quality_bar" "$detail"
                 continue
             fi
             
@@ -122,37 +120,33 @@ if [ "$total_dirs" -gt 0 ]; then
             # Legacy heuristics if structured fields are missing
             if [ -z "$status_line" ] || [ -z "$outcome_line" ]; then
                 if grep -qi "fanout-couldnt-complete\|human intervention" "$state"; then
-                    status_line="Aborted"
-                    outcome_line="Requires human intervention"
-                elif grep -qi "already successfully implemented\|already fixed\|closed issue" "$state"; then
-                    status_line="NOOP"
-                    outcome_line="Already fixed/closed"
-                elif grep -qi "permission to push\|user confirmation" "$state"; then
-                    status_line="Completed"
-                    outcome_line="Pending push approval"
-                elif [ -n "$pr" ]; then
-                    status_line="Completed"
-                    outcome_line="Created $pr"
-                else
-                    [ -z "$status_line" ] && status_line="Completed"
-                    [ -z "$outcome_line" ] && outcome_line="Work finished (no explicit PR link)"
-                fi
-            fi
-
-            if [ -n "$status_line" ]; then
-                if [[ "$status_line" == *"Aborted"* ]]; then
+                    state_code="ABORTED"; detail="Requires human intervention"
                     bullet="🔴"; emoji="🛑"
-                elif [[ "$status_line" == *"NOOP"* ]]; then
+                elif grep -qi "already successfully implemented\|already fixed\|closed issue" "$state"; then
+                    state_code="NOOP_GOOD"; detail="Already fixed/closed"
                     bullet="🟢"; emoji="♻️ "
+                elif grep -qi "permission to push\|user confirmation" "$state"; then
+                    state_code="COMPLETED"; detail="Pending push approval"
+                    bullet="🟢"; emoji="✅"
+                elif [ -n "$pr" ]; then
+                    state_code="COMPLETED"; detail="$pr"
+                    bullet="🟢"; emoji="✅"
                 else
+                    state_code="COMPLETED"; detail="Work finished"
                     bullet="🟢"; emoji="✅"
                 fi
-                echo "  $bullet $emoji $issue: $status_line ($outcome_line)$review_suffix"
-            elif [ -n "$pr" ]; then
-                echo "  🟢 ✅ $issue: Completed (with $pr)$review_suffix"
             else
-                echo "  🟢 ✅ $issue: Completed$review_suffix"
+                if [[ "$status_line" == *"Aborted"* ]]; then
+                    state_code="ABORTED"; bullet="🔴"; emoji="🛑"
+                elif [[ "$status_line" == *"NOOP"* ]]; then
+                    state_code="NOOP_GOOD"; bullet="🟢"; emoji="♻️ "
+                else
+                    state_code="COMPLETED"; bullet="🟢"; emoji="✅"
+                fi
+                detail="$outcome_line"
             fi
+            [ -n "$review_detail" ] && detail="$detail $review_detail"
+            printf "  %s %s %-8s %-12s %s  %s\n" "$bullet" "$emoji" "$issue" "$state_code" "$quality_bar" "$detail"
         else
             # Is the bonanza still running or has it ended?
             bonanza_ended=""
@@ -160,9 +154,9 @@ if [ "$total_dirs" -gt 0 ]; then
                 bonanza_ended=$(python3 -c "import json; d=json.load(open('$MAIN_JSON')); print(d.get('fanout_end_time',''))" 2>/dev/null)
             fi
             if [ -n "$bonanza_ended" ]; then
-                echo "  ⚪ 💀 $issue: Abandoned (no status.json)"
+                printf "  ⚪ 💀 %-8s %-12s\n" "$issue" "ABANDONED"
             else
-                echo "  ⚪ ⏳ $issue: Pending"
+                printf "  ⚪ ⏳ %-8s %-12s\n" "$issue" "PENDING"
             fi
         fi
     done
