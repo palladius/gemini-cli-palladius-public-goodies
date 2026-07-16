@@ -50,13 +50,18 @@ Based on your review and the `hitl_threshold` defined in your prompt, make a dec
      - Remove the `CHANGELOG_ADDON.md` file before merging.
      - Commit the VERSION + CHANGELOG.md update as part of the merge.
   4. Squash and merge the PR into `main`.
-  5. Write to `review.json` with `"outcome": "auto_merged"`.
+  5. Write to `review.json` with `"pr_status": "merged"`.
 
 - **If the code requires Human-In-The-Loop (HITL) intervention**:
   1. **Comment on BOTH the PR and the GHI**: Use `gh pr comment <PR_NUMBER>` AND `gh issue comment <ISSUE_NUMBER>` to explain why human review is needed (e.g. "Needs architectural decision on database schema"). Both must be updated so the human sees the context regardless of where they look.
   2. Add the label `hitl-required` to the GHI: `gh issue edit <ISSUE_NUMBER> --add-label "hitl-required"`
-  3. Write to `review.json` with `"outcome": "hitl_required"`.
+  3. Write to `review.json` with `"pr_status": "pending_user_interaction"`.
   4. Do NOT merge the PR. Leave it open for the human.
+
+- **If the code is fundamentally flawed, a duplicate, or a security risk**:
+  1. **Comment on BOTH the PR and the GHI**: Explain why the PR is being rejected.
+  2. **Close the PR**: `gh pr close <PR_NUMBER>`
+  3. Write to `review.json` with `"pr_status": "closed"` and populate `"pr_closed_reason"` appropriately (e.g. `security_breach`, `duplicate`, `failed_tests`, `not_planned`).
 
 ### 5. Output `review.json`
 For EVERY PR you review, you MUST create a `review.json` file in the same directory as the `status.json` (e.g., `.gemini/execution_logs/<UUID>/ghi-123/review.json`).
@@ -68,7 +73,8 @@ The schema must exactly match:
   "review_end_ts": "<timestamp in UTC from date command>",
   "issue_number": "<e.g., 123>",
   "pr_url": "<the GitHub PR URL>",
-  "outcome": "hitl_required | auto_merged",
+  "pr_status": "merged | closed | pending_user_interaction | open",
+  "pr_closed_reason": "duplicate | security_breach | failed_tests | not_planned | N/A",
   "commit_hash": "<short git commit hash on main if merged, otherwise empty string>",
   "code_quality_score": "<integer 0-100, see SCORING RUBRIC below>",
   "files_changed": "<integer from git diff --stat>",

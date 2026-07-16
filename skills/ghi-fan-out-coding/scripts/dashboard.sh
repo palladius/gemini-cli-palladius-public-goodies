@@ -74,12 +74,32 @@ if [ "$total_dirs" -gt 0 ]; then
                     quality_bar=$(printf '%-10s' "$bar_str ${json_quality}%")
                 fi
 
-                if [ "$json_rev_outcome" == "auto_merged" ]; then
-                    review_detail="🕵️ Auto-Merged"
-                elif [ "$json_rev_outcome" == "hitl_required" ]; then
-                    review_detail="🕵️ HITL"
+                json_pr_status=$(python3 -c "import json, sys; d=json.load(open('$review_file')); print(d.get('pr_status', ''))" 2>/dev/null)
+                json_pr_reason=$(python3 -c "import json, sys; d=json.load(open('$review_file')); print(d.get('pr_closed_reason', ''))" 2>/dev/null)
+
+                if [ -n "$json_pr_status" ]; then
+                    if [ "$json_pr_status" == "merged" ]; then
+                        review_detail="🕵️ Merged"
+                    elif [ "$json_pr_status" == "closed" ]; then
+                        if [ -n "$json_pr_reason" ] && [ "$json_pr_reason" != "N/A" ]; then
+                            review_detail="🕵️ Closed ($json_pr_reason)"
+                        else
+                            review_detail="🕵️ Closed"
+                        fi
+                    elif [ "$json_pr_status" == "pending_user_interaction" ]; then
+                        review_detail="🕵️ Pending User"
+                    else
+                        review_detail="🕵️ $json_pr_status"
+                    fi
                 else
-                    review_detail="🕵️ Reviewed"
+                    # Fallback to old 'outcome' field for backwards compatibility
+                    if [ "$json_rev_outcome" == "auto_merged" ]; then
+                        review_detail="🕵️ Auto-Merged"
+                    elif [ "$json_rev_outcome" == "hitl_required" ]; then
+                        review_detail="🕵️ HITL"
+                    else
+                        review_detail="🕵️ Reviewed"
+                    fi
                 fi
             fi
 

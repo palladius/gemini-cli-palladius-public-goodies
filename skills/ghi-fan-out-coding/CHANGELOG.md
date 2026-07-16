@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this skill will be documented in this file.
+## [1.7.0] - 2026-07-15
+### Added
+- 📈 **Granular PR state tracking** (`pr_status` and `pr_closed_reason`) in Phase 2 Review Agent.
+- 📊 Dashboard parses and correctly renders the new `pr_status` strings with appropriate emojis.
+
 ## [1.6.0] - 2026-07-15
 ### Added
 - 🛡️ **Postmortem GHI#89 remediation** (2/3 action items implemented):
