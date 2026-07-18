@@ -3,7 +3,7 @@ name: create-cli-best-practices
 description: Rules to create and maintain a GOOD CLI. Do not use for GUI-only design rules, web apps, or backend REST APIs.
 compatibility: Antigravity / Gemini CLI
 metadata:
-  version: 0.1.11
+  version: 0.1.14
 ---
 
 Implement the CLI in `rust` or `go`.
@@ -44,12 +44,15 @@ Ensure all commands support the following flags:
 Since AI agents are prime consumers of command-line tools, design the CLI to be AI-friendly:
 
 * **Format Options (`--format`):** Support structured output (`json`, `yaml`, `csv`). AIs parse JSON easily, while humans prefer YAML. Allow colors to be disabled via `--no-color` or `NO_COLOR=1`.
-* **Pagination:** Support pagination parameters (e.g., page index and page size) to help agents navigate large data sets without blowing their context window.
+* **Pagination:** Support pagination parameters to help agents and humans navigate large data sets without blowing their context window or screen buffer. Use standard flags like `--max-items 100` and `--page 2` to retrieve the second batch (items 101-200).
 * **Idempotency & exit codes:** Make commands idempotent (e.g., like `kubectl apply`). If a conflict exists, return unique exit codes (like `5` for "already exists") to facilitate programmatic recovery.
 * **Composability (`--quiet` / `-q`):** Output bare values (one per line, no decorative borders, no tables) for easy piping into other commands or shell scripts.
-* **Non-Interactive Bypasses (`--yes` / `--force`):** Allow bypassing human prompt queries. Always fail-fast or auto-bypass prompts when stdin is not a TTY (non-interactive terminals) to avoid hanging the agent.
+* **Non-Interactive Bypasses (`--yes`, `--force`, or `--non-interactive`):** Allow bypassing human prompt queries. Always fail-fast or auto-bypass prompts when `stdin` is not a TTY (non-interactive terminals) to avoid hanging the agent. When a command requires interaction, explicitly document how to bypass it (e.g., "Warning: this part is interactive. To avoid interaction, ensure that `ENV[PINCO]` and `ENV[PALLO]` are set, or use `--force`").
 * **Actionable Errors:** Ensure errors return machine-parseable strings (like `image_not_found` in the JSON/stderr payload), output the failing input, and provide suggestions/remediation commands.
-* **AI-Specific Help (`--ai-help`):** Provide a dedicated help option designed specifically for AI agents (explaining API structures, schemas, integration constraints, and formatting rules). The standard `--help` output should mention the availability of `--ai-help` so agents can easily discover it.
+* **AI-Specific Help (`--ai-help`):** Every CLI tool MUST have both a `--help` (for humans) and `--ai-help` (for AI). The `--ai-help` flag should output Markdown and provide:
+  1. **Uses of the CLI for AI vs Human:** Explain how an AI should use the CLI differently from a human (e.g., advising the AI to call with `--json`, `--format=json | jq`, or `--quiet`).
+  2. **Added Context:** Provide all relevant context in Markdown, such as where the script is located, where it is built, where additional context or documentation can be found, and references to any related skills.
+  The standard `--help` output MUST mention the availability of `--ai-help` so agents can easily discover it.
 
 # LLM Support
 

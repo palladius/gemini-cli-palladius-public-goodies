@@ -1,3 +1,8 @@
+## [0.5.19] - 2026-07-17
+
+- 📖 Docs: Enhanced `create-cli-best-practices` skill with pagination examples (`--max-items`, `--page`), non-interactive TTY bypass details, and `--ai-help` markdown requirements.
+- 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
+
 ## [0.5.18] - 2026-07-15
 
 - ✨ Feat: Added `REVIEW_AGENT_CHECKLIST.md` logic for the Phase 2 Sequential Review Agent.
