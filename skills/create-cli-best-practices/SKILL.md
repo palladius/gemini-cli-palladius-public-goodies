@@ -3,7 +3,7 @@ name: create-cli-best-practices
 description: Rules to create and maintain a GOOD CLI. Do not use for GUI-only design rules, web apps, or backend REST APIs.
 compatibility: Antigravity / Gemini CLI
 metadata:
-  version: 0.1.14
+  version: 0.1.15
 ---
 
 Implement the CLI in `rust` or `go`.
@@ -60,6 +60,119 @@ Do not run LLM calls implicitly or block executions indefinitely on rogue AI com
 
 * `--llm-classify` or similar flags.
 * `--long-running-summarization` to signal high execution latency to the user.
+
+# Terminal Emoji Alignment
+
+Based on lessons learned from the `obpbt` CLI, aligning emojis in tabular terminal layouts can be difficult due to variations in display widths.
+
+## The Problem
+
+Emojis have inconsistent terminal widths. While standard characters use 1 column, most emojis are wide and use 2 columns. However, some emojis (e.g., ⚔, 🛡, ⛏) are "narrow" (1 column). Furthermore, variation selectors (like U+FE0F, which forces emoji presentation) are often appended to narrow emojis, causing standard string length or terminal width calculators to miscount the visual width, breaking column alignment.
+
+## The Solution
+
+To ensure immaculate table and listing alignment when using emojis:
+* **Measure Display Width:** Use standard libraries (like `unicode-width` in Rust or `go-runewidth` in Go) to measure the display width of a string rather than its character count.
+* **Strip Variation Selectors:** Remove U+FE0F variation selectors before measuring the width, as they often confuse width-calculation libraries.
+* **Provide a Padding Helper:** Create a reusable `pad_display(text, target_width)` helper function that calculates the visible width and pads with the exact number of spaces needed.
+* **Swap Narrow Emojis:** Keep a list of known narrow-width emojis and avoid using them in columnar layouts. Swap narrow emojis for wide alternatives whenever possible.
+
+## Golden Code Snippets
+
+### Rust (using `unicode-width`)
+
+First, ensure you have the dependency in `Cargo.toml`:
+
+```toml
+[dependencies]
+unicode-width = "0.1.11"
+```
+
+Then, implement the padding helper:
+
+```rust
+use unicode_width::UnicodeWidthStr;
+
+/// Returns the display width of a string, ignoring the U+FE0F variation selector.
+pub fn display_width(s: &str) -> usize {
+    // Strip the variation selector before calculating width
+    let stripped = s.replace('\u{fe0f}', "");
+    stripped.width()
+}
+
+/// Pads a string to a target display width.
+pub fn pad_display(s: &str, target_width: usize) -> String {
+    let width = display_width(s);
+    if width >= target_width {
+        s.to_string()
+    } else {
+        let padding = " ".repeat(target_width - width);
+        format!("{}{}", s, padding)
+    }
+}
+```
+
+### Go (using `go-runewidth`)
+
+```go
+package main
+
+import (
+	"strings"
+
+	"github.com/mattn/go-runewidth"
+)
+
+// DisplayWidth returns the visible width of a string in a terminal,
+// stripping the U+FE0F variation selector first.
+func DisplayWidth(s string) int {
+	stripped := strings.ReplaceAll(s, "\ufe0f", "")
+	return runewidth.StringWidth(stripped)
+}
+
+// PadDisplay pads a string with spaces to reach the target width.
+func PadDisplay(s string, targetWidth int) string {
+	width := DisplayWidth(s)
+	if width >= targetWidth {
+		return s
+	}
+	padding := strings.Repeat(" ", targetWidth-width)
+	return s + padding
+}
+```
+
+### Output Example
+
+Before (broken alignment due to standard char counting):
+```text
+Item        Status
+Sword ⚔️    Equipped
+Shield 🛡️   Unequipped
+Axe 🪓       Unequipped
+```
+
+After (using padding helpers and wide replacements):
+```text
+Item        Status
+Sword 🗡️     Equipped
+Shield 🏰   Unequipped
+Axe 🪓      Unequipped
+```
+
+## Bad Emoji Database
+
+The following emojis are known to be narrow (1 col) or cause width calculation issues due to variation selectors. Avoid them in aligned columns and use their wide (2 col) alternatives:
+
+| Concept | Bad (Narrow / 1 col) | Good Alternative (Wide / 2 cols) |
+|---|---|---|
+| Sword / Attack | ⚔ (U+2694) | 🗡 (U+1F5E1) |
+| Shield / Defense | 🛡 (U+1F6E1) | 🏰 (U+1F3F0) |
+| Warning / Alert | ⚠ (U+26A0) | 🚨 (U+1F6A8) |
+| Time / Clock | ⌚ (U+231A) | ⏰ (U+23F0) |
+| Checkmark | ✔ (U+2714) | ✅ (U+2705) |
+| Cross / X | ✖ (U+2716) | ❌ (U+274C) |
+| Star | ⭐ (U+2B50) | 🌟 (U+1F31F) |
+| Pickaxe | ⛏ (U+26CF) | 🪓 (U+1FA93) |
 
 # Readings
 
