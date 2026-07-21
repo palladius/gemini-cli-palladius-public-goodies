@@ -1,9 +1,10 @@
 ---
 name: carlessian-obsidian
-description: "💛 Expert guide for interacting with Riccardo's Obsidian vault (The Carlessian Vault)."
+description: "💛 Expert guide for interacting with Riccardo's Obsidian vault (The Carlessian Vault). (Includes TODOs and CLI setup)"
 compatibility: Gemini CLI
 metadata:
-  version: 0.2
+  version: 1.0.0
+tags: Lobby
 ---
 # Carlessian Obsidian
 
@@ -14,13 +15,13 @@ This skill provides the knowledge and workflows to interact with your Obsidian v
 - **Path**: Usually `~/obsidian-pbt/` or similar.
 - **Inbox**: New ideas or quick notes go into `Inbox/`.
 - **Diary**: Daily logs are located in `Diary/YYYY-MM-DD.md`.
+- **TODOs**: The canonical to-do list is located at `TODOs/TODOz.md` or `Computers/COMPUTER_NAME/TODOs.md`.
 
 ## Key Workflows
 
 ### 1. Adding a Daily Entry
 To add a quick note to today's diary entry:
 ```bash
-# Example script or manual append
 date_today=$(date +%Y-%m-%d)
 echo "- $(date +%H:%M) - My new entry" >> ~/obsidian-pbt/Diary/${date_today}.md
 ```
@@ -31,47 +32,41 @@ Quick notes captured via mobile or other tools often land in `Inbox/`.
 ls ~/obsidian-pbt/Inbox/
 ```
 
+### 3. Riccardo's To-Do Management Protocol
+When managing To-Do lists:
+1. Target File: `~/obsidian-pbt/TODOs/TODOz.md`. For computer-specific tasks, use `Computers/HOSTNAME/TODOs.md`.
+2. Find or Create: If not exists, create with title `# Riccardo's To-Do List`.
+3. Date Heading: Check if `## YYYY-MM-DD` exists for today. If not, prepend it below the main title.
+4. Format: `[PRIORITY] - [ ] [TASK_DESCRIPTION] [TAGS]`
+   * **Priority Emoji:** 🔴 `Red` (Urgent), 🟠 `Orange` (High), 🟡 `Yellow` (Medium), 🟢 `Green` (Low), ⚪️ `White` (Default)
+   * **Category Tags:** `#salute`, `#lavoro`, `#casa`
+   * **Emojis:** 🦞 `Lobby` (Lobby-related), 🧑‍⚕️ `Health`, 💻 `Tech`.
+
+### 4. Logging event on a computer
+To log an event for computer HOSTNAME, find or create `Computers/HOSTNAME/log.md`:
+* Ensure the FQDN is on top of the note `Computers/HOSTNAME.md`
+* Reverse append a bullet point with:
+  `* YYYYMMDD HH:MM [YOUR_EMOJI] [AGENT_NAME] Short meaningful description.`
+* YOUR_EMOJI: 🦞 for Openclaw/Lobby, 🛰 for Antigravity, or Gemini sign. Sign yourself as Lobby unless obvious.
+
 ## Tools
 
-### Obsidian Headless CLI
-Used for syncing the vault on machines without a GUI.
+### Agent Obsidian Plugins
+As an agent, you have access to the newly installed `obsidian-skills` plugin (including `obsidian-cli`, `defuddle`, and `json-canvas`) to programmatically manage notes, extract web content, and parse canvas files in this vault.
+
+### Obsidian Headless CLI (obsidian-headless)
+For machines without a GUI:
 ```bash
-# Sync the vault
+npm install -g obsidian-headless
+ob login --email palladiusbonton@gmail.com
+ob sync-setup --vault PBTPersonalSync --path ~/obsidian-pbt/
 ob sync --path ~/obsidian-pbt/
 ```
 
-### Future Automation
-Additional scripts for obsidian-related tasks can be found (or should be placed) in the `scripts/` subdirectory of this skill.
-
-## Riccardo's Configuration
-- **Primary Vault Name**: PBTPersonalSync
-- **Default Path**: `~/obsidian-pbt/`
-
 ## Carlessian Conventions
 
-* **Universal Router:** For general Harness logic, media generation, and script routing, always consult the `carlessian-harness-tool` skill (via `agc skills harness` or reading `~/git/gemini-cli-palladius-private-goodies/skills/carlessian-harness-tool/SKILL.md`) before executing complex tasks.
-* Generic TODOs should be characterized under `TODOz.md`
-* Try to fit todos by computer in which they're given to you (hostname or Pixel 10, ... under Computers/)
-* When something relevant happens on a computer (eg Riccardo installs a package, or a functionality, or changes something,) its IMPORTANT that you **log** it.
-* If it's related with my health, like doctor visit or anything from pedicure to physio to dentist, put it under `Salute/`.
-* If you see duplication, or something that can be done better (eg a computer-todo in main todo, a log in a computer MD and not in a subfolder, ..), proactively propose a fix to Riccardo. Things dont fix themselves alone: show the inconsistency you saw, and propose your favorite move forward (eg "I would cut this info from here to there" or "I'd remove this dupe from X and leave it in Y") so user can approve or cross correct.
-
-### Logging event on a computer
-
-To log an event for cmputer HOSTANEM, find or create the `Computers/HOSTNAME.md` (dont use FQDN for brevity).
-* Ensure the FQDN is on top of the note  `Computers/HOSTNAME.md` 
-* Add a `Computers/HOSTNAME/log.md` if doesnt exist.
-* Add on top (reverse append) a bullet point line with:
-
-```
-* `YYYYMMDD HH:MM` [YOUR_EMOJI] `[AGENT_NAME]` Line that you want to log, and maybe details on how you got this (did Riccardo tell you? Did Riccardo tell you write it, or it told you soemthing else and you decided this was relevant?). Keep it short but still meaningful
-```
-
-* YOUR_EMOJI should be your personality, a lobster if you're openclaw, or a Gemini zodiac sign if you're Gemini, or 🛰 if you're AntiGravity.
-* AGENT_NAME should be in backticks and should be your program, to separate from a human: Gemini CLI, Antigravity, Lobby, Gamberone, or whatever fits best. IT's the agent name.
-
-# Obsidian path
-
-Once you find where obsidian is, do two things:
-1. Ensure there's a PATH with `CARLESSIAN_OBSIDIAN_PATH` in .bashrc pointing to the rea path. 
-2. Usually this path is `~/obsidian-pbt`. If this folder doesn't exist, create it as a symlink to the original path so our scripts can depend on this.
+* **Universal Router:** Consult `carlessian-harness-tool` before executing complex tasks.
+* Try to fit todos by computer in which they're given to you (under Computers/).
+* If it's related with my health, put it under `Salute/`.
+* Proactively propose fixes for deduplication or inconsistencies.
+* Ensure `.bashrc` has `CARLESSIAN_OBSIDIAN_PATH` pointing to the real path. If `~/obsidian-pbt` doesn't exist, create it as a symlink to the original path.
