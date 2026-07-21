@@ -72,7 +72,7 @@ def validate_skill(skill_dir):
                 changelog_content = f.read()
                 version_pattern = rf'##\s+.*{re.escape(version)}.*'
                 if not re.search(version_pattern, changelog_content):
-                    warnings.append(f"Version {version} from SKILL.md not found in {changelog_path}")
+                    errors.append(f"Version {version} from SKILL.md not found in {changelog_path}: make sure you add it there before you move on and forget")
         except Exception:
             warnings.append(f"Could not read {changelog_path}")
     

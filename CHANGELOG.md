@@ -1,3 +1,7 @@
+## [0.5.20] - 2026-07-21
+
+- 🐛 Fix: `validate_skills.py` now treats "version not found in CHANGELOG.md" as an `[ERROR]` instead of `[WARN]`, so it actually fails the test and reminds you to update the changelog.
+
 ## [0.5.19] - 2026-07-17
 
 - 📖 Docs: Enhanced `create-cli-best-practices` skill with pagination examples (`--max-items`, `--page`), non-interactive TTY bypass details, and `--ai-help` markdown requirements.
