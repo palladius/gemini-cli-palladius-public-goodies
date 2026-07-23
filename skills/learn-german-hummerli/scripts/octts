@@ -45,7 +45,7 @@ TMP_FILE="$HOME/.openclaw/workspace/tmp/${VOICE_NAME}_${SAFE_TEXT}_$(date +%M%S)
 echo "🎙️  Synthesizing with $VOICE (speed: $SPEED)..."
 echo "📂  File: $(basename "$TMP_FILE")"
 
-cd /home/riccardo/git/openclaw || exit 1
+cd "${OPENCLAW_DIR:-$HOME/openclaw}" || exit 1
 
 if [[ "$VOICE" == "echo" || "$VOICE" == "onyx" || "$VOICE" == "alloy" || "$VOICE" == "shimmer" ]]; then
     # OpenAI Path

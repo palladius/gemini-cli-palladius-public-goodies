@@ -113,7 +113,7 @@ Follow these steps exactly:
 7. **End Forensic Telemetry**
    - Run the state manager script to stamp the end time into your log file:
      ```bash
-     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh sub_end --issue <ISSUE_NUMBER> --uuid <UUID>
+     bash $SKILL_DIR/scripts/state_manager.sh sub_end --issue <ISSUE_NUMBER> --uuid <UUID>
      ```
 
 8. **Archive Transcript** *(final step)*
@@ -124,7 +124,7 @@ Follow these steps exactly:
      ```
    - Then run the command audit script to flag any dangerous commands:
      ```bash
-     python3 ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/extract_command_history.py \
+     python3 $SKILL_DIR/scripts/extract_command_history.py \
         .gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/transcript.jsonl --audit \
         > .gemini/execution_logs/<UUID>/ghi-<ISSUE_NUMBER>/command_history.txt
      ```

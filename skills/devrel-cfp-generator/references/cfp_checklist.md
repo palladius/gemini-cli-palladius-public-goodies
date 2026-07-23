@@ -26,4 +26,4 @@ Follow these three phases rigorously to ensure a high-quality CFP.
 When the CFP is successfully submitted:
 - [ ] Ask the user to update their internal ticketing system (e.g., Buganizer) to track the proposal.
 - [ ] Update the `apps-portfolio` project with this application and the skill.
-- [ ] Update the Bio Sessions GH repo (usually located at `~/git/my-sessions-and-bio/`).
+- [ ] Update the Bio Sessions GH repo (the sessions-and-bio repository).

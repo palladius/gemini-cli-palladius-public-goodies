@@ -146,7 +146,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="Pull articles from Medium RSS XML feed and save them as Markdowns")
     parser.add_argument("rss_file", nargs="?", help="Path to local RSS XML file. If not provided, will try fetching online or using standard path.")
-    parser.add_argument("--dest-dir", default="/usr/local/google/home/ricc/git/gemini-cli-g3/skills/article-creator/references/personal-styie/riccardo-carlesso/", help="Destination directory for markdown files.")
+    parser.add_argument("--dest-dir", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'references', 'personal-styie', 'riccardo-carlesso'), help="Destination directory for markdown files.")
     args = parser.parse_args()
 
     os.makedirs(args.dest_dir, exist_ok=True)
@@ -170,9 +170,9 @@ def main():
             print("✅ Successfully fetched RSS feed online.")
         except Exception as e:
             print(f"⚠️ Failed to fetch feed online: {e}")
-            # Try fallback to standard local path from the workspace/brain
-            fallback_path = "/usr/local/google/home/ricc/.gemini/antigravity-cli/brain/0688c6ce-80ce-4bfe-b8b7-6cdd17ce1431/.system_generated/steps/38/content.md"
-            if os.path.exists(fallback_path):
+            # No fallback — removed hardcoded path
+            fallback_path = None
+            if fallback_path and os.path.exists(fallback_path):
                 print(f"📖 Reading RSS feed from fallback file: {fallback_path}")
                 with open(fallback_path, 'r', encoding='utf-8') as f:
                     xml_content = f.read()

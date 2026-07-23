@@ -24,7 +24,7 @@ options = {
   platform: 'TBD',
   publish_date: (Date.today + 7).strftime("%Y-%m-%d"),
   dry_run: false,
-  articles_dir: '/usr/local/google/home/ricc/git/ricclife-with-gemini-pvt/work/articles'
+  articles_dir: ENV.fetch('ARTICLES_DIR', File.join(Dir.home, 'articles'))
 }
 
 OptionParser.new do |opts|

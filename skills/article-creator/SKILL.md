@@ -10,7 +10,7 @@ tags: devrel, article, publishing, ricc.rocks, medium
 This skill guides the preparation, compilation, validation, and post-publication steps for articles targeted to **ricc.rocks** and **Medium**.
 
 > [!NOTE]
-> For **Riccardo**, new articles and drafts should always be initialized and managed under the root articles directory: [work/articles/](file:///usr/local/google/home/ricc/git/ricclife-with-gemini-pvt/work/articles/) (which is the parent folder relative to individual article projects).
+> For **Riccardo**, new articles and drafts should always be initialized and managed under the root articles directory configured via `$ARTICLES_DIR` environment variable (defaults to `work/articles/` in the current project).
 
 ## 📐 Authoring & Pipeline Rules
 
@@ -56,6 +56,6 @@ Verify that generated HTML builds correctly and links are functional:
 3.  Commit and push to `ricc.rocks` repository to trigger deployment.
 
 ### Step 5: Portfolio & Social Promotion
-1.  Run the `add-to-portfolio-app` skill to register this new post in `~/git/vibecoding/apps-portfolio`.
+1.  Run the `add-to-portfolio-app` skill to register this new post in the apps-portfolio project directory.
 2.  Update the `my-sessions-and-bio` repository listings.
 3.  Draft and schedule social announcements on LinkedIn, Bluesky, and Twitter using Buffer.

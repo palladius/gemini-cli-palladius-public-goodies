@@ -38,7 +38,7 @@ def main():
     octts_path = os.path.join(base_dir, "octts-german")
     
     if not os.path.exists(octts_path):
-        # If this fails, try also ~/git/gemini-cli-palladius-public-goodies/skills/learn-german-hummerli/scripts/octts
+        # If this fails, try also $SKILL_DIR/scripts/octts
         octts_path = os.path.expanduser("~/.openclaw/workspace/bin/octts")
     
     if not os.path.exists(octts_path):

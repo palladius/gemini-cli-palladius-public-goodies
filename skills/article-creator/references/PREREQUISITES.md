@@ -12,4 +12,4 @@ Before creating a new article folder structure, the agent or user MUST verify an
 - [ ] **PublishDate**: Target publication date (defaults to 7 days from now).
 
 ## 2. Environment Validation
-- [ ] **Articles Directory**: Verify that `/usr/local/google/home/ricc/git/ricclife-with-gemini-pvt/work/articles` exists on the local filesystem.
+- [ ] **Articles Directory**: Verify that the articles directory (set via `$ARTICLES_DIR` env var) exists on the local filesystem.

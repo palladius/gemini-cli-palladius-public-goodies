@@ -152,7 +152,7 @@ if [ -s "$TMP_RAW" ]; then
             openclaw message send --channel "$CHANNEL" $ACCOUNT_ARG --target "$TARGET" --media "$FINAL_MEDIA"
         else
             # Fallback to local path if not in PATH
-            ~/git/openclaw/openclaw.mjs message send --channel "$CHANNEL" $ACCOUNT_ARG --target "$TARGET" --media "$FINAL_MEDIA"
+            "${OPENCLAW_DIR:-$HOME/openclaw}"/openclaw.mjs message send --channel "$CHANNEL" $ACCOUNT_ARG --target "$TARGET" --media "$FINAL_MEDIA"
         fi
         rm -f "$TMP_FILE" "$OGG_FILE"
         echo "✅ Done!"

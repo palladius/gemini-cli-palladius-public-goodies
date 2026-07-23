@@ -23,7 +23,7 @@ Activate this skill when the user wants to add a new project to their portfolio 
 
 ## Instructions for Apps Portfolio
 
-1.  Go to `~/git/vibecoding/apps-portfolio` and read GEMINI.md instructions there. Basically, this means adding the new article/info onto `etc/data.yaml` and running a script to update the sqlite DB. 
+1.  Go to the apps-portfolio project directory (configured via `$PORTFOLIO_APP_DIR` env var) and read GEMINI.md instructions there. Basically, this means adding the new article/info onto `etc/data.yaml` and running a script to update the sqlite DB. 
 2.  Run tests -> `git commit` -> `git push`.
 3.  Notify user to look in 5 minutes for a new page in https://portfolio-app-272932496670.europe-west1.run.app/ (better if you say which page)
 
@@ -31,7 +31,7 @@ Activate this skill when the user wants to add a new project to their portfolio 
 
 I also have a github repo with a list of my articles and event to which I go.
 
-* go to `~/git/my-sessions-and-bio/`
+* go to the sessions-and-bio repository
 * Select the most pertinent file: `code-projects.md`, `oss-contributions.md`, `talks.md` , or `workshops.md`.
 * Add the info to that file in proper datetime order, English language, and with the right.
 * If important info is missing, prompt user for it.
@@ -49,5 +49,5 @@ If the repo online doesn't show data, ensure user has:
 
 ## Resources
 
-- `~/git/vibecoding/apps-portfolio/`. In particular, read well its `GEMINI.md`: plenty of non obvious dependencies in there.
-- `~/git/my-sessions-and-bio/`
+- The apps-portfolio project directory (configured via `$PORTFOLIO_APP_DIR` env var). In particular, read well its `GEMINI.md`: plenty of non obvious dependencies in there.
+- The sessions-and-bio repository

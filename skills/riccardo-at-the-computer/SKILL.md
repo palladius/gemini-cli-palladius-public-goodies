@@ -30,5 +30,5 @@ A script exists to check the to-do file and send a desktop notification if there
 To ensure Riccardo is notified about open to-dos, the notification script is executed periodically via a cron job.
 
 - **Frequency:** Every 30 minutes (`*/30 * * * *`).
-- **Command Executed:** `/Users/riccardo/.openclaw/workspace/bin/pupurabbux-notifications.sh`
+- **Command Executed:** `$HOME/.openclaw/workspace/bin/pupurabbux-notifications.sh`
 - **Purpose:** To automate "nagging" for open to-do items.

@@ -9,7 +9,7 @@ Follow these steps exactly:
 1. **Pre-Flight Check**
    - If a previous bonanza UUID exists, run the dashboard to review the current state:
      ```bash
-     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/dashboard.sh <PREVIOUS_UUID>
+     bash $SKILL_DIR/scripts/dashboard.sh <PREVIOUS_UUID>
      ```
    - This gives you context on what was already done, what's pending, and what failed.
 
@@ -18,7 +18,7 @@ Follow these steps exactly:
    - Extract the first 8 characters to form the `<SHORT_UUID>`.
    - Run the state manager script to initialize the central `main.json` forensic log:
      ```bash
-     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh main_start --uuid <UUID> --short-uuid <SHORT_UUID> --custom-prompt "<any extra instructions you received from the user>" --harness antigravity --hitl-threshold 80
+     bash $SKILL_DIR/scripts/state_manager.sh main_start --uuid <UUID> --short-uuid <SHORT_UUID> --custom-prompt "<any extra instructions you received from the user>" --harness antigravity --hitl-threshold 80
      ```
    - **Persist the execution logs in git** so they survive branch switches (`.gemini/` is typically gitignored):
      ```bash
@@ -48,7 +48,7 @@ Follow these steps exactly:
    - For *every* target GitHub issue found, tag it by adding a label: `gh issue edit <#> --add-label "fan_out_<SHORT_UUID>"`
    - Before spawning the subagent, initialize its forensic log file:
      ```bash
-     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh sub_start --issue <ISSUE_NUMBER> --uuid <UUID> --short-uuid <SHORT_UUID> --custom-prompt "<custom instructions for this subagent>"
+     bash $SKILL_DIR/scripts/state_manager.sh sub_start --issue <ISSUE_NUMBER> --uuid <UUID> --short-uuid <SHORT_UUID> --custom-prompt "<custom instructions for this subagent>"
      ```
    - Use your `invoke_subagent` tool to spawn a separate subagent for each issue.
    - **Set the subagent `Role`** to `GHI #<ISSUE_NUMBER> Resolver` so each agent is distinguishable in the UI (not just generic "GHI Resolver").
@@ -78,5 +78,5 @@ Follow these steps exactly:
 10. **Finalize Bonanza**
    - Run the state manager script to stamp the end time in the central forensic log. Ensure you pass the URL of the Meta Issue you created in Step 8:
      ```bash
-     bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh main_end --uuid <UUID> --retro-ghi "<META_GHI_URL>"
+     bash $SKILL_DIR/scripts/state_manager.sh main_end --uuid <UUID> --retro-ghi "<META_GHI_URL>"
      ```

@@ -1,3 +1,7 @@
+## [0.5.21] - 2026-07-23
+
+- 🧹 Skill Portability & Cleanup: Removed hardcoded personal paths in `SKILL.md` files across public goodies, added `buffer-social-media-best-practices` skill -- by gc-skillume-bot-v0_2
+
 ## [0.5.20] - 2026-07-21
 
 - 🐛 Fix: `validate_skills.py` now treats "version not found in CHANGELOG.md" as an `[ERROR]` instead of `[WARN]`, so it actually fails the test and reminds you to update the changelog.

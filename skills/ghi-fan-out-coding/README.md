@@ -11,7 +11,7 @@ Using this skill is incredibly simple. Just follow these steps:
 ### Step 1: Navigate to your code
 Open your terminal and `cd` into the repository you want to fix.
 ```bash
-cd ~/git/my-awesome-repo
+cd /path/to/your/repo
 ```
 
 ### Step 2: Start a new AI session

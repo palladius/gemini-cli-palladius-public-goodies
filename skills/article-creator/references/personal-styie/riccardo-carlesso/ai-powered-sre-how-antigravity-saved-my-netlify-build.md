@@ -46,7 +46,7 @@ Sounds familiar? Luckily I have **Antigravity**, **Gemini CLI**, and a number of
 *You’ll never guess my nationality from my PS1 ;)*
 
 ```
-$ cd ~/git/rubycon.it/
+$ cd /path/to/rubycon.it/
 $ antigravity .
 ```
 

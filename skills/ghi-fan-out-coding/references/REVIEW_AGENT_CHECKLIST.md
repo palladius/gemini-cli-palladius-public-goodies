@@ -19,7 +19,7 @@ You can find the skill version in `SKILL.md` and the harness/username in `main.j
 ### 1. Initialize Review Phase
 Log the start of the review phase in the central telemetry:
 ```bash
-bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh review_start --uuid <UUID>
+bash $SKILL_DIR/scripts/state_manager.sh review_start --uuid <UUID>
 ```
 
 ### 2. Identify "Ready for Review" PRs
@@ -115,5 +115,5 @@ Repeat Steps 3-5 until all PRs in the queue have been reviewed.
 ### 6. Finalize Review Phase
 Log the completion of the review phase in the central telemetry:
 ```bash
-bash ~/git/gemini-cli-palladius-public-goodies/skills/ghi-fan-out-coding/scripts/state_manager.sh review_end --uuid <UUID>
+bash $SKILL_DIR/scripts/state_manager.sh review_end --uuid <UUID>
 ```
