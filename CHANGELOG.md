@@ -1,3 +1,6 @@
+## [0.5.22] - 2026-08-22
+- Added public `carlessian-article` skill.
+
 ## [0.5.21] - 2026-07-23
 
 - 🧹 Skill Portability & Cleanup: Removed hardcoded personal paths in `SKILL.md` files across public goodies, added `buffer-social-media-best-practices` skill -- by gc-skillume-bot-v0_2
