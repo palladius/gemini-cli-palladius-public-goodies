@@ -1,0 +1,86 @@
+[
+  {
+    "name": "GDG & Google Events Zurich",
+    "url": "https://community.dev/gdg-cloud-zurich/",
+    "rss": null,
+    "category": "tech_google",
+    "notes": "Google Developer Groups Zurich & GDG Cloud Zurich meetups, talks, workshops at Europaallee"
+  },
+  {
+    "name": "Zurich AI & Machine Learning Meetups",
+    "url": "https://www.meetup.com/find/?keywords=ai&location=ch--Z%C3%BCrich",
+    "rss": null,
+    "category": "tech_ai",
+    "notes": "Generative AI Zurich, AI Agents, Machine Learning Zurich, Applied AI meetups"
+  },
+  {
+    "name": "AWS User Group Zurich / Switzerland",
+    "url": "https://www.meetup.com/find/?keywords=aws&location=ch--Z%C3%BCrich",
+    "rss": null,
+    "category": "tech_aws",
+    "notes": "AWS User Group Switzerland, Cloud architecture, Serverless & Bedrock events"
+  },
+  {
+    "name": "Microsoft & Azure Community Zurich",
+    "url": "https://www.meetup.com/find/?keywords=microsoft+azure&location=ch--Z%C3%BCrich",
+    "rss": null,
+    "category": "tech_microsoft",
+    "notes": "Azure Zurich User Group, Microsoft Reactor, Copilot & OpenAI Switzerland meetups"
+  },
+  {
+    "name": "NVIDIA & High-Performance AI Zurich",
+    "url": "https://www.meetup.com/find/?keywords=nvidia&location=ch--Z%C3%BCrich",
+    "rss": null,
+    "category": "tech_nvidia",
+    "notes": "NVIDIA GTC watch parties, CUDA, GPU acceleration, LLM inference, Robotics Zurich"
+  },
+  {
+    "name": "ETH AI Center & University Tech Events",
+    "url": "https://ai.ethz.ch/news-and-events/events.html",
+    "rss": null,
+    "category": "tech_eth",
+    "notes": "ETH AI Center public colloquiums, robotics demos, academic AI research talks"
+  },
+  {
+    "name": "Eventbrite Zurich Tech & Science",
+    "url": "https://www.eventbrite.ch/d/switzerland--zurich/science-and-tech--events/",
+    "rss": null,
+    "category": "tech_general",
+    "notes": "Tech conferences, startup pitch nights, hackathons, and AI demo days in Zurich"
+  },
+  {
+    "name": "Istituto Italiano di Cultura di Zurigo (IIC)",
+    "url": "https://iiczurigo.esteri.it/it/gli_eventi/",
+    "rss": null,
+    "category": "italian_culture",
+    "notes": "Official Italian cultural events, literature, cinema, conferences, and art in Zurich"
+  },
+  {
+    "name": "Società Dante Alighieri Zurigo",
+    "url": "https://www.dantealighieri.ch/eventi/",
+    "rss": null,
+    "category": "italian_culture",
+    "notes": "Italian literary events, cultural lectures, book clubs, and language gatherings in Zurich"
+  },
+  {
+    "name": "Filmpodium & Arthouse Cinemas (Italian Screenings)",
+    "url": "https://www.filmpodium.ch/",
+    "rss": null,
+    "category": "cinema_italian",
+    "notes": "Classic and contemporary Italian cinema screenings in original version (Centro / Nüschelerstrasse)"
+  },
+  {
+    "name": "Museum Rietberg Agenda (Enge)",
+    "url": "https://rietberg.ch/en/events",
+    "rss": null,
+    "category": "enge_local",
+    "notes": "Exhibitions, park concerts, guided tours, and family workshops directly in Enge"
+  },
+  {
+    "name": "Quartierverein Enge / Seebad Enge",
+    "url": "https://www.enge.ch/",
+    "rss": null,
+    "category": "enge_local",
+    "notes": "Neighborhood events, local markets, and lakefront activities in Kreis 2 / Enge"
+  }
+]
