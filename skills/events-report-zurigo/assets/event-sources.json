@@ -82,5 +82,12 @@
     "rss": null,
     "category": "enge_local",
     "notes": "Neighborhood events, local markets, and lakefront activities in Kreis 2 / Enge"
+  },
+  {
+    "name": "Swiss {ai} Weeks (Events & Hackathons)",
+    "url": "https://ai-weeks.ch/events?tag=Hackathon",
+    "rss": null,
+    "category": "tech_ai_swiss",
+    "notes": "Swiss {ai} Weeks official portal: hackathons, GenAI, agentic AI, and Swiss-wide tech competitions across Zurich, Lausanne, Geneva, and Lugano"
   }
 ]
