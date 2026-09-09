@@ -1,3 +1,8 @@
+## [0.5.21] - 2026-09-09
+
+- ✨ Feat: Added `marp-slides` skill with layout boundary guidelines, overflow detection methods, and `scripts/preview_slide.sh` helper to render slide preview artifacts for Riccardo.
+- 🚀 Bumped version to 0.5.21.
+
 ## [0.5.20] - 2026-08-24
 
 - 📦 Transformed extension into official Agent Plugin (v1.0.0 schema) via `plugin.json`.
