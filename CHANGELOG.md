@@ -1,3 +1,8 @@
+## [0.5.22] - 2026-09-09
+
+- ✨ Feat: Added `rails8app-billing` skill and Ruby script `rails8app_billing.rb` to estimate real-time GCP incurred costs and remaining budget for attendees with \$5.00 GDP credits.
+- 🚀 Bumped version to 0.5.22.
+
 ## [0.5.21] - 2026-09-09
 
 - ✨ Feat: Added `marp-slides` skill with layout boundary guidelines, overflow detection methods, and `scripts/preview_slide.sh` helper to render slide preview artifacts for Riccardo.
