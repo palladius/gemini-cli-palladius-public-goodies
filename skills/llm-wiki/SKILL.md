@@ -6,10 +6,11 @@ author: Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  hermes:
-    tags: [wiki, knowledge-base, research, notes, markdown, rag-alternative]
-    category: research
-    related_skills: [obsidian, arxiv]
+  version: "2.1.0"
+  author: "Hermes Agent"
+  hermes_category: "research"
+  hermes_tags: "wiki, knowledge-base, research, notes, markdown, rag-alternative"
+  hermes_related_skills: "obsidian, arxiv"
 ---
 
 # Karpathy's LLM Wiki

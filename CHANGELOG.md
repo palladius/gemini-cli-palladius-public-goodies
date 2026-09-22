@@ -1,3 +1,8 @@
+## [0.5.23] - 2026-09-22
+
+- 🐛 Fix: Flatten nested hermes metadata in `skills/llm-wiki/SKILL.md` to comply with `@govcraft/agent-skills` schema validator.
+- 🚀 Bumped version to 0.5.23 by `gc-skillume-bot-v0_2`.
+
 ## [0.5.22] - 2026-09-09
 
 - ✨ Feat: Added `rails8app-billing` skill and Ruby script `rails8app_billing.rb` to estimate real-time GCP incurred costs and remaining budget for attendees with \$5.00 GDP credits.
