@@ -144,24 +144,62 @@ These bugs were discovered the hard way during the Modena deck. Don't repeat the
 
 ---
 
-### ❌ `<table>` row borders visible even with `border-collapse: collapse`
+### ❌ `border: none` on `<td>` — Marp OVERRIDES it
 
-**Bug**: Even with `border-collapse: collapse` on the table, `<td>` cells show grey dividing lines from the Marp theme's default table CSS.
+**Bug**: Even `border: none !important` on `<td>` is overridden by the Marp theme's table CSS. Grey dividing lines between rows persist regardless.
 
-**Fix**: Add `border: none;` explicitly to every `<td>`.
+**Fix**: Use the **camouflage trick** — set the border to the same color as the background:
+
+```html
+<td style="border: 2px solid #0f172a;">...</td>
+```
+
+The border exists but is invisible because it matches the dark bg. Marp cannot override a color it doesn't know about.
 
 ---
 
-### ✅ Safe HTML pattern for dark code blocks in Marp
+### ❌ Too much row spacing — Marp table default padding is loose
+
+**Bug**: Default `<td>` padding in Marp tables is several pixels, making rows look spread out, not like a terminal.
+
+**Fix**: Set `padding: 0` on every `<td>` and add `line-height: 1.5` on the `<table>`:
+
+```html
+<table style="line-height: 1.5; ...">
+<tr><td style="padding: 0; ...">line 1</td></tr>
+<tr><td style="padding: 0; ...">line 2</td></tr>
+</table>
+```
+
+---
+
+### ✅ Safe HTML pattern for dark code blocks in Marp (FINAL)
 
 ```html
 <table style="background: #0f172a; border-radius: 10px; padding: 10px 18px;
               font-family: 'JetBrains Mono', monospace; font-size: 0.62em;
-              width: 100%; border-collapse: collapse; border: 1px solid #1e293b;">
-<tr><td style="color: #475569; padding: 2px 0; background: #0f172a; border: none;"># comment</td></tr>
-<tr><td style="color: #7dd3fc; padding: 2px 0; background: #0f172a; border: none;">KEY=value</td></tr>
+              line-height: 1.5; width: 100%; border-collapse: collapse;
+              border: 1px solid #1e293b;">
+<tr><td style="color: #475569; padding: 0; background: #0f172a; border: 2px solid #0f172a;"># comment</td></tr>
+<tr><td style="color: #7dd3fc; padding: 0; background: #0f172a; border: 2px solid #0f172a;">KEY=<span style="color:#86efac;">value</span></td></tr>
 </table>
 ```
 
-✅ No `<pre>`, no `<span>` inside `<pre>`, no HTML comments before the tag, explicit td background, explicit td border: none.
+✅ `border: 2px solid <same-as-bg>` (not `none`), `padding: 0`, `line-height: 1.5`, explicit bg on td, no HTML comments.
 
+---
+
+## 🔍 Debugging: Export a Single Slide to PNG
+
+To visually verify a single slide without opening a browser:
+
+```bash
+cd slides/   # where node_modules/@marp-team lives
+npx @marp-team/marp-cli@latest path/to/slide.md \
+  --allow-local-files --html --images png --image-scale 2 \
+  -o /tmp/slide_preview.png
+```
+
+Then open `/tmp/slide_preview.001.png` to see the rendered output.
+
+> **Note**: Local images (`src="images/foo.png"`) may not resolve unless the slide is compiled from inside the `slides/` directory where relative paths match. Use this for layout/color checks, not full media checks.
