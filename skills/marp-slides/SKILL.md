@@ -86,3 +86,82 @@ When running `marp` directly via CLI:
 - `--allow-local-files`: **Mandatory** when slides reference local assets (`images/*.png`, `.svg`). Without this flag, Marp CLI blocks local file access.
 - `--html`: Enables HTML tags (`<div>`, `<style>`, `<img>`, etc.) inside the markdown document.
 - `--images png`: Renders each slide into a standalone numbered image (`<name>.001.png`, `<name>.002.png`, ...).
+
+---
+
+## 🐛 HTML Rendering Gotchas (hard-won, Oct 2026)
+
+These bugs were discovered the hard way during the Modena deck. Don't repeat them.
+
+### ❌ HTML comments before block tags → Marp code-block leak
+
+```markdown
+<!-- My comment -->
+<div style="...">content</div>
+```
+
+**Bug**: Marp treats `<!-- comment -->` immediately before a `<div>` as a fenced code block delimiter. The entire following HTML is rendered as escaped text (`&lt;div&gt;`) instead of HTML.
+
+**Fix**: Remove ALL inline HTML comments from the slide body. Only the final `<!-- speaker notes -->` at the very end of the slide is safe (Marp treats it as notes).
+
+---
+
+### ❌ `<pre>` + `<span>` → spans leak out of the pre block
+
+```markdown
+<pre style="background:#0f172a;">
+<span style="color:red;">text</span>
+</pre>
+```
+
+**Bug**: Marp's Markdown parser breaks `<span>` tags inside `<pre>`, rendering them as escaped text or leaking them outside the block.
+
+**Fix**: Use `<div>` with `font-family: monospace` + `<br/>` line breaks instead of `<pre>`. No spans needed if you set `color` on the div.
+
+---
+
+### ❌ `color` on `<div>` / `<p>` → Marp theme overrides it
+
+```html
+<div style="color: white;">text here</div>
+```
+
+**Bug**: Marp wraps plain text in `<p>` tags and applies its theme color (dark), overriding the parent `div`'s `color`.
+
+**Fix**: Use `<table><tr><td style="color: white;">text</td></tr></table>`. Marp does NOT override `<td>` colors.
+
+---
+
+### ❌ `background: transparent` on `<td>` → inherits Marp theme white
+
+```html
+<td style="background: transparent;">...</td>
+```
+
+**Bug**: `transparent` on `<td>` inherits the Marp theme's white table background, not the parent table's dark background.
+
+**Fix**: Use an explicit color: `background: #0f172a;` (or whatever your dark color is).
+
+---
+
+### ❌ `<table>` row borders visible even with `border-collapse: collapse`
+
+**Bug**: Even with `border-collapse: collapse` on the table, `<td>` cells show grey dividing lines from the Marp theme's default table CSS.
+
+**Fix**: Add `border: none;` explicitly to every `<td>`.
+
+---
+
+### ✅ Safe HTML pattern for dark code blocks in Marp
+
+```html
+<table style="background: #0f172a; border-radius: 10px; padding: 10px 18px;
+              font-family: 'JetBrains Mono', monospace; font-size: 0.62em;
+              width: 100%; border-collapse: collapse; border: 1px solid #1e293b;">
+<tr><td style="color: #475569; padding: 2px 0; background: #0f172a; border: none;"># comment</td></tr>
+<tr><td style="color: #7dd3fc; padding: 2px 0; background: #0f172a; border: none;">KEY=value</td></tr>
+</table>
+```
+
+✅ No `<pre>`, no `<span>` inside `<pre>`, no HTML comments before the tag, explicit td background, explicit td border: none.
+
