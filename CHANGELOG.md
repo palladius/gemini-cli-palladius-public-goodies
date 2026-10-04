@@ -1,3 +1,8 @@
+## [0.5.24] - 2026-10-04
+
+- 🔧 Chore: Aligned plugin.json and client plugin version specifications with `gemini-extension.json` configuration.
+- 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
+
 ## [0.5.23] - 2026-09-22
 
 - 🐛 Fix: Flatten nested hermes metadata in `skills/llm-wiki/SKILL.md` to comply with `@govcraft/agent-skills` schema validator.
