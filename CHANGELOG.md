@@ -1,3 +1,10 @@
+## [0.5.25] - 2026-10-05
+
+- ✨ Feat: Added `auto-org` skill for intelligent triage and categorization of messy Desktop and Downloads folders into `~/Auto.org/` subfolders (`screenshots`, `scontrini`, `viaggi`, `presentazioni`, `idee`, `documenti`, `media`).
+- 🛡️ Vecchiume: Non-destructive staging quarantine area for obsolete installers and past travel documents, paired with human audit prompts.
+- 📝 Logging: Markdown logging in `~/Auto.org/TRIAGE_LOG.md` with auto-tags and optional Obsidian sync.
+- 🚀 Bumped version to 0.5.25.
+
 ## [0.5.24] - 2026-10-04
 
 - 🔧 Chore: Aligned plugin.json and client plugin version specifications with `gemini-extension.json` configuration.
