@@ -1,3 +1,9 @@
+## [0.6.0] - 2026-10-06
+
+- 🎬 Feat: Converged terminal demo recording (`vhs` / `.tape`) and browser demo recording (`shot-scraper video`) into single unified `demo-agentic-video` skill.
+- 📚 Docs: Refactored `demo-agentic-video` to progressive disclosure architecture with `references/browser_recording.md` and `references/terminal_recording.md`.
+- 🚀 Bumped minor version to 0.6.0 to reflect unified video architecture.
+
 ## [0.5.25] - 2026-10-05
 
 - ✨ Feat: Added `auto-org` skill for intelligent triage and categorization of messy Desktop and Downloads folders into `~/Auto.org/` subfolders (`screenshots`, `scontrini`, `viaggi`, `presentazioni`, `idee`, `documenti`, `media`).

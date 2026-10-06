@@ -1,0 +1,37 @@
+output: demo.webm
+url: https://studio--meditrack-29c9m.us-central1.hosted.app/
+
+viewport:
+  width: 1280
+  height: 800
+
+cursor:
+  visible: true
+  clicks: true
+  color: "#ff4f00"
+  size: 18
+  click_size: 44
+
+scenes:
+  - name: Open Dashboard
+    do:
+      - pause: 2
+
+  - name: Enter Today's Weight
+    do:
+      - fill:
+          into: "input[name='weight']"
+          text: "97.2"
+      - pause: 1.5
+
+  - name: Write Daily Notes
+    do:
+      - fill:
+          into: "textarea[name='notes']"
+          text: "Ermete oggi peso 97.2! Ciao da Ermete 🚛"
+      - pause: 1.5
+
+  - name: Save the Log
+    do:
+      - click: "text=Save Today's Log"
+      - pause: 4
