@@ -6,9 +6,9 @@ author: Riccardo Carlesso & Ermete Bottazzi
 license: Apache-2.0
 compatibility: Gemini CLI, Hermes Agent, Antigravity
 metadata:
-  hermes:
-    tags: [productivity, cleanup, files, macos, triage, desktop, downloads, obsidian]
-    related_skills: [carlessian-obsidian, ocr-and-documents]
+  version: 1.0.0
+  hermes_tags: "productivity, cleanup, files, macos, triage, desktop, downloads, obsidian"
+  hermes_related_skills: "carlessian-obsidian, ocr-and-documents"
 ---
 
 # Auto.org File Organizer & Triage Skill 🚛📂

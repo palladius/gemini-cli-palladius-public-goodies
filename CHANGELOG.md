@@ -1,3 +1,8 @@
+## [0.5.26] - 2026-10-06
+
+- 🐛 Fix: Flatten nested hermes metadata in `skills/auto-org/SKILL.md` to comply with `@govcraft/agent-skills` schema validator.
+- 🚀 Bumped version to 0.5.26 by `gc-skillume-bot-v0_2`.
+
 ## [0.5.25] - 2026-10-05
 
 - ✨ Feat: Added `auto-org` skill for intelligent triage and categorization of messy Desktop and Downloads folders into `~/Auto.org/` subfolders (`screenshots`, `scontrini`, `viaggi`, `presentazioni`, `idee`, `documenti`, `media`).
