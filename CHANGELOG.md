@@ -1,3 +1,8 @@
+## [0.5.27] - 2026-10-07
+
+- 📖 Docs: Clarified what `agc` is and added repository links in `README.md` (fixes #2).
+- 🚀 Bumped version to 0.5.27.
+
 ## [0.5.26] - 2026-10-06
 
 - 🐛 Fix: Flatten nested hermes metadata in `skills/auto-org/SKILL.md` to comply with `@govcraft/agent-skills` schema validator.
