@@ -11,11 +11,12 @@ This repository functions as a native plugin/extension across multiple agent eco
 ### 1. Antigravity UI & `agy` CLI
 *   **Workspace-Level**: Clone or symlink this directory into `.agents/plugins/palladius-public-goodies/` at the root of your workspace.
 *   **Global-Level**: Clone or symlink this directory into `~/.gemini/config/plugins/palladius-public-goodies/`.
-*   **Verification**: Check active plugins and skills inside the CLI/UI using:
+*   **Verification**: Check active plugins and skills inside the CLI/UI using [`agc`](https://github.com/palladius/agc) (Antigravity Companion CLI):
     ```bash
     agc plugins
     agc skills
     ```
+    > 💡 **Note on `agc`**: `agc` is Riccardo's [Antigravity Companion CLI](https://github.com/palladius/agc), a helper utility providing commands like `agc skills`, `agc plugins`, and search capabilities across harnesses.
 
 ### 2. Claude Code
 *   **Workspace-Level**: Place or symlink this repository folder inside `.claude/plugins/palladius-public-goodies/` at the root of your workspace.
@@ -73,3 +74,4 @@ This extension includes the following **[Agent Skills](https://antigravity.googl
 ### Cross-Links:
 *   [General-Purpose Gemini CLI Custom Commands](https://github.com/palladius/gemini-cli-custom-commands)
 *   [Riccardo's Private Gemini CLI Goodies](https://github.com/palladius/gemini-cli-palladius-private-goodies) (private, not for general consumption)
+*   [Antigravity Companion CLI (`agc`)](https://github.com/palladius/agc) (CLI helper tool for managing and searching Antigravity skills & plugins)
