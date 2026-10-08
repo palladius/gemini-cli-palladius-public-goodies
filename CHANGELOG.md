@@ -1,8 +1,21 @@
-## [0.6.0] - 2026-10-06
+## [0.6.0] - 2026-10-08
 
 - 🎬 Feat: Converged terminal demo recording (`vhs` / `.tape`) and browser demo recording (`shot-scraper video`) into single unified `demo-agentic-video` skill.
 - 📚 Docs: Refactored `demo-agentic-video` to progressive disclosure architecture with `references/browser_recording.md` and `references/terminal_recording.md`.
-- 🚀 Bumped minor version to 0.6.0 to reflect unified video architecture.
+- 🎥 Veo: Enhanced public `veo` skill to be the authoritative FAT implementation supporting both API Key and Vertex AI modes, with `$SKILL_DIR` standard paths.
+- 🚀 Bumped minor version to 0.6.0.
+
+## [0.5.27] - 2026-10-08
+
+- ✨ Feat: Added `niccolo-game-design` skill: manager-based game architecture (EventBus, GameFlow state machine, MapManager owning Game Over/Victory, DropManager pity-timer luck meter, object pools, data-driven registries), strangler-fig refactor recipe, MR review checklist, `tsc --strict`-verified TypeScript skeletons with Monte-Carlo self-test, and Godot 4 mapping. Origin: Niccolò's code review + Nystrom's *Game Programming Patterns*.
+- 🚀 Bumped version to 0.5.27.
+
+## [0.5.26] - 2026-10-06
+
+- 🐛 Fix: Flatten nested hermes metadata in `skills/auto-org/SKILL.md` to comply with `@govcraft/agent-skills` schema validator.
+- 🚀 Bumped version to 0.5.26 by `gc-skillume-bot-v0_2`.
+
+## [0.5.25] - 2026-10-05
 
 ## [0.5.25] - 2026-10-05
 

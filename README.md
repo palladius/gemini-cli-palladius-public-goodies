@@ -41,6 +41,7 @@ This extension includes the following **[Agent Skills](https://antigravity.googl
 *   **`add-to-portfolio-app`**: Adds a new Talk or Article to Riccardo's personal portfolio application.
 *   **`adk-python`**: Create and manage AI agents using Google's Agent Development Kit (ADK) for Python.
 *   **`article-creator`**: (🥑) Expert guide for authoring, building, testing, and publishing technical articles to ricc.rocks and Medium.
+*   **`auto-org`**: (🚛📂) Intelligent Desktop & Downloads organizer into `~/Auto.org/` subfolders, staging quarantine, and Markdown triage logs.
 *   **`carlessian-gog`**: Google Workspace CLI managed the Carlesso way—featuring isolated configurations, selective read-only security, and daily workflows (Gmail, Calendar, Drive).
 *   **`carlessian-obsidian`**: (💛) Expert guide for interacting with Riccardo's Obsidian vault (The Carlessian Vault).
 *   **`create-cli-best-practices`**: Rules to create and maintain a GOOD CLI. Do not use for GUI-only design rules, web apps, or backend REST APIs.
@@ -57,6 +58,7 @@ This extension includes the following **[Agent Skills](https://antigravity.googl
 *   **`learn-german-hummerli`**: (🦞) Your personal Swiss Citizenship (Zürich) tutor. Speaks easy B1 German and helps you prep for the exam.
 *   **`lyria2-music-generation`**: Generate music using Google's Lyria (v2) model via Vertex AI.
 *   **`nano-banana-ricc`**: (💛) Generate or edit images via Gemini 3 Pro Image (🍌 Nano Banana Pro) with Riccardo character consistency.
+*   **`niccolo-game-design`**: (💛) Game architecture with specialized Managers + typed Event Bus (Nystrom's Game Programming Patterns): MapManager owns Game Over/Victory, DropManager pity-timer luck meter, strangler-fig refactor recipe, TS + Godot skeletons.
 *   **`openclaudio-host-monitoring`**: Installs a lightweight CPU and RAM monitoring cron job and visualization script for agents on the local machine.
 *   **`openclaudio-update-advisor`**: Analisi acida e basata sui fatti della stabilità delle release di OpenClaudio.
 *   **`python-coding`**: (💛) Opinionated Python coding practices and standards.
