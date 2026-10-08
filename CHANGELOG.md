@@ -1,3 +1,8 @@
+## [0.5.27] - 2026-10-08
+
+- ✨ Feat: Added `niccolo-game-design` skill: manager-based game architecture (EventBus, GameFlow state machine, MapManager owning Game Over/Victory, DropManager pity-timer luck meter, object pools, data-driven registries), strangler-fig refactor recipe, MR review checklist, `tsc --strict`-verified TypeScript skeletons with Monte-Carlo self-test, and Godot 4 mapping. Origin: Niccolò's code review + Nystrom's *Game Programming Patterns*.
+- 🚀 Bumped version to 0.5.27.
+
 ## [0.5.26] - 2026-10-06
 
 - 🐛 Fix: Flatten nested hermes metadata in `skills/auto-org/SKILL.md` to comply with `@govcraft/agent-skills` schema validator.
