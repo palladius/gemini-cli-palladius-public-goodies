@@ -1,3 +1,8 @@
+## [0.6.1] - 2026-10-09
+
+- 🛡️ Feat: Added extensible `gcp-hardening` skill (`v1.0.0`) with a dedicated **Google Cloud Storage (GCS) Hardening** section (`roles/storage.legacyObjectReader` vs `roles/storage.objectViewer` XML bucket listing leak prevention, V4 Signed URL "Snapchat Mode" best practices, and 4-surface pre-open-source GCP & repository audit checklist).
+- 🚀 Bumped version to 0.6.1.
+
 ## [0.6.0] - 2026-10-08
 
 - 🎬 Feat: Converged terminal demo recording (`vhs` / `.tape`) and browser demo recording (`shot-scraper video`) into single unified `demo-agentic-video` skill.
