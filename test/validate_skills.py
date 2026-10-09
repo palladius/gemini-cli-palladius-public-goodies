@@ -1,10 +1,11 @@
 import os
 import re
 import sys
+import yaml
 
 # Requirements categorization
-# MUST (Errors): name, description, SKILL.md existence
-# SHOULD (Warnings): compatibility, metadata.version, CHANGELOG.md existence, version in CHANGELOG
+# MUST (Errors): valid YAML frontmatter, name, description, scalar metadata values, SKILL.md existence
+# SHOULD (Warnings): kebab-case name, compatibility, metadata.version, CHANGELOG.md existence, version in CHANGELOG
 
 def validate_skill(skill_dir):
     skill_path = os.path.join(skill_dir, 'SKILL.md')
@@ -18,7 +19,7 @@ def validate_skill(skill_dir):
         return [f"Error reading SKILL.md: {e}"], []
     
     # Extract frontmatter
-    match = re.match(r'^---\s*\n(.*?)\n---\s*\n', content, re.DOTALL)
+    match = re.match(r'^---\s*\n(.*?)\n---\s*(?:\n|$)', content, re.DOTALL)
     if not match:
         return ["Missing or invalid frontmatter"], []
     
@@ -26,30 +27,26 @@ def validate_skill(skill_dir):
     errors = []
     warnings = []
     
-    # Simple YAML-ish parser for frontmatter
-    frontmatter = {}
-    current_key = None
-    for line in frontmatter_text.split('\n'):
-        if not line.strip():
-            continue
-        if ':' in line and not line.startswith(' '):
-            key, value = line.split(':', 1)
-            current_key = key.strip()
-            frontmatter[current_key] = value.strip()
-        elif line.startswith('  ') and current_key:
-            # Handle nested keys like metadata: version:
-            sub_key_match = re.match(r'^\s+(\w+):\s*(.*)', line)
-            if sub_key_match:
-                sub_key, sub_value = sub_key_match.groups()
-                if not isinstance(frontmatter[current_key], dict):
-                    frontmatter[current_key] = {}
-                frontmatter[current_key][sub_key] = sub_value.strip()
+    try:
+        frontmatter = yaml.safe_load(frontmatter_text)
+    except Exception as e:
+        return [f"Error parsing YAML frontmatter: {e}"], []
+
+    if not isinstance(frontmatter, dict):
+        return ["YAML frontmatter must be a mapping/dictionary"], []
 
     # MUST
-    if 'name' not in frontmatter:
+    if 'name' not in frontmatter or not frontmatter['name']:
         errors.append("Missing 'name'")
-    if 'description' not in frontmatter:
+    elif not isinstance(frontmatter['name'], str):
+        errors.append("'name' must be a string (quote values starting with '[')")
+    elif not re.match(r'^[a-z0-9_-]+$', frontmatter['name']):
+        warnings.append(f"Skill name '{frontmatter['name']}' should be kebab-case")
+
+    if 'description' not in frontmatter or not frontmatter['description']:
         errors.append("Missing 'description'")
+    elif not isinstance(frontmatter['description'], str):
+        errors.append("'description' must be a string (quote values starting with '[')")
     
     # SHOULD
     if 'compatibility' not in frontmatter:
@@ -57,10 +54,18 @@ def validate_skill(skill_dir):
     
     metadata = frontmatter.get('metadata')
     version = None
-    if not metadata or (isinstance(metadata, dict) and 'version' not in metadata):
-        warnings.append("Missing 'metadata.version'")
+    if metadata is not None and not isinstance(metadata, dict):
+        errors.append("'metadata' must be a dictionary")
     elif isinstance(metadata, dict):
-        version = str(metadata.get('version'))
+        for m_key, m_val in metadata.items():
+            if isinstance(m_val, list):
+                errors.append(f"'metadata.{m_key}' must be a scalar/string, got list (quote values starting with '[')")
+        if 'version' not in metadata:
+            warnings.append("Missing 'metadata.version'")
+        else:
+            version = str(metadata.get('version'))
+    else:
+        warnings.append("Missing 'metadata.version'")
 
     # Check for CHANGELOG.md in the skill directory
     changelog_path = os.path.join(skill_dir, 'CHANGELOG.md')

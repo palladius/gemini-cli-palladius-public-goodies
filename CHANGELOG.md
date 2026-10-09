@@ -1,3 +1,9 @@
+## [0.6.2] - 2026-10-09
+
+- 🛡️ **Frontmatter Validator (`test/validate_skills.py`)**: Replaced naive `line.split(':', 1)` parser with strict `yaml.safe_load` parsing, validating scalar string types on `name`, `description`, and `metadata.*` and warning on non-kebab-case `name`.
+- 🐛 **Fix (`skills/auto-org/SKILL.md`)**: Resolved merge conflict markers in YAML frontmatter `metadata` block.
+- 🚀 Bumped version to 0.6.2.
+
 ## [0.6.1] - 2026-10-09
 
 - 🛡️ Feat: Added extensible `gcp-hardening` skill (`v1.0.0`) with a dedicated **Google Cloud Storage (GCS) Hardening** section (`roles/storage.legacyObjectReader` vs `roles/storage.objectViewer` XML bucket listing leak prevention, V4 Signed URL "Snapchat Mode" best practices, and 4-surface pre-open-source GCP & repository audit checklist).
