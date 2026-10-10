@@ -1,3 +1,10 @@
+## [0.6.4] - 2026-10-10
+
+- 🎹 Feat: Added `spartiti-md` skill (`v1.0.0`): "Markdown Smart" standard for pianist/keyboardist chords and lyrics (inline ChordPro brackets + semantic section emoji headers), conversion guidelines from web chord sites, and validation script `scripts/validate_spartito.py`.
+- 🧪 Test: Hardened `justfile` test runner with `uv run --with pyyaml` for hermetic test execution, added unit test in `skills/spartiti-md/tests/test_validate_spartito.py`.
+- 🤖 Maintenance run and validation by `gc-skillume-bot-v0_2`.
+- 🚀 Bumped version to 0.6.4.
+
 ## [0.6.3] - 2026-10-10
 
 - ✨ Feat: Added `install-jev-for-antigravity` skill with complete installation procedures for TypeSafe Jev (System One classification engine) across Antigravity CLI and IDE, covering both the skill plugin and the MCP proxy server (`jev-proxy`).

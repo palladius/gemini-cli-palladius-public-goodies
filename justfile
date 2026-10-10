@@ -1,6 +1,6 @@
 # Run tests on a specific directory (defaults to 'skills')
 test DIR="skills":
-    python3 test/validate_skills.py {{DIR}}
+    uv run --with pyyaml python3 test/validate_skills.py {{DIR}}
     find {{DIR}} -name SKILL.md | npx @govcraft/agent-skills validate -
 
 # Run tests on private goodies
