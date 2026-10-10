@@ -1,3 +1,9 @@
+## [0.6.3] - 2026-10-10
+
+- ✨ Feat: Added `install-jev-for-antigravity` skill with complete installation procedures for TypeSafe Jev (System One classification engine) across Antigravity CLI and IDE, covering both the skill plugin and the MCP proxy server (`jev-proxy`).
+- 🤖 Maintenance run and validation by `gc-skillume-bot-v0_2`.
+- 🚀 Bumped version to 0.6.3.
+
 ## [0.6.2] - 2026-10-09
 
 - 🛡️ **Frontmatter Validator (`test/validate_skills.py`)**: Replaced naive `line.split(':', 1)` parser with strict `yaml.safe_load` parsing, validating scalar string types on `name`, `description`, and `metadata.*` and warning on non-kebab-case `name`.
