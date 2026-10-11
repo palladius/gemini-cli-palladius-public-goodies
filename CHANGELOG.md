@@ -1,3 +1,8 @@
+## [0.6.5] - 2026-10-11
+
+- 🗿🎨 **`niccolo-game-design` (`v0.2.0`)**: Added `references/2d-to-3d-sdf-uv-baking.md` covering zero-GPU local 2D-to-3D `.glb` reconstruction (**Mode A**: `rembg` neural segmentation + halo-free RGB dilation + 3D Signed Distance Field visual-hull & luminance relief carving + Taubin smoothing + boundary-matched seamless `1024×1024` UV baking) and **Mode B** (2D portrait face-grafting onto existing `TRELLIS.2` / `Hunyuan3D` `.glb` meshes).
+- 🚀 Bumped version to 0.6.5.
+
 ## [0.6.4] - 2026-10-10
 
 - 🎹 Feat: Added `spartiti-md` skill (`v1.0.0`): "Markdown Smart" standard for pianist/keyboardist chords and lyrics (inline ChordPro brackets + semantic section emoji headers), conversion guidelines from web chord sites, and validation script `scripts/validate_spartito.py`.

@@ -1,9 +1,9 @@
 ---
 name: niccolo-game-design
-description: (💛) Game-architecture skill based on Managers + Event Bus, distilled from Niccolò's code-review feedback and Robert Nystrom's "Game Programming Patterns". Use when designing, reviewing, or refactoring game code (TypeScript/Three.js, Godot, Unity…) that has a god-object game loop, too many singletons, scattered win/lose logic, or ad-hoc loot. Covers EnemyManager, PlayerManager, MapManager (owns Game Over / Victory), DropManager (pity-timer luck meter), GameFlow state machine, object pools, and a strangler-fig refactor recipe.
+description: (💛) Game-architecture skill based on Managers + Event Bus, distilled from Niccolò's code-review feedback and Robert Nystrom's "Game Programming Patterns". Use when designing, reviewing, or refactoring game code (TypeScript/Three.js, Godot, Unity…) that has a god-object game loop, too many singletons, scattered win/lose logic, ad-hoc loot, or 2D-to-3D GLB asset pipelines. Covers EnemyManager, PlayerManager, MapManager (owns Game Over / Victory), DropManager (pity-timer luck meter), GameFlow state machine, object pools, local 2D-to-3D SDF + UV baking / face-grafting, and a strangler-fig refactor recipe.
 compatibility: Gemini CLI, Antigravity, Claude Code
 metadata:
-  version: 0.1.0
+  version: "0.2.0"
 ---
 
 # 💛 Niccolò Game Design — Managers, Events, and Rules That Own Themselves
@@ -27,6 +27,7 @@ Activate when ANY of these is true:
 - "Game Over", "Victory", or screen switching is decided in `main`/UI code instead of by game rules.
 - Loot / drops are pure `Math.random()` with no memory.
 - You are about to add multiplayer / client-server: managers make the simulation portable to a server.
+- You need to reconstruct 3D `.glb` game pieces locally from 2D portraits/turnarounds (when cloud 3D GPU quota is unavailable) or graft a clean 2D portrait face onto an existing 3D `.glb` mesh.
 
 ## The 7 Rules
 
@@ -98,7 +99,7 @@ Combat → Pickups → Drops → Map (rules) → GameFlow.
   manager (e.g. `DropManager` reacts to `ENEMY_DEFEATED` by asking `PickupManager` to place a drop).
 - Always unsubscribe in `dispose()` (memory leaks are the #1 event-bus bug).
 
-## Two signature recipes
+## Signature recipes
 
 - **MapManager owns Game Over / Victory** → see [references/map-manager-win-lose.md](references/map-manager-win-lose.md).
   Kid-friendly variant: solo never shows "Game Over" (instant protective respawn); co-op only restarts
@@ -106,6 +107,8 @@ Combat → Pickups → Drops → Map (rules) → GameFlow.
 - **DropManager luck meter (pity timer)** → see [references/drop-manager-pity.md](references/drop-manager-pity.md).
   `luck += enemy.weight` per kill, odds shift towards rarer tiers (soft pity), a guaranteed rare at the
   cap (hard pity), **reset to 0 on an important find**. Seeded RNG + Monte-Carlo tests.
+- **2D-to-3D Local GLB Reconstruction & Portrait Face-Grafting (Zero-GPU)** → see [references/2d-to-3d-sdf-uv-baking.md](references/2d-to-3d-sdf-uv-baking.md).
+  Covers **Mode A** (full 2D→3D Signed Distance Field visual-hull + luminance relief carving + Taubin fairing + edge-matched `1024×1024` UV texture baking when replacing untextured primitive meshes without cloud GPU quota) and **Mode B** (projecting/grafting a true 2D portrait face onto an existing `TRELLIS.2` / `Hunyuan3D` `.glb` mesh whose 3D face was distorted).
 
 ## Refactor recipe (strangler fig — never big-bang)
 
@@ -151,6 +154,7 @@ Combat → Pickups → Drops → Map (rules) → GameFlow.
 - [references/patterns.md](references/patterns.md) — pattern catalog (Game Loop, Update Method, Event Queue, Observer, State, Service Locator, Object Pool, Component, Data-driven) with "use when / avoid when".
 - [references/map-manager-win-lose.md](references/map-manager-win-lose.md) — win/lose rules per mode.
 - [references/drop-manager-pity.md](references/drop-manager-pity.md) — luck meter math + tests.
+- [references/2d-to-3d-sdf-uv-baking.md](references/2d-to-3d-sdf-uv-baking.md) — local 2D-to-3D SDF + seamless `1024×1024` UV baking (Mode A) and 2D portrait face-grafting onto existing 3D `.glb` meshes (Mode B).
 - [references/typescript-skeletons.md](references/typescript-skeletons.md) — heavily commented TS skeletons (Bus, Manager, Context, DropManager).
 - [references/godot-mapping.md](references/godot-mapping.md) — same architecture in Godot 4 (autoloads, signals, scene tree).
 
