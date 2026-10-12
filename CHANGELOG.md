@@ -1,3 +1,9 @@
+## [0.6.8] - 2026-10-12
+
+- 🎵 Skill update: `spartiti-md` (`v1.0.2`) — Added Umberto Tozzi's *Gloria* example score (`examples/gloria-umberto-tozzi.md`) with piano/synthesizer performance tips and full ChordPro brackets.
+- 🤖 Maintenance run and validation by `gc-skillume-bot-v0_2`.
+- 🚀 Bumped version to 0.6.8.
+
 ## [0.6.7] - 2026-10-12
 
 - 🏨📶 Feat: Added `karl-captiveportal-wifi-wisdom` skill (`v0.1.0`): Captive portal & hotel Wi-Fi troubleshooting playbook by Karl Weinmeister (provenance: LinkedIn), covering Private Wi-Fi MAC address fix ("Fixed" vs "Rotating"), `neverssl.com` unencrypted HTTP redirect trigger, network forget/rejoin, VPN/DNS blocker fallbacks, macOS CLI quick references, and `scripts/diagnose_wifi.sh`.
