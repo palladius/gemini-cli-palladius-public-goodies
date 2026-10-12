@@ -3,7 +3,7 @@ name: spartiti-md
 description: "(💛) Formato standard 'Markdown Smart' (ChordPro inline + Emoji semantiche) per spartiti di canzoni con accordi e testo per tastieristi e pianisti."
 compatibility: gemini-cli, antigravity, claude
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
   author: "Riccardo Carlesso"
   tags: "music, chords, lyrics, piano, markdown, chordpro, spartiti"
 ---
@@ -72,3 +72,25 @@ Quando converti spartiti da siti web (dove gli accordi sono posizionati su righe
 ## 📂 Esempio Completo
 
 Vedi l'esempio pronto all'uso in `examples/su-di-noi-pupo.md`.
+
+---
+
+## 🧪 Validazione e Unit Test
+
+La skill include uno script di linting e una suite di test (zero dipendenze, Python standard `unittest`):
+
+1. **Linting di un file spartito**:
+   ```bash
+   $SKILL_DIR/scripts/validate_spartito.py <percorso/file.md>
+   ```
+   Verifica:
+   - ✅ Chiusura e bilanciamento parentesi (intercetta errori di battitura come `[DO` o `RE]`).
+   - ✅ Validità delle note/fondamentali (notazione italiana `DO..SI` e internazionale `C..B`, alterazioni `#`, `b`). Rileva note inventate come `[PO]`, `[PIPPO]`, ecc.
+   - ✅ Validità delle estensioni armoniche (`m`, `maj7`, `sus4`, `dim`, `add9`, ecc.).
+   - ✅ Validità dei bassi alternati per pianoforte (`[DO/MI]`, `[G/B]`).
+
+2. **Esecuzione dei test automatici**:
+   ```bash
+   python3 -m unittest discover -s $SKILL_DIR/tests
+   ```
+

@@ -1,3 +1,14 @@
+## [0.6.7] - 2026-10-12
+
+- 🏨📶 Feat: Added `karl-captiveportal-wifi-wisdom` skill (`v0.1.0`): Captive portal & hotel Wi-Fi troubleshooting playbook by Karl Weinmeister (provenance: LinkedIn), covering Private Wi-Fi MAC address fix ("Fixed" vs "Rotating"), `neverssl.com` unencrypted HTTP redirect trigger, network forget/rejoin, VPN/DNS blocker fallbacks, macOS CLI quick references, and `scripts/diagnose_wifi.sh`.
+- 🚀 Bumped version to 0.6.7.
+
+## [0.6.6] - 2026-10-11
+
+- 🎹 **`spartiti-md` (`v1.0.1`)**: Added comprehensive standard `unittest` test suite in `tests/test_validate_spartito.py` (chords parsing, Italian/English notation, syntax error intercept), documented testing workflows in `SKILL.md`, and marked validator script executable.
+- 🤖 Maintenance run and validation by `gc-skillume-bot-v0_2`.
+- 🚀 Bumped version to 0.6.6.
+
 ## [0.6.5] - 2026-10-11
 
 - 🗿🎨 **`niccolo-game-design` (`v0.2.0`)**: Added `references/2d-to-3d-sdf-uv-baking.md` covering zero-GPU local 2D-to-3D `.glb` reconstruction (**Mode A**: `rembg` neural segmentation + halo-free RGB dilation + 3D Signed Distance Field visual-hull & luminance relief carving + Taubin smoothing + boundary-matched seamless `1024×1024` UV baking) and **Mode B** (2D portrait face-grafting onto existing `TRELLIS.2` / `Hunyuan3D` `.glb` meshes).
