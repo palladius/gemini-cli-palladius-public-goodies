@@ -1,3 +1,8 @@
+## [0.6.6] - 2026-10-14
+
+- 💃🕺🎺 **`chumbia` (`v1.0.0`)**: Added end-of-session verification and post-work cleanup skill ("le pulizie dopo la fatica"). Audits whether all work is committed, tested, and merged to `main` (refusing to say Chumbia if anything remains); cleans up temporary Git worktrees, merged local & remote feature branches, leftover `node_modules/` and build caches via `just clean`, stops background crons, and concludes with `CHUMBIA!` so the conversation can be safely archived/destroyed. Includes `scripts/chumbia_audit.sh`.
+- 🚀 Bumped version to 0.6.6.
+
 ## [0.6.5] - 2026-10-11
 
 - 🗿🎨 **`niccolo-game-design` (`v0.2.0`)**: Added `references/2d-to-3d-sdf-uv-baking.md` covering zero-GPU local 2D-to-3D `.glb` reconstruction (**Mode A**: `rembg` neural segmentation + halo-free RGB dilation + 3D Signed Distance Field visual-hull & luminance relief carving + Taubin smoothing + boundary-matched seamless `1024×1024` UV baking) and **Mode B** (2D portrait face-grafting onto existing `TRELLIS.2` / `Hunyuan3D` `.glb` meshes).
