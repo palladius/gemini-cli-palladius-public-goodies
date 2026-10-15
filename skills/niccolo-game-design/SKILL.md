@@ -3,7 +3,7 @@ name: niccolo-game-design
 description: (💛) Game-architecture skill based on Managers + Event Bus, distilled from Niccolò's code-review feedback and Robert Nystrom's "Game Programming Patterns". Use when designing, reviewing, or refactoring game code (TypeScript/Three.js, Godot, Unity…) that has a god-object game loop, too many singletons, scattered win/lose logic, ad-hoc loot, or 2D-to-3D GLB asset pipelines. Covers EnemyManager, PlayerManager, MapManager (owns Game Over / Victory), DropManager (pity-timer luck meter), GameFlow state machine, object pools, local 2D-to-3D SDF + UV baking / face-grafting, and a strangler-fig refactor recipe.
 compatibility: Gemini CLI, Antigravity, Claude Code
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
 ---
 
 # 💛 Niccolò Game Design — Managers, Events, and Rules That Own Themselves

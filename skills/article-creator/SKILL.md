@@ -1,8 +1,9 @@
 ---
 name: article-creator
 description: (🥑) Expert guide for authoring, building, testing, and publishing technical articles to ricc.rocks and Medium.
-version: 1.0
-tags: devrel, article, publishing, ricc.rocks, medium
+compatibility: Gemini CLI
+metadata:
+  version: 1.0
 ---
 
 # 🥑 Article Creator & Publisher Workflow

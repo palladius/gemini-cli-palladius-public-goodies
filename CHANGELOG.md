@@ -1,6 +1,30 @@
-## [0.6.6] - 2026-10-14
+## [0.6.10] - 2026-10-15
 
 - 💃🕺🎺 **`chumbia` (`v1.0.0`)**: Added end-of-session verification and post-work cleanup skill ("le pulizie dopo la fatica"). Audits whether all work is committed, tested, and merged to `main` (refusing to say Chumbia if anything remains); cleans up temporary Git worktrees, merged local & remote feature branches, leftover `node_modules/` and build caches via `just clean`, stops background crons, and concludes with `CHUMBIA!` so the conversation can be safely archived/destroyed. Includes `scripts/chumbia_audit.sh`.
+- 🚀 Bumped version to 0.6.10.
+
+## [0.6.9] - 2026-10-15
+
+- 🛠️ Fixed Agent Skills YAML frontmatter schema compliance across `article-creator`, `llm-wiki`, and `auto-org` skills (moved root-level non-standard fields into `metadata` and added `compatibility`).
+- 🧪 Ran `just test` validation suite — all 41 skills pass cleanly with 0 errors.
+- 🤖 Maintenance run and validation by `gc-skillume-bot-v0_2`.
+- 🚀 Bumped version to 0.6.9.
+
+## [0.6.8] - 2026-10-12
+
+- 🎵 Skill update: `spartiti-md` (`v1.0.2`) — Added Umberto Tozzi's *Gloria* example score (`examples/gloria-umberto-tozzi.md`) with piano/synthesizer performance tips and full ChordPro brackets.
+- 🤖 Maintenance run and validation by `gc-skillume-bot-v0_2`.
+- 🚀 Bumped version to 0.6.8.
+
+## [0.6.7] - 2026-10-12
+
+- 🏨📶 Feat: Added `karl-captiveportal-wifi-wisdom` skill (`v0.1.0`): Captive portal & hotel Wi-Fi troubleshooting playbook by Karl Weinmeister (provenance: LinkedIn), covering Private Wi-Fi MAC address fix ("Fixed" vs "Rotating"), `neverssl.com` unencrypted HTTP redirect trigger, network forget/rejoin, VPN/DNS blocker fallbacks, macOS CLI quick references, and `scripts/diagnose_wifi.sh`.
+- 🚀 Bumped version to 0.6.7.
+
+## [0.6.6] - 2026-10-11
+
+- 🎹 **`spartiti-md` (`v1.0.1`)**: Added comprehensive standard `unittest` test suite in `tests/test_validate_spartito.py` (chords parsing, Italian/English notation, syntax error intercept), documented testing workflows in `SKILL.md`, and marked validator script executable.
+- 🤖 Maintenance run and validation by `gc-skillume-bot-v0_2`.
 - 🚀 Bumped version to 0.6.6.
 
 ## [0.6.5] - 2026-10-11

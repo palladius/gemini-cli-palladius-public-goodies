@@ -1,12 +1,11 @@
 ---
 name: auto-org
 description: Use when Desktop or Downloads are cluttered with unorganized files, screenshots, receipts, trip documents, or stale installers. Safely categorizes files into ~/Auto.org/ subfolders, stages obsolete items in 'vecchiume', generates markdown triage logs with auto-tagging, and connects to Obsidian.
-version: 1.0.0
-author: Riccardo Carlesso & Ermete Bottazzi
 license: Apache-2.0
 compatibility: Gemini CLI, Hermes Agent, Antigravity
 metadata:
   version: 1.0.0
+  author: Riccardo Carlesso & Ermete Bottazzi
   hermes_tags: "productivity, cleanup, files, macos, triage, desktop, downloads, obsidian"
   hermes_related_skills: "carlessian-obsidian, ocr-and-documents"
 ---

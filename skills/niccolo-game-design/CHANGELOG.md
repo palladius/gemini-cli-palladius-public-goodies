@@ -1,5 +1,14 @@
 # Changelog — niccolo-game-design
 
+## [0.2.1] - 2026-10-12
+
+- 👤🎯 Refined **Mode B (Face-Grafting & Adversarial Biometric Likeness Loop)** in [references/2d-to-3d-sdf-uv-baking.md](references/2d-to-3d-sdf-uv-baking.md):
+  - Ground-truth photo-anchored template seeding (`build_photo_seeded_template`, avoiding alpha-blend ghosting).
+  - Piecewise-linear 3D facial landmark calibration (`scale_y_upper` vs `scale_y_lower`).
+  - Stripping 2D sideburns and mirroring clean temple skin (`prepare_clean_front_face`).
+  - Dual-chart 2048×1024 atlas with zero-bleed barycentric hair recoloring (`recolor_strict_hair_texels_zero_bleed`).
+  - Multimodal adversarial biometric critic loop (`adversarial_riccardo_likeness.py`) with 6-panel evaluation sheet.
+
 ## [0.2.0] - 2026-10-11
 
 - 🗿🎨 Added [references/2d-to-3d-sdf-uv-baking.md](references/2d-to-3d-sdf-uv-baking.md): deterministic, zero-GPU recipes for:
