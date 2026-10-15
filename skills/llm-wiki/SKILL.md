@@ -1,13 +1,12 @@
 ---
 name: llm-wiki
 description: "Karpathy's LLM Wiki: build/query interlinked markdown KB."
-version: 2.1.0
-author: Hermes Agent
 license: MIT
-platforms: [linux, macos, windows]
+compatibility: Gemini CLI
 metadata:
   version: "2.1.0"
   author: "Hermes Agent"
+  platforms: "linux, macos, windows"
   hermes_category: "research"
   hermes_tags: "wiki, knowledge-base, research, notes, markdown, rag-alternative"
   hermes_related_skills: "obsidian, arxiv"

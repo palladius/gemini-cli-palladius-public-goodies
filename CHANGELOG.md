@@ -1,3 +1,10 @@
+## [0.6.9] - 2026-10-15
+
+- 🛠️ Fixed Agent Skills YAML frontmatter schema compliance across `article-creator`, `llm-wiki`, and `auto-org` skills (moved root-level non-standard fields into `metadata` and added `compatibility`).
+- 🧪 Ran `just test` validation suite — all 41 skills pass cleanly with 0 errors.
+- 🤖 Maintenance run and validation by `gc-skillume-bot-v0_2`.
+- 🚀 Bumped version to 0.6.9.
+
 ## [0.6.8] - 2026-10-12
 
 - 🎵 Skill update: `spartiti-md` (`v1.0.2`) — Added Umberto Tozzi's *Gloria* example score (`examples/gloria-umberto-tozzi.md`) with piano/synthesizer performance tips and full ChordPro brackets.
