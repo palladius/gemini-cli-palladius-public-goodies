@@ -47,6 +47,15 @@ def validate_skill(skill_dir):
         errors.append("Missing 'description'")
     elif not isinstance(frontmatter['description'], str):
         errors.append("'description' must be a string (quote values starting with '[')")
+    else:
+        # Check that 'description:' uses folded strip block scalar syntax 'description: >-'
+        lines = content.splitlines()
+        closing_idx = next((i for i in range(1, len(lines)) if lines[i].strip() == "---"), None)
+        if closing_idx:
+            fm_lines = lines[1:closing_idx]
+            desc_line = next((l for l in fm_lines if re.match(r'^description\s*:', l)), None)
+            if desc_line and not re.match(r'^description:\s*>-\s*$', desc_line):
+                errors.append("Error: 'description' must use folded strip block scalar 'description: >-'")
     
     # SHOULD
     if 'compatibility' not in frontmatter:
