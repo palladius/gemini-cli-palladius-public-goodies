@@ -1,3 +1,10 @@
+## [0.6.17] - 2026-10-25
+
+- 🤖✨ **`ai-coding` (`v0.1.0`)**: Added new skill for AI-assisted coding and agent prompt hygiene (`AGENTS.md` over `GEMINI.md` for inclusivity + symlink strategy, anti-bloat guardrails against `CRAMMED_LINE` and `OVERFITTING_H2_SECTION`, and bundled `scripts/analyze_bloat_history.py` + `scripts/analize_bloat_history.py`).
+- 🧹 **`git-coding` (`v0.0.3`)**: Added Mandate #6 (*Anti-Bloat Guardrails for Agent System Prompts* covering `GEMINI.md`, `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `SPECS.md`, `INSTRUCTIONS.md`, `SKILL.md`), bundled `scripts/analyze_bloat_history.py` (and `scripts/analize_bloat_history.py` alias) with fast deterministic heuristics (`OVERFITTING_H2_SECTION`, `CRAMMED_LINE`, `APPEND_ONLY_EOF`, `CONFLICT_OR_GARBAGE`, `WALL_OF_TEXT`) and `--llm` strict JSON mode (`gemini-flash-latest` / `gemini-3-flash-preview` / `gemini-3.1-flash-lite`).
+- 📏 **Antigravity Glob Rule (`prompt-anti-bloat.md`)**: Added `rules/prompt-anti-bloat.md` and `.agent/rules/prompt-anti-bloat.md` with `trigger: glob` matching system prompt markdowns to automatically enforce anti-bloat checks.
+- 🚀 Bumped version to 0.6.17.
+
 ## [0.6.16] - 2026-10-25
 
 - 💃🧹 **`chumbia` (`v1.2.0`)**:
