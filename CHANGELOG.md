@@ -1,3 +1,9 @@
+## [0.6.11] - 2026-10-21
+
+- 🧪 Updated `test/validate_skills.py` to enforce `description: >-` folded strip block scalar syntax compliance in sub-repository tests.
+- 🤖 Maintenance run by `gc-skillume-bot-v0_2`.
+- 🚀 Bumped version to 0.6.11.
+
 ## [0.6.10] - 2026-10-15
 
 - 💃🕺🎺 **`chumbia` (`v1.0.0`)**: Added end-of-session verification and post-work cleanup skill ("le pulizie dopo la fatica"). Audits whether all work is committed, tested, and merged to `main` (refusing to say Chumbia if anything remains); cleans up temporary Git worktrees, merged local & remote feature branches, leftover `node_modules/` and build caches via `just clean`, stops background crons, and concludes with `CHUMBIA!` so the conversation can be safely archived/destroyed. Includes `scripts/chumbia_audit.sh`.
