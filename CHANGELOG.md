@@ -1,3 +1,8 @@
+## [0.6.13] - 2026-10-23
+
+- ✨ **`events-report-zurigo` (`v2.0.0`)**: Harmonized from Hermes; added Zurich cycling & lake weather ("Zona T-Shirt" protocol) and `scripts/bike_weather.py`, multi-source live Lake Zurich water temperature feeds, and `references/event_verification_protocol.md`.
+- 🚀 Bumped version to 0.6.13.
+
 ## [0.6.12] - 2026-10-23
 
 - 💛 **`spec-to-code-tdd` (`v0.1.0`)**: Added Spec-Driven Development meets Test-Driven Development skill for Antigravity, Gemini CLI, and Claude Code. Orchestrates implementation of `respec` (`speck`) specifications in dedicated external repositories while enforcing the Foundry Isolation Principle (never code inside the spec foundry).
