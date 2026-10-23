@@ -1,3 +1,9 @@
+## [0.6.12] - 2026-10-23
+
+- 💛 **`spec-to-code-tdd` (`v0.1.0`)**: Added Spec-Driven Development meets Test-Driven Development skill for Antigravity, Gemini CLI, and Claude Code. Orchestrates implementation of `respec` (`speck`) specifications in dedicated external repositories while enforcing the Foundry Isolation Principle (never code inside the spec foundry).
+- 💛 **`add-to-portfolio-app` (`v0.2.0`)**: Upgraded from placeholder to comprehensive portfolio management workflow covering `etc/data.yaml`, `etc/videos.yaml`, `db/portfolio.sqlite3` (`just import`), curated on-stage speaker photos (`riccardo-stage-default.png`), TDD checks (`npx vitest run src/`), and GitHub Actions WIF auto-deploy to Cloud Run.
+- 🚀 Bumped version to 0.6.12.
+
 ## [0.6.11] - 2026-10-21
 
 - 🧪 Updated `test/validate_skills.py` to enforce `description: >-` folded strip block scalar syntax compliance in sub-repository tests.
