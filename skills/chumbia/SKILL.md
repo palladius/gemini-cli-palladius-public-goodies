@@ -1,29 +1,31 @@
 ---
 name: chumbia
 description: >-
-  (💛) End-of-session verification and post-work cleanup skill ('le pulizie dopo la fatica').
-  Use when the user says 'chumbia', '/chumbia', 'possiamo chiudere?', or 'are we done? if yes say chumbia'.
-  Audits whether all work is committed, tested, and merged to main; if not done, reports what remains.
-  If done, cleans up merged local/remote feature branches, temporary git worktrees, leftover node_modules/
-  and build caches (via 'just clean'), cancels active background timers, and concludes with CHUMBIA!
+  (💛) End-of-session verification, post-work cleanup ('le pulizie dopo la fatica'), and '/learn'
+  piggyback skill. Use when the user says 'chumbia', '/chumbia', 'possiamo chiudere?', or
+  'are we done? if yes say chumbia'. Audits whether all work is committed, tested, and merged to main;
+  if not done, reports what remains. If done, cleans up merged local/remote feature branches, temporary
+  git worktrees, leftover node_modules/ and build caches (via 'just clean'), cancels active background
+  timers, piggybacks a mandatory '/learn' session-learnings distillation, and concludes with CHUMBIA!
   so the conversation can be safely archived or destroyed.
 compatibility: gemini-cli, antigravity, claude
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   author: "Riccardo Carlesso"
-  tags: "cleanup, git, worktree, branch, workflow, session-end, chumbia, hygiene"
+  tags: "cleanup, git, worktree, branch, workflow, session-end, chumbia, hygiene, learn, learnings"
 ---
 
-# 💃🕺🎺 Chumbia! — End-of-Session Verification & Cleanup
+# 💃🕺🎺 Chumbia! — End-of-Session Verification, Cleanup & `/learn` Piggyback
 
-**Chumbia** is the official end-of-conversation protocol ("le pulizie DOPO la fatica") before archiving or destroying an agent conversation.
+**Chumbia** is the official end-of-conversation protocol ("le pulizie DOPO la fatica + `/learn` piggyback") before archiving or destroying an agent conversation.
 
-When the user asks *"manca qualcosa o /chumbia?"*, *"are we done? if yes say chumbia"*, or invokes `/chumbia`, you **MUST NOT** blindly say "Chumbia!". Instead, run the 3-phase protocol below:
+When the user asks *"manca qualcosa o /chumbia?"*, *"are we done? if yes say chumbia"*, or invokes `/chumbia`, you **MUST NOT** blindly say "Chumbia!". Instead, run the 4-phase protocol below:
 
 1. **Phase 1 — Readiness Audit ("Abbiamo davvero finito?")**: Verify whether the task is 100% complete, tested, version-bumped, committed, pushed, and merged into `main`.
    - **If NO**: Do **NOT** say "Chumbia!". List clearly what is still pending and ask the user whether to finish it now.
 2. **Phase 2 — Post-Work Cleanup ("Le Pulizie Dopo la Fatica")**: If Phase 1 passes, clean up temporary worktrees, merged local & remote feature branches, leftover `node_modules/` in secondary worktrees, build artifacts (`just clean`), and recurring background timers.
-3. **Phase 3 — The Chumbia Sign-Off**: Conclude with a celebratory **`CHUMBIA! 💃🕺🎺🦖✨`** and a compact summary of what was verified and cleaned up.
+3. **Phase 3 — 🧠 `/learn` Piggyback ("Cosa Abbiamo Imparato Oggi?")**: **ALWAYS** piggyback a structured distillation of session learnings (user corrections, non-trivial setups, gotchas, reusable patterns), persisting what can be saved directly and surfacing a ready-to-trigger `/learn` recommendation before the chat is destroyed.
+4. **Phase 4 — The Chumbia Sign-Off**: Conclude with a celebratory **`CHUMBIA! 💃🕺🎺🦖✨`** and a compact summary of what was verified, cleaned up, and learned.
 
 ---
 
@@ -124,9 +126,24 @@ Check `git worktree list` and `git branch --show-current`:
 
 ---
 
-## 🎺 Phase 3: The Chumbia Sign-Off
+## 🧠 Phase 3: `/learn` Piggyback ("Cosa Abbiamo Imparato Oggi?")
 
-When Phase 1 and Phase 2 are complete, end your message with a clear, joyful sign-off so the user knows they can immediately archive or close the conversation:
+Before declaring `CHUMBIA!`, you **MUST ALWAYS** piggyback a `/learn` knowledge-capture pass so no valuable lesson vanishes when the conversation is destroyed:
+
+1. **Scan the Conversation Trajectory for Learnings**:
+   - **User Corrections & Preferences**: Did the user correct your assumptions, flags, style, workflow, or commands?
+   - **Tricky Setups & Debugging Gotchas**: Did you solve a non-trivial environment issue, build failure, auth quirk, or API edge case?
+   - **Reusable Patterns & Skills**: Did a repeatable multi-step recipe emerge that belongs in `GEMINI.md` / `AGENTS.md` or a new/updated skill in `~/git/skillume/`?
+2. **Persist or Stage the Learnings**:
+   - **Direct Persistence**: If a learning clearly belongs in the repo's docs/rules or an existing skill and can be safely saved (committed & pushed before final sign-off), do so or note where it was persisted.
+   - **Slash Command `/learn` Handoff**: Since `/learn` is a user-triggered chat UI slash command that persists agent rules/memories across future sessions, **always** provide a ready-to-copy `/learn` snippet whenever the session produced behavioral corrections, user preferences, or setup wisdom worth remembering.
+   - **Skill Candidate Proposal**: If a new reusable workflow was invented, briefly propose whether to crystallize it into a skill (per `~/git/skillume/GEMINI.md` routing).
+
+---
+
+## 🎺 Phase 4: The Chumbia Sign-Off
+
+When Phases 1, 2, and 3 are complete, end your message with a clear, joyful sign-off (always including the **`🧠 Learnings (/learn Piggyback)`** section!) so the user knows they can optionally fire `/learn` and immediately archive or close the conversation:
 
 ```markdown
 ## 💃🕺🎺 CHUMBIA! 🦖✨
@@ -136,4 +153,7 @@ Tutto pulito e archiviato su `main` — puoi chiudere o distruggere questa conve
 - ✅ **Git & Main**: `origin/main` allineato (`vX.Y.Z`), working tree pulito, test verdi.
 - 🌿 **Branch & Worktree**: [Rimosso worktree temporaneo / eliminato branch locale e remoto `<branch>` / `git fetch --prune` eseguito].
 - 🧹 **Pulizie Disco & Task**: [`just clean` eseguito / rimossi `node_modules` temporanei / nessun task o cron rimasto attivo].
+- 🧠 **Learnings (`/learn` Piggyback)**:
+  - 💡 *Takeaways*: [1–3 bullet sintetici su cosa abbiamo imparato, fixato o scoperto nella sessione, oppure *"Sessione di routine, nessun nuovo gotcha critico"*].
+  - 📌 *Persistenza*: [Già salvato in `<file/skill>` / Nessuna modifica necessaria / **Consigliato prima di chiudere:** esegui `/learn <frase pronta da incollare con la regola o il setup imparato>`].
 ```

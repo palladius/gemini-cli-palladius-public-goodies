@@ -1,3 +1,8 @@
+## [0.6.12] - 2026-10-23
+
+- 🧠💃 **`chumbia` (`v1.1.0`)**: Added mandatory **Phase 3 (`/learn` Piggyback — "Cosa Abbiamo Imparato Oggi?")** and updated the final `CHUMBIA!` sign-off template to always piggyback session learnings, persistence status, and a ready-to-paste `/learn` command before closing a conversation.
+- 🚀 Bumped version to 0.6.12.
+
 ## [0.6.11] - 2026-10-21
 
 - 🧪 Updated `test/validate_skills.py` to enforce `description: >-` folded strip block scalar syntax compliance in sub-repository tests.

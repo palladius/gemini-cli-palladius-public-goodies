@@ -2,6 +2,10 @@
 
 All notable changes to this skill will be documented in this file.
 
+## [1.1.0] - 2026-10-23
+
+- 🧠 **Phase 3 (`/learn` Piggyback)**: Added mandatory session-learnings distillation phase ("Cosa Abbiamo Imparato Oggi?") before the final `CHUMBIA!` sign-off. Scans the conversation for user corrections, complex setup discoveries, and reusable workflows, persists what can be saved directly, and always outputs a `🧠 Learnings (/learn Piggyback)` block with a ready-to-copy `/learn` command recommendation.
+
 ## [1.0.0] - 2026-10-14
 
 - 💃🕺🎺 Initial release of `chumbia` skill (`(💛)`).
