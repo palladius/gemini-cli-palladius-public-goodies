@@ -1,6 +1,8 @@
 ## [0.6.13] - 2026-10-23
 
-- ✨ **`events-report-zurigo` (`v2.0.0`)**: Harmonized from Hermes; added Zurich cycling & lake weather ("Zona T-Shirt" protocol) and `scripts/bike_weather.py`, multi-source live Lake Zurich water temperature feeds, and `references/event_verification_protocol.md`.
+- ✨ **`events-report-zurigo` (`v2.0.1`)**:
+  - Added direct Tecson live sensor hardware telemetry fallback (Wasserschutzpolizei harbor origin at Tiefenbrunnen and Mythenquai) to Lake Zurich water temp feeds in `scripts/bike_weather.py`.
+  - Harmonized from Hermes; added Zurich cycling & lake weather ("Zona T-Shirt" protocol) and `scripts/bike_weather.py`, multi-source live Lake Zurich water temperature feeds, and `references/event_verification_protocol.md`.
 - 🚀 Bumped version to 0.6.13.
 
 ## [0.6.12] - 2026-10-23

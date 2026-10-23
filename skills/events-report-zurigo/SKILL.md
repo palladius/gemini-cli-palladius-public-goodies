@@ -2,12 +2,12 @@
 name: events-report-zurigo
 description: >-
   Generates a verified daily report in Italian about upcoming events in Zurich within a strict 7-day window (Today to Today + 7d). Mandates hard JSON schema verification with exact URL, verified calendar date, and physical address before formatting.
-version: 2.0.0
+version: 2.0.1
 compatibility: Gemini CLI
 author: ErmeteBottazzi
 license: MIT
 metadata:
-  version: 2.0.0
+  version: 2.0.1
   hermes:
     tags: [journalism, news, events, zurich, enge, italian-community, ai, tech, verification, json]
     category: productivity
@@ -74,6 +74,8 @@ Stadt Zürich Open Data provides real-time 10-minute water station metrics (WSP 
 - **wiewarm.ch JSON API (All-Season Fallback)**:
   `https://wiewarm.ch/api/v1/bad.json`
   Find `item['badid'] == '14'` (Zürichsee) for current water temperatures at `Tiefenbrunnen` and `Mythenquai` (`item['becken']['Tiefenbrunnen']['temp']`). Remains actively updated and available year-round even when open-air badis are closed for the season.
+- **Tecson Live Sensor Telemetry (Origin Hardware)**:
+  Direct live station HTML feeds at `https://www.tecson-data.ch/zurich/tiefenbrunnen/index.php` and `https://www.tecson-data.ch/zurich/mythenquai/index.php`. Real-time sensor readings directly from the Wasserschutzpolizei harbor hardware updated every 10 minutes.
 
 ### Temperature Tiers:
 - **`>= 20°C`**: 👕 **ZONA T-SHIRT** (Ideal for road cycling / Colnago ready, short sleeves, dry asphalt)

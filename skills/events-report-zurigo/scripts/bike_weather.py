@@ -113,6 +113,25 @@ def get_lake_temperature(station="mythenquai"):
                             return {"station": f"Zürichsee ({chosen_station})", "water_temp_c": float(temp_str), "timestamp": date_str}
     except Exception:
         pass
+
+    # 5. Direct Tecson live station HTML (Wasserschutzpolizei origin telemetry)
+    try:
+        import re
+        station_slug = "tiefenbrunnen" if "tiefenbrunnen" in station.lower() else "mythenquai"
+        t_url = f"https://www.tecson-data.ch/zurich/{station_slug}/index.php"
+        req_t = urllib.request.Request(t_url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req_t, timeout=5) as resp:
+            html = resp.read().decode("utf-8", errors="ignore")
+            idx = html.find("Wassertemperatur</span></a>")
+            if idx != -1:
+                chunk = html[idx:idx + 1200]
+                m = re.search(r'>\s*([0-9]+(?:[\.,][0-9]+)?)\s*(&nbsp;)?\s*C\s*<', chunk)
+                if m:
+                    temp_val = float(m.group(1).replace(",", "."))
+                    return {"station": f"Zürichsee ({station_slug.capitalize()})", "water_temp_c": temp_val, "timestamp": "live (tecson)"}
+    except Exception:
+        pass
+
     return None
 
 def classify_tier(temp, rain_prob, wind_kmh):
