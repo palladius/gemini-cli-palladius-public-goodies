@@ -1,6 +1,7 @@
 ---
 name: harbor-atif-trajectory
-description: (💛) Harbor & Agent Trajectory Interchange Format (ATIF-v1.8) capture, inspection, and FinOps telemetry skill. Standardizes agent trajectories across agy/Antigravity, Antigravity IDE, gemini-cli, and OpenClaw.
+description: >-
+  (💛) Harbor & Agent Trajectory Interchange Format (ATIF-v1.8) capture, inspection, and FinOps telemetry skill. Standardizes agent trajectories across agy/Antigravity, Antigravity IDE, gemini-cli, and OpenClaw.
 metadata:
   version: "1.0.0"
   standard: "Harbor RFC 0001 (ATIF-v1.8)"

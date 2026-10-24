@@ -1,6 +1,7 @@
 ---
 name: marp-slides
-description: Best practices for authoring, editing, testing layout bounds, and rendering previews of Marp Markdown presentations. Use when creating or editing Marp slides, testing for vertical/visual overflow, or generating slide preview artifacts.
+description: >-
+  Best practices for authoring, editing, testing layout bounds, and rendering previews of Marp Markdown presentations. Use when creating or editing Marp slides, testing for vertical/visual overflow, or generating slide preview artifacts.
 compatibility: Gemini CLI, Antigravity
 metadata:
   version: 1.0.0

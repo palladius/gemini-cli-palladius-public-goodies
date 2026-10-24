@@ -1,6 +1,7 @@
 ---
 name: ruby-coding
-description: (💛) Opinionated Ruby coding practices and standards.
+description: >-
+  (💛) Opinionated Ruby coding practices and standards.
 compatibility: Gemini CLI
 metadata:
   version: 0.2

@@ -1,6 +1,7 @@
 ---
 name: google-stt
-description: Transcribe audio files using Google Gemini 1.5 Flash model. Supports batch transcription of multiple audio files.
+description: >-
+  Transcribe audio files using Google Gemini 1.5 Flash model. Supports batch transcription of multiple audio files.
 compatibility: Gemini CLI
 metadata:
   version: 0.1.0

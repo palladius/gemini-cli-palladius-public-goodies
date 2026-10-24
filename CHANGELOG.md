@@ -2,6 +2,8 @@
 
 - 🔀 Merged branch `origin/main` into `main`.
 - 🧠💃 **`chumbia` (`v1.1.0`)**: Added mandatory **Phase 3 (`/learn` Piggyback — "Cosa Abbiamo Imparato Oggi?")** and updated the final `CHUMBIA!` sign-off template to always piggyback session learnings, persistence status, and a ready-to-paste `/learn` command before closing a conversation.
+- 🛠️ Migrated 40 SKILL.md frontmatter descriptions to folded strip block scalar syntax (`description: >-`) and fixed `events-report-zurigo` metadata schema & tier emoji (💛) to achieve 100% `just test` pass rate.
+- 🤖 Signed by `gc-skillume-bot-v0_2`.
 - 🚀 Bumped version to 0.6.14.
 
 ## [0.6.13] - 2026-10-23

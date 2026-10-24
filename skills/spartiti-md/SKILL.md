@@ -1,6 +1,7 @@
 ---
 name: spartiti-md
-description: "(💛) Formato standard 'Markdown Smart' (ChordPro inline + Emoji semantiche) per spartiti di canzoni con accordi e testo per tastieristi e pianisti."
+description: >-
+  (💛) Formato standard 'Markdown Smart' (ChordPro inline + Emoji semantiche) per spartiti di canzoni con accordi e testo per tastieristi e pianisti.
 compatibility: gemini-cli, antigravity, claude
 metadata:
   version: "1.0.1"
@@ -93,4 +94,3 @@ La skill include uno script di linting e una suite di test (zero dipendenze, Pyt
    ```bash
    python3 -m unittest discover -s $SKILL_DIR/tests
    ```
-

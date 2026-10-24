@@ -1,6 +1,7 @@
 ---
 name: riccardo-at-the-computer
-description: Contains the logic and tools to determine if Riccardo is active on his Ubuntu computer (pupurabbux). Use this skill when Riccardo asks "am I at the computer?" or similar questions about his desktop activity.
+description: >-
+  Contains the logic and tools to determine if Riccardo is active on his Ubuntu computer (pupurabbux). Use this skill when Riccardo asks "am I at the computer?" or similar questions about his desktop activity.
 compatibility: Gemini CLI
 metadata:
   version: 0.1

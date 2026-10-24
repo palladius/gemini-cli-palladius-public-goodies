@@ -1,6 +1,7 @@
 ---
 name: openclaudio-update-advisor
-description: Analisi acida e basata sui fatti della stabilità delle release di OpenClaudio. Da usare prima di ogni 'openclaw update' per evitare regressioni o leak di log.
+description: >-
+  Analisi acida e basata sui fatti della stabilità delle release di OpenClaudio. Da usare prima di ogni 'openclaw update' per evitare regressioni o leak di log.
 compatibility: Gemini CLI
 metadata:
   version: 0.1

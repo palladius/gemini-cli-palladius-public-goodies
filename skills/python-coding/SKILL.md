@@ -1,6 +1,7 @@
 ---
 name: python-coding
-description: (💛) Opinionated Python coding practices and standards.
+description: >-
+  (💛) Opinionated Python coding practices and standards.
 compatibility: Gemini CLI
 metadata:
   version: 0.2

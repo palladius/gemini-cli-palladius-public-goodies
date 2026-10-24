@@ -1,6 +1,7 @@
 ---
 name: openclaudio-host-monitoring
-description: Installs a lightweight CPU and RAM monitoring cron job and visualization script for agents on the local machine.
+description: >-
+  Installs a lightweight CPU and RAM monitoring cron job and visualization script for agents on the local machine.
 ---
 
 # openclaudio-host-monitoring

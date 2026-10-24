@@ -1,6 +1,7 @@
 ---
 name: rails8app-billing
-description: (💛) Real-time GCP cost and resource usage estimator for attendees of the Rails 8 on GCP workshop with $5 GDP promotional credits.
+description: >-
+  (💛) Real-time GCP cost and resource usage estimator for attendees of the Rails 8 on GCP workshop with $5 GDP promotional credits.
 ---
 
 # 💸 rails8app-billing

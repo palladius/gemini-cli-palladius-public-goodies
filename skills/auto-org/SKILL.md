@@ -1,6 +1,7 @@
 ---
 name: auto-org
-description: Use when Desktop or Downloads are cluttered with unorganized files, screenshots, receipts, trip documents, or stale installers. Safely categorizes files into ~/Auto.org/ subfolders, stages obsolete items in 'vecchiume', generates markdown triage logs with auto-tagging, and connects to Obsidian.
+description: >-
+  Use when Desktop or Downloads are cluttered with unorganized files, screenshots, receipts, trip documents, or stale installers. Safely categorizes files into ~/Auto.org/ subfolders, stages obsolete items in 'vecchiume', generates markdown triage logs with auto-tagging, and connects to Obsidian.
 license: Apache-2.0
 compatibility: Gemini CLI, Hermes Agent, Antigravity
 metadata:

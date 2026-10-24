@@ -1,6 +1,7 @@
 ---
 name: voice-message
-description: Formats the transcript of a voice message with a standardized, fixed-width layout. Use this skill whenever a voice message is received to present the transcript clearly before taking action.
+description: >-
+  Formats the transcript of a voice message with a standardized, fixed-width layout. Use this skill whenever a voice message is received to present the transcript clearly before taking action.
 compatibility: Gemini CLI
 metadata:
   version: 0.1

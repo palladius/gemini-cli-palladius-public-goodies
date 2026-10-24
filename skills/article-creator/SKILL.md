@@ -1,6 +1,7 @@
 ---
 name: article-creator
-description: (🥑) Expert guide for authoring, building, testing, and publishing technical articles to ricc.rocks and Medium.
+description: >-
+  (🥑) Expert guide for authoring, building, testing, and publishing technical articles to ricc.rocks and Medium.
 compatibility: Gemini CLI
 metadata:
   version: 1.0

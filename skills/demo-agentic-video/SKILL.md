@@ -1,6 +1,7 @@
 ---
 name: demo-agentic-video
-description: Record automated video demos for browsers (shot-scraper) and terminals (Charm VHS .tape scripts) with frame verification and agent delivery.
+description: >-
+  Record automated video demos for browsers (shot-scraper) and terminals (Charm VHS .tape scripts) with frame verification and agent delivery.
 compatibility: Antigravity, Gemini CLI, Claude, Hermes
 metadata:
   version: 1.1.0

@@ -1,6 +1,7 @@
 ---
 name: imagen-zurich-demo
-description: (💛) A skill for generating images with a Zurich twist (🍌🇨🇭). It adds a "Swiss Flag" cameo to your image prompts.
+description: >-
+  (💛) A skill for generating images with a Zurich twist (🍌🇨🇭). It adds a "Swiss Flag" cameo to your image prompts.
 compatibility: Gemini CLI
 metadata:
   version: 0.1

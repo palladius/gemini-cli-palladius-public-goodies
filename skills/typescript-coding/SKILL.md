@@ -1,6 +1,7 @@
 ---
 name: typescript-coding
-description: (💛) Opinionated TypeScript coding practices and standards for those who prefer Ruby.
+description: >-
+  (💛) Opinionated TypeScript coding practices and standards for those who prefer Ruby.
 compatibility: Gemini CLI
 metadata:
   version: 0.1

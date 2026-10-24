@@ -1,6 +1,7 @@
 ---
 name: install-jev-for-antigravity
-description: (💛) Guide and automation procedures to install and configure TypeSafe Jev (System One classification & decision engine) for Google Antigravity CLI and IDE, including both the skill plugin and the MCP proxy server.
+description: >-
+  (💛) Guide and automation procedures to install and configure TypeSafe Jev (System One classification & decision engine) for Google Antigravity CLI and IDE, including both the skill plugin and the MCP proxy server.
 compatibility: Gemini CLI, Antigravity, Claude Code
 metadata:
   version: 0.1.0

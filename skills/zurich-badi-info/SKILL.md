@@ -1,6 +1,7 @@
 ---
 name: zurich-badi-info
-description: (💛) Real-time water temperatures, open status of Zurich badis (lakes, river/Letten, pools), outside weather recommendations for family trips, and Limmat canotto/dinghy flow safety alerts.
+description: >-
+  (💛) Real-time water temperatures, open status of Zurich badis (lakes, river/Letten, pools), outside weather recommendations for family trips, and Limmat canotto/dinghy flow safety alerts.
 compatibility: Gemini CLI
 metadata:
   version: 0.1

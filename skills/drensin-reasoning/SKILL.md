@@ -1,6 +1,7 @@
 ---
 name: drensin-reasoning
-description: (💛) Implementation of the Elephant-Goldfish Model (EGM) by Ben Drensin. Used for deep reasoning, intent design, and intent validation before coding.
+description: >-
+  (💛) Implementation of the Elephant-Goldfish Model (EGM) by Ben Drensin. Used for deep reasoning, intent design, and intent validation before coding.
 compatibility: Gemini CLI
 metadata:
   version: 0.1.0

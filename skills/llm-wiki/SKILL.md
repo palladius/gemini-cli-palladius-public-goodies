@@ -1,6 +1,7 @@
 ---
 name: llm-wiki
-description: "Karpathy's LLM Wiki: build/query interlinked markdown KB."
+description: >-
+  Karpathy's LLM Wiki: build/query interlinked markdown KB.
 license: MIT
 compatibility: Gemini CLI
 metadata:

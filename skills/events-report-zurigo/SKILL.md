@@ -1,16 +1,15 @@
 ---
 name: events-report-zurigo
 description: >-
-  Generates a verified daily report in Italian about upcoming events in Zurich within a strict 7-day window (Today to Today + 7d). Mandates hard JSON schema verification with exact URL, verified calendar date, and physical address before formatting.
+  (💛) Generates a verified daily report in Italian about upcoming events in Zurich within a strict 7-day window (Today to Today + 7d). Mandates hard JSON schema verification with exact URL, verified calendar date, and physical address before formatting.
 version: 2.0.1
 compatibility: Gemini CLI
 author: ErmeteBottazzi
 license: MIT
 metadata:
-  version: 2.0.1
-  hermes:
-    tags: [journalism, news, events, zurich, enge, italian-community, ai, tech, verification, json]
-    category: productivity
+  version: "2.0.1"
+  hermes_category: "productivity"
+  hermes_tags: "journalism, news, events, zurich, enge, italian-community, ai, tech, verification, json"
 ---
 
 # Events Report Zurich Skill (Strict JSON Verification & Zero-Hallucination Policy)

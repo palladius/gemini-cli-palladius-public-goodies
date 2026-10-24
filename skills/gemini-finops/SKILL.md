@@ -1,6 +1,7 @@
 ---
 name: gemini-finops
-description: Monitor and analyze GenAI expenditure on Google Cloud (Vertex AI/Gemini).
+description: >-
+  Monitor and analyze GenAI expenditure on Google Cloud (Vertex AI/Gemini).
 compatibility: gemini-cli
 metadata:
   version: 0.0.1

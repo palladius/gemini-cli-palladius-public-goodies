@@ -1,6 +1,7 @@
 ---
 name: gcp-hardening
-description: "(💛) Use when configuring, auditing, hardening, or open-sourcing projects that use Google Cloud Platform (GCP) resources — especially Google Cloud Storage (GCS) buckets, IAM roles, V4 Signed URLs, or pre-release repository security checks."
+description: >-
+  (💛) Use when configuring, auditing, hardening, or open-sourcing projects that use Google Cloud Platform (GCP) resources — especially Google Cloud Storage (GCS) buckets, IAM roles, V4 Signed URLs, or pre-release repository security checks.
 compatibility: gemini-cli
 metadata:
   version: "1.0.0"

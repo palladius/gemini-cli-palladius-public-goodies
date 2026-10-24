@@ -1,6 +1,7 @@
 ---
 name: imagen-milan-demo
-description: (💛) A skill for generating images with a Milanese twist (🍌🇮🇹). It adds a "Panettone" cameo to your image prompts.
+description: >-
+  (💛) A skill for generating images with a Milanese twist (🍌🇮🇹). It adds a "Panettone" cameo to your image prompts.
 compatibility: Gemini CLI
 metadata:
   version: 0.3

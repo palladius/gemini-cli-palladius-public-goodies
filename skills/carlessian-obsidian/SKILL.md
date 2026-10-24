@@ -1,6 +1,7 @@
 ---
 name: carlessian-obsidian
-description: "💛 Expert guide for interacting with Riccardo's Obsidian vault (The Carlessian Vault)."
+description: >-
+  💛 Expert guide for interacting with Riccardo's Obsidian vault (The Carlessian Vault).
 compatibility: Gemini CLI
 metadata:
   version: 0.2

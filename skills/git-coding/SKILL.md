@@ -1,6 +1,7 @@
 ---
 name: git-coding
-description: (💛) Core guidelines for interacting with git repositories, updating CHANGELOGs, and safely bumping versions. Use this skill whenever proposing or executing git commits, pushing code, or making destructive file changes.
+description: >-
+  (💛) Core guidelines for interacting with git repositories, updating CHANGELOGs, and safely bumping versions. Use this skill whenever proposing or executing git commits, pushing code, or making destructive file changes.
 compatibility: Gemini CLI
 metadata:
   version: 0.0.2

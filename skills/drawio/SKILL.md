@@ -1,6 +1,7 @@
 ---
 name: drawio
-description: Generates and edits diagrams using draw.io via local files or the MCP service.
+description: >-
+  Generates and edits diagrams using draw.io via local files or the MCP service.
 compatibility: Gemini CLI
 metadata:
   version: 0.1

@@ -1,6 +1,7 @@
 ---
 name: karl-captiveportal-wifi-wisdom
-description: "(💛) Use when troubleshooting hotel, airport, conference, or public captive portal Wi-Fi connection failures on macOS, including login pages not opening, constant disconnections on sleep/wake, self-assigned IP addresses (169.254.x.x), or SSL certificate redirect errors."
+description: >-
+  (💛) Use when troubleshooting hotel, airport, conference, or public captive portal Wi-Fi connection failures on macOS, including login pages not opening, constant disconnections on sleep/wake, self-assigned IP addresses (169.254.x.x), or SSL certificate redirect errors.
 compatibility: Gemini CLI, Antigravity, Claude Code, macOS
 metadata:
   version: "0.1.0"

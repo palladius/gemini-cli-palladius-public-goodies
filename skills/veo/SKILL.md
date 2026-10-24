@@ -1,6 +1,7 @@
 ---
 name: veo
-description: Generate short videos from text or image prompts using Google's Veo model (via API Key or Vertex AI). Use when the user asks to create a video, generate a clip, or animate an image.
+description: >-
+  Generate short videos from text or image prompts using Google's Veo model (via API Key or Vertex AI). Use when the user asks to create a video, generate a clip, or animate an image.
 compatibility: Antigravity, Gemini CLI, Claude, OpenClaw
 metadata:
   version: 0.2.0

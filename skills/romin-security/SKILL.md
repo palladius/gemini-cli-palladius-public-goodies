@@ -1,6 +1,7 @@
 ---
 name: romin-security
-description: Hackathon security guide to prevent leaking secrets. Based on Romin Irani's article.
+description: >-
+  Hackathon security guide to prevent leaking secrets. Based on Romin Irani's article.
 metadata:
   version: 1.0.0
 compatibility: gemini-cli

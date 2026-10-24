@@ -1,6 +1,7 @@
 ---
 name: take-screenshot
-description: Cross-platform screenshot utility for Linux Wayland and macOS. Use when the user asks to take a screenshot of a monitor, window, or specific area so the CLI can see and analyze it.
+description: >-
+  Cross-platform screenshot utility for Linux Wayland and macOS. Use when the user asks to take a screenshot of a monitor, window, or specific area so the CLI can see and analyze it.
 compatibility: Gemini CLI
 metadata:
   version: 1.0.0

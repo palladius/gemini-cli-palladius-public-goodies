@@ -1,6 +1,7 @@
 ---
 name: git-repo-documenter
-description: "(💛) Auto-documents any Git repository: creates ABOUT.md, generates project hero images via nanobanana, and builds deep diagrams (Mermaid E/R or Class diagrams)."
+description: >-
+  (💛) Auto-documents any Git repository: creates ABOUT.md, generates project hero images via nanobanana, and builds deep diagrams (Mermaid E/R or Class diagrams).
 compatibility: Gemini CLI
 metadata:
   version: 0.1.0
