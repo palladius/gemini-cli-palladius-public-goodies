@@ -1,6 +1,20 @@
+## [0.6.14] - 2026-10-24
+
+- 🔀 Merged branch `origin/main` into `main`.
+- 🧠💃 **`chumbia` (`v1.1.0`)**: Added mandatory **Phase 3 (`/learn` Piggyback — "Cosa Abbiamo Imparato Oggi?")** and updated the final `CHUMBIA!` sign-off template to always piggyback session learnings, persistence status, and a ready-to-paste `/learn` command before closing a conversation.
+- 🚀 Bumped version to 0.6.14.
+
+## [0.6.13] - 2026-10-23
+
+- ✨ **`events-report-zurigo` (`v2.0.1`)**:
+  - Added direct Tecson live sensor hardware telemetry fallback (Wasserschutzpolizei harbor origin at Tiefenbrunnen and Mythenquai) to Lake Zurich water temp feeds in `scripts/bike_weather.py`.
+  - Harmonized from Hermes; added Zurich cycling & lake weather ("Zona T-Shirt" protocol) and `scripts/bike_weather.py`, multi-source live Lake Zurich water temperature feeds, and `references/event_verification_protocol.md`.
+- 🚀 Bumped version to 0.6.13.
+
 ## [0.6.12] - 2026-10-23
 
-- 🧠💃 **`chumbia` (`v1.1.0`)**: Added mandatory **Phase 3 (`/learn` Piggyback — "Cosa Abbiamo Imparato Oggi?")** and updated the final `CHUMBIA!` sign-off template to always piggyback session learnings, persistence status, and a ready-to-paste `/learn` command before closing a conversation.
+- 💛 **`spec-to-code-tdd` (`v0.1.0`)**: Added Spec-Driven Development meets Test-Driven Development skill for Antigravity, Gemini CLI, and Claude Code. Orchestrates implementation of `respec` (`speck`) specifications in dedicated external repositories while enforcing the Foundry Isolation Principle (never code inside the spec foundry).
+- 💛 **`add-to-portfolio-app` (`v0.2.0`)**: Upgraded from placeholder to comprehensive portfolio management workflow covering `etc/data.yaml`, `etc/videos.yaml`, `db/portfolio.sqlite3` (`just import`), curated on-stage speaker photos (`riccardo-stage-default.png`), TDD checks (`npx vitest run src/`), and GitHub Actions WIF auto-deploy to Cloud Run.
 - 🚀 Bumped version to 0.6.12.
 
 ## [0.6.11] - 2026-10-21
