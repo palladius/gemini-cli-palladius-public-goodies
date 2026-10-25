@@ -1,3 +1,9 @@
+## [0.6.15] - 2026-10-25
+
+- 🛠️ Fix `events-report-zurigo` frontmatter fields (`version` and `author` moved into `metadata`) to adhere to agent-skills schema and ensure clean `just test` validation pass.
+- 🤖 Signed by `gc-skillume-bot-v0_2`.
+- 🚀 Bumped version to 0.6.15.
+
 ## [0.6.14] - 2026-10-24
 
 - 🔀 Merged branch `origin/main` into `main`.
