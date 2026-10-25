@@ -412,39 +412,57 @@ def evaluate_hunk_with_llm(
     last_error = ""
 
     if api_key:
-        try:
-            from google import genai
-            from google.genai import types
+        import urllib.error
+        import urllib.request
 
-            client = genai.Client(api_key=api_key)
-            for model_name in models_to_try:
-                if not model_name:
-                    continue
-                try:
-                    response = client.models.generate_content(
-                        model=model_name,
-                        contents=prompt,
-                        config=types.GenerateContentConfig(
-                            response_mime_type="application/json",
-                            temperature=0.1,
-                        ),
-                    )
-                    raw_text = (response.text or "").strip()
-                    parsed = json.loads(raw_text)
-                    prob = float(parsed.get("probability", hunk.deterministic_probability))
-                    prob = max(0.0, min(1.0, round(prob, 2)))
-                    reason = str(parsed.get("reason") or hunk.deterministic_reason)
-                    return {
-                        "error": False,
-                        "error_message": None,
-                        "probability": prob,
-                        "reason": reason,
-                        "model_used": model_name,
+        for model_name in models_to_try:
+            if not model_name:
+                continue
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+                req_body = json.dumps(
+                    {
+                        "contents": [{"parts": [{"text": prompt}]}],
+                        "generationConfig": {
+                            "responseMimeType": "application/json",
+                            "temperature": 0.1,
+                        },
                     }
-                except Exception as model_err:
-                    last_error = f"Model {model_name} failed: {model_err}"
-        except Exception as sdk_err:
-            last_error = f"google-genai SDK error: {sdk_err}"
+                ).encode("utf-8")
+                req = urllib.request.Request(
+                    url,
+                    data=req_body,
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                with urllib.request.urlopen(req, timeout=20) as resp:
+                    resp_data = json.loads(resp.read().decode("utf-8"))
+                candidates = resp_data.get("candidates") or []
+                raw_text = (
+                    candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                    if candidates
+                    else ""
+                ).strip()
+                parsed = json.loads(raw_text)
+                prob = float(parsed.get("probability", hunk.deterministic_probability))
+                prob = max(0.0, min(1.0, round(prob, 2)))
+                reason = str(parsed.get("reason") or hunk.deterministic_reason)
+                return {
+                    "error": False,
+                    "error_message": None,
+                    "probability": prob,
+                    "reason": reason,
+                    "model_used": model_name,
+                }
+            except urllib.error.HTTPError as http_err:
+                err_body = ""
+                try:
+                    err_body = http_err.read().decode("utf-8", errors="ignore")[:200]
+                except Exception:
+                    pass
+                last_error = f"Model {model_name} HTTP {http_err.code}: {err_body or http_err.reason}"
+            except Exception as model_err:
+                last_error = f"Model {model_name} failed: {model_err}"
     else:
         last_error = "Neither GEMINI_API_KEY nor GOOGLE_API_KEY is set in environment."
 
