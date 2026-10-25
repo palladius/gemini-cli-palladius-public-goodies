@@ -200,7 +200,7 @@ def analyze_hunk_deterministic(
         char_len = len(stripped)
         directives, clauses = _count_clauses_and_directives(stripped)
 
-        if (directives >= 3 and clauses >= 3) or (char_len > 240 and (directives >= 2 or clauses >= 3)) or clauses >= 5:
+        if (directives >= 3 and clauses >= 3) or (char_len > 220 and (directives >= 2 or clauses >= 4)):
             signals.append(
                 BloatSignal(
                     code="CRAMMED_LINE",
