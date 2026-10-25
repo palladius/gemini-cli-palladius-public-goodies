@@ -2,6 +2,12 @@
 
 All notable changes to this skill will be documented in this file.
 
+## [1.2.0] - 2026-10-25
+
+- 🎯 **Expanded Trigger Phrases**: Added English readiness-audit triggers (*"check git / git st and commit push if the work is finished, or tell me what is missing"*).
+- 🛡️ **Stale `.git/sequencer/` Guardrail**: Check full `git status` (since `git status -s` / `--porcelain` hides in-progress cherry-pick/rebase sequencer state) and use `git cherry-pick --quit` (never `--abort`) when commits are already on `HEAD`.
+- 🌿 **Cherry-Picked / Squashed Worktree Detection**: Added `git cherry -v origin/main <branch>` check when `git merge-base --is-ancestor` returns `1`.
+
 ## [1.1.0] - 2026-10-23
 
 - 🧠 **Phase 3 (`/learn` Piggyback)**: Added mandatory session-learnings distillation phase ("Cosa Abbiamo Imparato Oggi?") before the final `CHUMBIA!` sign-off. Scans the conversation for user corrections, complex setup discoveries, and reusable workflows, persists what can be saved directly, and always outputs a `🧠 Learnings (/learn Piggyback)` block with a ready-to-copy `/learn` command recommendation.

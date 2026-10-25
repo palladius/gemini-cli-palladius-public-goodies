@@ -2,15 +2,17 @@
 name: chumbia
 description: >-
   (💛) End-of-session verification, post-work cleanup ('le pulizie dopo la fatica'), and '/learn'
-  piggyback skill. Use when the user says 'chumbia', '/chumbia', 'possiamo chiudere?', or
-  'are we done? if yes say chumbia'. Audits whether all work is committed, tested, and merged to main;
-  if not done, reports what remains. If done, cleans up merged local/remote feature branches, temporary
-  git worktrees, leftover node_modules/ and build caches (via 'just clean'), cancels active background
-  timers, piggybacks a mandatory '/learn' session-learnings distillation, and concludes with CHUMBIA!
-  so the conversation can be safely archived or destroyed.
+  piggyback skill. Use when the user says 'chumbia', '/chumbia', 'possiamo chiudere?',
+  'are we done? if yes say chumbia', or asks to 'check git / git st and commit push if the work
+  is finished, or tell me what is missing'. Audits whether all work is committed, tested, and merged
+  to main; if not done, reports what remains. If done, cleans up stale git sequencer states
+  (cherry-pick/rebase), merged local/remote feature branches, temporary git worktrees, leftover
+  node_modules/ and build caches (via 'just clean'), cancels active background timers, piggybacks
+  a mandatory '/learn' session-learnings distillation, and concludes with CHUMBIA! so the
+  conversation can be safely archived or destroyed.
 compatibility: gemini-cli, antigravity, claude
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   author: "Riccardo Carlesso"
   tags: "cleanup, git, worktree, branch, workflow, session-end, chumbia, hygiene, learn, learnings"
 ---
@@ -34,6 +36,7 @@ When the user asks *"manca qualcosa o /chumbia?"*, *"are we done? if yes say chu
 - 🚫 **NEVER run `git clean -fd` or `git reset --hard`**. Untracked files may contain active work by the user or other agents.
 - 🚫 **NEVER touch `.env` or `.riccardo/`**.
 - 🚫 **NEVER delete unmerged branches** (`git branch -D` is forbidden unless you have first proven `git merge-base --is-ancestor <branch> origin/main` returns `0`).
+- 🚫 **NEVER run `git cherry-pick --abort` or `git rebase --abort` blindly on `main`** if a stale `.git/sequencer/` exists after commits were already landed manually — `--abort` rewinds `HEAD` to `.git/sequencer/abort-safety`! Verify whether commits are already on `HEAD`, and use `git cherry-pick --quit` to clear stale sequencer state safely without moving `HEAD`.
 - 🚫 **NEVER delete protected branches** (`main`, `master`, `gh-pages`, `production`, `release/*`).
 - 🚫 **NEVER delete `node_modules/` in the primary active repository** if the user is actively running a foreground dev server there — only remove `node_modules/` inside temporary/secondary worktrees or sub-repos after work is finished, or via the project's own `just clean` recipe.
 
@@ -43,8 +46,9 @@ When the user asks *"manca qualcosa o /chumbia?"*, *"are we done? if yes say chu
 
 Run a non-destructive diagnostic check (or run `bash "$SKILL_DIR/scripts/chumbia_audit.sh"` if available) covering these 6 gates:
 
-1. **Working Tree Status (`git status --porcelain`)**:
+1. **Working Tree & Sequencer Status (`git status` + `git status --porcelain`)**:
    - Are there modified, staged, or newly created files from this session that haven't been committed?
+   - **Always check full `git status` (or `.git/sequencer/`, `.git/CHERRY_PICK_HEAD`, `.git/REBASE_HEAD`)**: `git status -s` / `--porcelain` hides in-progress cherry-pick/rebase sequencer state! If `.git/sequencer/` is left over from a cherry-pick whose commits are already on `HEAD`, clear it safely with `git cherry-pick --quit` (never `--abort`).
 2. **Version & Changelog Hygiene**:
    - If code or skills were modified in this session and the repo maintains `VERSION` / `gemini-extension.json` and `CHANGELOG.md`, were they bumped and updated?
 3. **Test Suite (`just test`)**:
@@ -53,6 +57,7 @@ Run a non-destructive diagnostic check (or run `bash "$SKILL_DIR/scripts/chumbia
    - Run `git fetch --prune origin`.
    - If on `main`: are there unpushed local commits (`git rev-list --count origin/main..HEAD`)?
    - If on a feature branch (`<feature-branch>`): has `<feature-branch>` been merged into `origin/main` (`git merge-base --is-ancestor HEAD origin/main`), or is there still an open PR/MR waiting to land?
+   - **Cherry-Picked / Squashed Worktree Check**: If a worktree branch was cherry-picked or squashed onto `main` rather than merged with `git merge`, `git merge-base --is-ancestor` returns `1`. Check `git cherry -v origin/main <branch>` (all lines prefixed with `-` means all patches are in `origin/main`) or inspect the commit log/diff on `main` to confirm the work has landed.
 5. **Conductor Track State (if applicable)**:
    - If a Conductor track was active in this session (`conductor/tracks/<track-id>/metadata.json`), are all tasks checked off?
 6. **Conversation Deliverables**:

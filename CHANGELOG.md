@@ -1,3 +1,11 @@
+## [0.6.16] - 2026-10-25
+
+- 💃🧹 **`chumbia` (`v1.2.0`)**:
+  - Expanded trigger description to match *"check git / git st and commit push if the work is finished, or tell me what is missing"*.
+  - Added **Stale `.git/sequencer/` Guardrail**: check full `git status` (since `git status -s` / `--porcelain` hides in-progress cherry-pick/rebase sequencer state) and use `git cherry-pick --quit` (never `--abort`) when commits are already on `HEAD`.
+  - Added **Cherry-Picked / Squashed Worktree Detection** (`git cherry -v origin/main <branch>` when `git merge-base --is-ancestor` returns `1`).
+  - Symlinked `chumbia` into `~/.gemini/config/skills/chumbia` and `~/.gemini/antigravity/skills/chumbia` for automatic Antigravity CLI discovery.
+
 ## [0.6.15] - 2026-10-25
 
 - 🛠️ Fix `events-report-zurigo` frontmatter fields (`version` and `author` moved into `metadata`) to adhere to agent-skills schema and ensure clean `just test` validation pass.
