@@ -1,3 +1,8 @@
+## [0.6.19] - 2026-10-27
+
+- 📖 Docs: Clarified what `agc` is and added repository links in `README.md` (fixes #2).
+- 🚀 Bumped version to 0.6.19.
+
 ## [0.6.18] - 2026-10-27
 
 - ✨ **`events-report-zurigo` (`v2.0.2`)**:
