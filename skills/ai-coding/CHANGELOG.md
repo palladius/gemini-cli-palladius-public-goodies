@@ -1,5 +1,8 @@
 # CHANGELOG for ai-coding
 
+## 0.1.1 (2026-10-27)
+- Enforced canonical `.agents/` (plural) directory and added `OBSOLETE_DOT_AGENT` / directory check (`WARNING: .agent/ is obsoleted, use .agents/ instead!`) to `analyze_bloat_history.py`.
+
 ## 0.1.0 (2026-10-25)
 - Initial release of `ai-coding`: best practices for agent instruction files (`AGENTS.md` over `GEMINI.md` for inclusivity, symlink strategy, and `.agents/rules/` glob rules).
 - Added Anti-Bloat Guardrails (`OVERFITTING_H2_SECTION`, `CRAMMED_LINE`, `APPEND_ONLY_EOF`, `CONFLICT_OR_GARBAGE`, `WALL_OF_TEXT`).

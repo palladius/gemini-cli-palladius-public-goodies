@@ -8,7 +8,7 @@ description: >-
   and provides analyze_bloat_history.py to audit Git history or uncommitted diffs.
 compatibility: Gemini CLI
 metadata:
-  version: 0.1.0
+  version: 0.1.1
 ---
 # AI Coding & Agent Prompt Hygiene (`ai-coding`)
 
@@ -27,7 +27,7 @@ System instruction files (`AGENTS.md`, `GEMINI.md`, `CLAUDE.md`, `CONTRIBUTING.m
   ```bash
   ln -s AGENTS.md GEMINI.md
   ```
-- **Hierarchical `.agents/rules/`:** For file-type-specific or conditional rules in Antigravity, place modular rule files under `.agents/rules/<rule-name>.md` (or `.agent/rules/<rule-name>.md`) using `trigger: glob` or `trigger: model_decision` frontmatter instead of stuffing everything into the root prompt file.
+- **Canonical `.agents/` (plural):** Place modular rules in `.agents/rules/<name>.md` (`trigger: glob` or `model_decision`). `.agent/` (singular) is obsolete — always `git mv .agent .agents`.
 
 ---
 

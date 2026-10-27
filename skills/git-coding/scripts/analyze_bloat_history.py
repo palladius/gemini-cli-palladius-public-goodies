@@ -115,10 +115,15 @@ class HunkAnalysis:
 def _count_clauses_and_directives(line_text: str) -> Tuple[int, int]:
     """Count imperative keywords and sentence/clause breaks in a single line."""
     directives = len(IMPERATIVE_PATTERNS.findall(line_text))
-    # Count clause separators: semicolons, sentence boundaries, numbered inline items, comma clauses
     inline_bullets = len(re.findall(r"(?:^|\s)(?:\(\d+\)|\d+\)|\d+\.|-|\*)\s+\w+", line_text))
     sentence_splits = len(re.findall(r"(?:;\s*\w|[.!]\s+[A-Z`*])", line_text))
-    comma_clauses = len(re.findall(r",\s+(?:and\s+|but\s+|or\s+|then\s+|never\s+|always\s+|make\s+|ensure\s+|do\s+|don't\s+|avoid\s+|prefer\s+)?\w+", line_text, re.IGNORECASE))
+    comma_clauses = len(
+        re.findall(
+            r",\s+(?:and\s+|but\s+|or\s+|then\s+|never\s+|always\s+|make\s+|ensure\s+|do\s+|don't\s+|avoid\s+|prefer\s+)?\w+",
+            line_text,
+            re.IGNORECASE,
+        )
+    )
     clauses = 1 + sentence_splits + comma_clauses + max(0, inline_bullets - 1)
     return directives, clauses
 
@@ -153,7 +158,6 @@ def analyze_hunk_deterministic(
             break
 
     # 2. Check for OVERFITTING_H2_SECTION:
-    # Adding an H2/H3 heading with only 1-2 content lines/bullets in the section.
     headings_in_hunk: List[Tuple[int, str]] = []
     for idx, line in enumerate(non_empty_added):
         if re.match(r"^#{2,3}\s+\S+", line.strip()):
@@ -222,7 +226,7 @@ def analyze_hunk_deterministic(
             )
             break
 
-    # 4. Check for APPEND_ONLY_EOF (pure addition at the end of the file, 0 removals)
+    # 4. Check for APPEND_ONLY_EOF
     if len(non_empty_removed) == 0 and old_count <= 4 and new_start > 15 and len(non_empty_added) >= 2:
         signals.append(
             BloatSignal(
@@ -235,7 +239,7 @@ def analyze_hunk_deterministic(
             )
         )
 
-    # 5. Check for WALL_OF_TEXT (dumping >25 lines in a single hunk without refactoring)
+    # 5. Check for WALL_OF_TEXT
     if len(non_empty_added) > 25 and len(non_empty_removed) <= 2:
         signals.append(
             BloatSignal(
@@ -248,10 +252,21 @@ def analyze_hunk_deterministic(
             )
         )
 
+    # 6. Check for obsolete .agent/ (singular) path references
+    for line in non_empty_added:
+        if re.search(r"(?<![\w-])\.agent/(?:rules|skills|workflows)\b", line) and ".agents" not in line:
+            signals.append(
+                BloatSignal(
+                    code="OBSOLETE_DOT_AGENT",
+                    weight=0.40,
+                    description="WARNING: .agent/ is obsoleted, use .agents/ instead!",
+                )
+            )
+            break
+
     if not signals:
         return [], 0.05, "Clean diff: atomic change with no bloat signals detected."
 
-    # Combine weights with diminishing returns capped at 0.98
     total_weight = sum(s.weight for s in signals)
     probability = min(0.98, round(total_weight, 2))
     reason = "; ".join(f"[{s.code}] {s.description}" for s in signals)
@@ -463,7 +478,6 @@ def evaluate_hunk_with_llm(
     else:
         last_error = "Neither GEMINI_API_KEY nor GOOGLE_API_KEY is set in environment."
 
-    # Fallback: guaranteed schema with error=True, error_message, deterministic probability, and reason
     return {
         "error": True,
         "error_message": last_error,
@@ -481,13 +495,34 @@ def _severity_label(prob: float) -> str:
     return "LOW"
 
 
-def format_agent_friendly_text(hunks: List[HunkAnalysis], min_probability: float = 0.0) -> str:
+def check_obsolete_dot_agent_dir(repo_root: str) -> List[str]:
+    """Check if the directory has an obsolete .agent/ directory or symlink instead of .agents/."""
+    warnings: List[str] = []
+    dot_agent = os.path.join(repo_root, ".agent")
+    if os.path.exists(dot_agent) or os.path.islink(dot_agent):
+        warnings.append(
+            f"WARNING: {dot_agent}/ is obsoleted, use .agents/ instead! (Run: git mv .agent .agents)"
+        )
+    return warnings
+
+
+def format_agent_friendly_text(
+    hunks: List[HunkAnalysis],
+    min_probability: float = 0.0,
+    workspace_warnings: Optional[List[str]] = None,
+) -> str:
     """Format hunks into the requested agent-friendly text blocks."""
+    prefix_lines: List[str] = []
+    if workspace_warnings:
+        for w in workspace_warnings:
+            prefix_lines.append(f"⚠️  {w}")
+
     filtered = [h for h in hunks if h.final_probability >= min_probability]
     if not filtered:
-        return "✅ No commits/hunks exceeded the bloat threshold."
+        msg = "✅ No commits/hunks exceeded the bloat threshold."
+        return ("\n".join(prefix_lines) + "\n" + msg) if prefix_lines else msg
 
-    blocks: List[str] = []
+    blocks: List[str] = list(prefix_lines)
     for h in filtered:
         prob = h.final_probability
         pct = int(round(prob * 100))
@@ -515,6 +550,7 @@ def format_llm_json_output(
     hunks: List[HunkAnalysis],
     min_probability: float = 0.0,
     top_level_error: Optional[str] = None,
+    workspace_warnings: Optional[List[str]] = None,
 ) -> str:
     """Format strictly valid JSON output required when `--llm` or `--json` is used.
 
@@ -523,13 +559,16 @@ def format_llm_json_output(
       - error_message (str | None)
       - probability (float, ALWAYS present)
       - reason (str, ALWAYS present)
+      - warnings (list[str])
     """
+    warnings_list = list(workspace_warnings or [])
     if top_level_error is not None:
         payload = {
             "error": True,
             "error_message": top_level_error,
             "probability": 0.0,
             "reason": f"Analysis could not run: {top_level_error}",
+            "warnings": warnings_list,
             "findings": [],
         }
         return json.dumps(payload, indent=2)
@@ -577,6 +616,7 @@ def format_llm_json_output(
         "error_message": first_error_msg,
         "probability": overall_prob,
         "reason": overall_reason,
+        "warnings": warnings_list,
         "total_hunks_analyzed": len(hunks),
         "flagged_hunks_count": len(findings),
         "findings": findings,
@@ -698,8 +738,14 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     all_hunks: List[HunkAnalysis] = []
     errors: List[str] = []
+    checked_dirs = set()
+    workspace_warnings: List[str] = []
 
     for fpath in target_files:
+        abs_dir = os.path.dirname(os.path.abspath(fpath)) if os.path.exists(fpath) else os.getcwd()
+        if abs_dir not in checked_dirs:
+            checked_dirs.add(abs_dir)
+            workspace_warnings.extend(check_obsolete_dot_agent_dir(abs_dir))
         ok, raw_out = run_git_diff_for_file(fpath, limit=args.limit, uncommitted=args.uncommitted)
         if not ok:
             errors.append(f"{fpath}: {raw_out}")
@@ -711,7 +757,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     if errors and not all_hunks:
         joined_err = "; ".join(errors)
         if args.llm or args.json:
-            print(format_llm_json_output([], top_level_error=joined_err))
+            print(format_llm_json_output([], top_level_error=joined_err, workspace_warnings=workspace_warnings))
         else:
             print(f"❌ Error running git diff: {joined_err}", file=sys.stderr)
         return 1
@@ -722,9 +768,21 @@ def main(argv: Optional[List[str]] = None) -> int:
                 hunk.llm_result = evaluate_hunk_with_llm(hunk, preferred_model=args.model)
 
     if args.llm or args.json:
-        print(format_llm_json_output(all_hunks, min_probability=args.threshold))
+        print(
+            format_llm_json_output(
+                all_hunks,
+                min_probability=args.threshold,
+                workspace_warnings=workspace_warnings,
+            )
+        )
     else:
-        print(format_agent_friendly_text(all_hunks, min_probability=args.threshold))
+        print(
+            format_agent_friendly_text(
+                all_hunks,
+                min_probability=args.threshold,
+                workspace_warnings=workspace_warnings,
+            )
+        )
 
     return 0
 

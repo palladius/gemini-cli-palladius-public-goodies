@@ -252,6 +252,18 @@ def analyze_hunk_deterministic(
             )
         )
 
+    # 6. Check for obsolete .agent/ (singular) path references
+    for line in non_empty_added:
+        if re.search(r"(?<![\w-])\.agent/(?:rules|skills|workflows)\b", line) and ".agents" not in line:
+            signals.append(
+                BloatSignal(
+                    code="OBSOLETE_DOT_AGENT",
+                    weight=0.40,
+                    description="WARNING: .agent/ is obsoleted, use .agents/ instead!",
+                )
+            )
+            break
+
     if not signals:
         return [], 0.05, "Clean diff: atomic change with no bloat signals detected."
 
@@ -483,13 +495,34 @@ def _severity_label(prob: float) -> str:
     return "LOW"
 
 
-def format_agent_friendly_text(hunks: List[HunkAnalysis], min_probability: float = 0.0) -> str:
+def check_obsolete_dot_agent_dir(repo_root: str) -> List[str]:
+    """Check if the directory has an obsolete .agent/ directory or symlink instead of .agents/."""
+    warnings: List[str] = []
+    dot_agent = os.path.join(repo_root, ".agent")
+    if os.path.exists(dot_agent) or os.path.islink(dot_agent):
+        warnings.append(
+            f"WARNING: {dot_agent}/ is obsoleted, use .agents/ instead! (Run: git mv .agent .agents)"
+        )
+    return warnings
+
+
+def format_agent_friendly_text(
+    hunks: List[HunkAnalysis],
+    min_probability: float = 0.0,
+    workspace_warnings: Optional[List[str]] = None,
+) -> str:
     """Format hunks into the requested agent-friendly text blocks."""
+    prefix_lines: List[str] = []
+    if workspace_warnings:
+        for w in workspace_warnings:
+            prefix_lines.append(f"⚠️  {w}")
+
     filtered = [h for h in hunks if h.final_probability >= min_probability]
     if not filtered:
-        return "✅ No commits/hunks exceeded the bloat threshold."
+        msg = "✅ No commits/hunks exceeded the bloat threshold."
+        return ("\n".join(prefix_lines) + "\n" + msg) if prefix_lines else msg
 
-    blocks: List[str] = []
+    blocks: List[str] = list(prefix_lines)
     for h in filtered:
         prob = h.final_probability
         pct = int(round(prob * 100))
@@ -517,6 +550,7 @@ def format_llm_json_output(
     hunks: List[HunkAnalysis],
     min_probability: float = 0.0,
     top_level_error: Optional[str] = None,
+    workspace_warnings: Optional[List[str]] = None,
 ) -> str:
     """Format strictly valid JSON output required when `--llm` or `--json` is used.
 
@@ -525,13 +559,16 @@ def format_llm_json_output(
       - error_message (str | None)
       - probability (float, ALWAYS present)
       - reason (str, ALWAYS present)
+      - warnings (list[str])
     """
+    warnings_list = list(workspace_warnings or [])
     if top_level_error is not None:
         payload = {
             "error": True,
             "error_message": top_level_error,
             "probability": 0.0,
             "reason": f"Analysis could not run: {top_level_error}",
+            "warnings": warnings_list,
             "findings": [],
         }
         return json.dumps(payload, indent=2)
@@ -579,6 +616,7 @@ def format_llm_json_output(
         "error_message": first_error_msg,
         "probability": overall_prob,
         "reason": overall_reason,
+        "warnings": warnings_list,
         "total_hunks_analyzed": len(hunks),
         "flagged_hunks_count": len(findings),
         "findings": findings,
@@ -700,8 +738,14 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     all_hunks: List[HunkAnalysis] = []
     errors: List[str] = []
+    checked_dirs = set()
+    workspace_warnings: List[str] = []
 
     for fpath in target_files:
+        abs_dir = os.path.dirname(os.path.abspath(fpath)) if os.path.exists(fpath) else os.getcwd()
+        if abs_dir not in checked_dirs:
+            checked_dirs.add(abs_dir)
+            workspace_warnings.extend(check_obsolete_dot_agent_dir(abs_dir))
         ok, raw_out = run_git_diff_for_file(fpath, limit=args.limit, uncommitted=args.uncommitted)
         if not ok:
             errors.append(f"{fpath}: {raw_out}")
@@ -713,7 +757,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     if errors and not all_hunks:
         joined_err = "; ".join(errors)
         if args.llm or args.json:
-            print(format_llm_json_output([], top_level_error=joined_err))
+            print(format_llm_json_output([], top_level_error=joined_err, workspace_warnings=workspace_warnings))
         else:
             print(f"❌ Error running git diff: {joined_err}", file=sys.stderr)
         return 1
@@ -724,9 +768,21 @@ def main(argv: Optional[List[str]] = None) -> int:
                 hunk.llm_result = evaluate_hunk_with_llm(hunk, preferred_model=args.model)
 
     if args.llm or args.json:
-        print(format_llm_json_output(all_hunks, min_probability=args.threshold))
+        print(
+            format_llm_json_output(
+                all_hunks,
+                min_probability=args.threshold,
+                workspace_warnings=workspace_warnings,
+            )
+        )
     else:
-        print(format_agent_friendly_text(all_hunks, min_probability=args.threshold))
+        print(
+            format_agent_friendly_text(
+                all_hunks,
+                min_probability=args.threshold,
+                workspace_warnings=workspace_warnings,
+            )
+        )
 
     return 0
 
