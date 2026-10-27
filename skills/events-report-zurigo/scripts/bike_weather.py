@@ -12,9 +12,26 @@ Also queries Stadt Zürich Open Data (WSP Mythenquai/Tiefenbrunnen via tecdottir
 import argparse
 import csv
 import json
+import ssl
 import sys
 import urllib.request
 from datetime import datetime, timedelta
+
+# Create SSL context tolerant of macOS missing certifi bundle
+ssl_ctx = ssl.create_default_context()
+try:
+    ssl_ctx.check_hostname = True
+except Exception:
+    pass
+unverified_ctx = ssl._create_unverified_context() if hasattr(ssl, "_create_unverified_context") else None
+
+def safe_urlopen(req, timeout=10):
+    try:
+        return urllib.request.urlopen(req, timeout=timeout, context=ssl_ctx)
+    except Exception:
+        if unverified_ctx:
+            return urllib.request.urlopen(req, timeout=timeout, context=unverified_ctx)
+        raise
 
 LAT_ZURICH = 47.3769
 LON_ZURICH = 8.5417
@@ -27,7 +44,7 @@ def get_zurich_weather(forecast_days=2):
         f"&timezone=Europe%2FZurich&forecast_days={forecast_days}"
     )
     req = urllib.request.Request(url, headers={"User-Agent": "ZurichBikeWeather/1.0"})
-    with urllib.request.urlopen(req) as resp:
+    with safe_urlopen(req) as resp:
         return json.loads(resp.read().decode())
 
 def get_lake_temperature(station="mythenquai"):
@@ -39,12 +56,12 @@ def get_lake_temperature(station="mythenquai"):
     try:
         base_url = f"https://tecdottir.herokuapp.com/measurements/{station}"
         req_meta = urllib.request.Request(base_url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req_meta, timeout=5) as resp:
+        with safe_urlopen(req_meta, timeout=5) as resp:
             meta = json.loads(resp.read().decode())
             total = meta.get("total_count", 0)
         if total > 0:
             req_latest = urllib.request.Request(f"{base_url}?offset={total - 1}", headers={"User-Agent": "Mozilla/5.0"})
-            with urllib.request.urlopen(req_latest, timeout=5) as resp:
+            with safe_urlopen(req_latest, timeout=5) as resp:
                 data = json.loads(resp.read().decode())
                 res = data.get("result", [])
                 if res:
@@ -61,7 +78,7 @@ def get_lake_temperature(station="mythenquai"):
     url = f"https://data.stadt-zuerich.ch/dataset/sid_wapo_wetterstationen/download/messwerte_{station}_seit2007-heute.csv"
     req = urllib.request.Request(url, headers={"Range": "bytes=-2000", "User-Agent": "curl/7.88.1"})
     try:
-        with urllib.request.urlopen(req, timeout=5) as resp:
+        with safe_urlopen(req, timeout=5) as resp:
             lines = resp.read().decode("utf-8", errors="ignore").strip().splitlines()
             for line in reversed(lines):
                 parts = line.split(",")
@@ -80,7 +97,7 @@ def get_lake_temperature(station="mythenquai"):
         import xml.etree.ElementTree as ET
         bath_url = "https://www.stadt-zuerich.ch/stzh/bathdatadownload"
         req_baths = urllib.request.Request(bath_url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req_baths, timeout=5) as resp:
+        with safe_urlopen(req_baths, timeout=5) as resp:
             tree = ET.fromstring(resp.read())
             target_names = ["Seebad Utoquai", "Strandbad Mythenquai", "Strandbad Tiefenbrunnen", "Seebad Enge"]
             baths = {b.findtext("title"): b for b in tree.findall(".//bath")}
@@ -98,7 +115,7 @@ def get_lake_temperature(station="mythenquai"):
     try:
         w_url = "https://wiewarm.ch/api/v1/bad.json"
         req_w = urllib.request.Request(w_url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req_w, timeout=5) as resp:
+        with safe_urlopen(req_w, timeout=5) as resp:
             bads = json.loads(resp.read().decode())
             for item in bads:
                 if str(item.get("badid")) == "14":  # Zürichsee
@@ -120,7 +137,7 @@ def get_lake_temperature(station="mythenquai"):
         station_slug = "tiefenbrunnen" if "tiefenbrunnen" in station.lower() else "mythenquai"
         t_url = f"https://www.tecson-data.ch/zurich/{station_slug}/index.php"
         req_t = urllib.request.Request(t_url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req_t, timeout=5) as resp:
+        with safe_urlopen(req_t, timeout=5) as resp:
             html = resp.read().decode("utf-8", errors="ignore")
             idx = html.find("Wassertemperatur</span></a>")
             if idx != -1:
@@ -129,6 +146,24 @@ def get_lake_temperature(station="mythenquai"):
                 if m:
                     temp_val = float(m.group(1).replace(",", "."))
                     return {"station": f"Zürichsee ({station_slug.capitalize()})", "water_temp_c": temp_val, "timestamp": "live (tecson)"}
+    except Exception:
+        pass
+
+    # 6. Eawag Alplakes API (Swiss Federal Institute of Aquatic Science and Technology - Delft3D 3D Simulation & Forecast)
+    try:
+        now_utc = datetime.utcnow()
+        t_start = (now_utc - timedelta(hours=3)).strftime("%Y%m%d%H00")
+        t_end = (now_utc + timedelta(hours=3)).strftime("%Y%m%d%H00")
+        alp_url = f"https://alplakes-api.eawag.ch/simulations/point/delft3d-flow/zurich/{t_start}/{t_end}/0.5/47.345/8.545"
+        req_alp = urllib.request.Request(alp_url, headers={"User-Agent": "Mozilla/5.0"})
+        with safe_urlopen(req_alp, timeout=5) as resp:
+            alp_data = json.loads(resp.read().decode())
+            temps = alp_data.get("variables", {}).get("temperature", {}).get("data", [])
+            times = alp_data.get("time", [])
+            if temps:
+                latest_t = float(temps[-1])
+                latest_ts = times[-1] if times else now_utc.isoformat()
+                return {"station": "Zürichsee (Eawag Alplakes)", "water_temp_c": round(latest_t, 1), "timestamp": latest_ts}
     except Exception:
         pass
 

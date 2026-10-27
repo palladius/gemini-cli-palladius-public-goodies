@@ -1,3 +1,12 @@
+## [0.6.18] - 2026-10-27
+
+- ✨ **`events-report-zurigo` (`v2.0.2`)**:
+  - Added Eawag Alplakes REST API (Delft3D 3D hydrodynamic model and forward forecast) fallback for Lake Zurich water temperature in `scripts/bike_weather.py`.
+  - Added `safe_urlopen` SSL fallback handler to prevent macOS SSL certificate verification errors.
+  - Corrected frontmatter schema (`metadata.version: 2.0.2`, moved top-level fields inside metadata).
+- 🤖 Signed by `gc-skillume-bot-v0_2`.
+- 🚀 Bumped version to 0.6.18.
+
 ## [0.6.17] - 2026-10-25
 
 - 🤖✨ **`ai-coding` (`v0.1.0`)**: Added new skill for AI-assisted coding and agent prompt hygiene (`AGENTS.md` over `GEMINI.md` for inclusivity + symlink strategy, anti-bloat guardrails against `CRAMMED_LINE` and `OVERFITTING_H2_SECTION`, and bundled `scripts/analyze_bloat_history.py` + `scripts/analize_bloat_history.py`).
@@ -12,8 +21,7 @@
   - Added **Stale `.git/sequencer/` Guardrail**: check full `git status` (since `git status -s` / `--porcelain` hides in-progress cherry-pick/rebase sequencer state) and use `git cherry-pick --quit` (never `--abort`) when commits are already on `HEAD`.
   - Added **Cherry-Picked / Squashed Worktree Detection** (`git cherry -v origin/main <branch>` when `git merge-base --is-ancestor` returns `1`).
   - Symlinked `chumbia` into `~/.gemini/config/skills/chumbia` and `~/.gemini/antigravity/skills/chumbia` for automatic Antigravity CLI discovery.
-
-## [0.6.15] - 2026-10-25
+- 🚀 Bumped version to 0.6.16.
 
 - 🛠️ Fix `events-report-zurigo` frontmatter fields (`version` and `author` moved into `metadata`) to adhere to agent-skills schema and ensure clean `just test` validation pass.
 - 🤖 Signed by `gc-skillume-bot-v0_2`.

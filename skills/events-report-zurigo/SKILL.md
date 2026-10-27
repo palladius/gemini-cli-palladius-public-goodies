@@ -1,11 +1,11 @@
 ---
 name: events-report-zurigo
 description: >-
-  Generates a verified daily report in Italian about upcoming events in Zurich within a strict 7-day window (Today to Today + 7d). Mandates hard JSON schema verification with exact URL, verified calendar date, and physical address before formatting.
+  Generates a verified daily report in Italian about upcoming events in Zurich (7-day window) and provides real-time Zurich cycling weather, lake water temperature (Zürichsee / Mythenquai / Tiefenbrunnen), and Colnago clothing tiers via scripts/bike_weather.py.
 compatibility: Gemini CLI
 license: MIT
 metadata:
-  version: "2.0.1"
+  version: "2.0.2"
   author: ErmeteBottazzi
   hermes_category: "productivity"
   hermes_tags: "journalism, news, events, zurich, enge, italian-community, ai, tech, verification, json"
@@ -74,6 +74,9 @@ Stadt Zürich Open Data provides real-time 10-minute water station metrics (WSP 
   Find `item['badid'] == '14'` (Zürichsee) for current water temperatures at `Tiefenbrunnen` and `Mythenquai` (`item['becken']['Tiefenbrunnen']['temp']`). Remains actively updated and available year-round even when open-air badis are closed for the season.
 - **Tecson Live Sensor Telemetry (Origin Hardware)**:
   Direct live station HTML feeds at `https://www.tecson-data.ch/zurich/tiefenbrunnen/index.php` and `https://www.tecson-data.ch/zurich/mythenquai/index.php`. Real-time sensor readings directly from the Wasserschutzpolizei harbor hardware updated every 10 minutes.
+- **Eawag Alplakes REST API (Hydrodynamic 3D Model & Forecast)**:
+  `https://alplakes-api.eawag.ch/simulations/point/delft3d-flow/zurich/{start_time}/{end_time}/{depth}/{lat}/{lng}`
+  Maintained by Eawag (Swiss Federal Institute of Aquatic Science and Technology). `start_time` and `end_time` format: `YYYYmmddHHMM` (UTC). Depth in meters (e.g., `0.5`). Lat/lng e.g. `47.345/8.545`. Provides verified current and forward-simulated multi-day water temperatures at depth for Zürichsee.
 
 ### Temperature Tiers:
 - **`>= 20°C`**: 👕 **ZONA T-SHIRT** (Ideal for road cycling / Colnago ready, short sleeves, dry asphalt)
