@@ -12,22 +12,27 @@ description: >-
   conversation can be safely archived or destroyed.
 compatibility: gemini-cli, antigravity, claude
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   author: "Riccardo Carlesso"
-  tags: "cleanup, git, worktree, branch, workflow, session-end, chumbia, hygiene, learn, learnings"
+  tags: "cleanup, git, worktree, branch, workflow, session-end, chumbia, hygiene, learn, learnings, breadcrumbs"
 ---
 
 # 💃🕺🎺 Chumbia! — End-of-Session Verification, Cleanup & `/learn` Piggyback
 
-**Chumbia** is the official end-of-conversation protocol ("le pulizie DOPO la fatica + `/learn` piggyback") before archiving or destroying an agent conversation.
+**Chumbia** is the end-of-conversation protocol ("le pulizie DOPO la fatica + `/learn` piggyback").
+For weekly workspace-wide sweeps across `$GIT_WORKSPACE_DIR`, see **`git-disk-cleanup`**.
 
-When the user asks *"manca qualcosa o /chumbia?"*, *"are we done? if yes say chumbia"*, or invokes `/chumbia`, you **MUST NOT** blindly say "Chumbia!". Instead, run the 4-phase protocol below:
+When invoked, run the 5-step protocol below:
 
-1. **Phase 1 — Readiness Audit ("Abbiamo davvero finito?")**: Verify whether the task is 100% complete, tested, version-bumped, committed, pushed, and merged into `main`.
-   - **If NO**: Do **NOT** say "Chumbia!". List clearly what is still pending and ask the user whether to finish it now.
-2. **Phase 2 — Post-Work Cleanup ("Le Pulizie Dopo la Fatica")**: If Phase 1 passes, clean up temporary worktrees, merged local & remote feature branches, leftover `node_modules/` in secondary worktrees, build artifacts (`just clean`), and recurring background timers.
-3. **Phase 3 — 🧠 `/learn` Piggyback ("Cosa Abbiamo Imparato Oggi?")**: **ALWAYS** piggyback a structured distillation of session learnings (user corrections, non-trivial setups, gotchas, reusable patterns), persisting what can be saved directly and surfacing a ready-to-trigger `/learn` recommendation before the chat is destroyed.
-4. **Phase 4 — The Chumbia Sign-Off**: Conclude with a celebratory **`CHUMBIA! 💃🕺🎺🦖✨`** and a compact summary of what was verified, cleaned up, and learned.
+0. **Phase 0 — Breadcrumb Lock (`.chumbia.touch`)**:
+   - `chumbia_audit.sh` creates `<GIT_ROOT>/.chumbia.touch` with timestamp, branch, and PID.
+   - Removed only at the end of Phase 4 (`--complete`) so `git-disk-cleanup` can detect interrupted `/chumbia` runs.
+1. **Phase 1 — Readiness Audit ("Abbiamo davvero finito?")**: Verify the task is tested, version-bumped, committed, pushed, and merged into `main`.
+   - **If NO**: Stop (leave `.chumbia.touch` in place) and list what is pending.
+2. **Phase 2 — Post-Work Cleanup ("Le Pulizie Dopo la Fatica")**:
+   - Remove merged worktrees (`~/.gemini/antigravity/worktrees/`), merged branches, temporary `node_modules/`, and run `just clean`.
+3. **Phase 3 — 🧠 `/learn` Piggyback**: Distill session learnings, persist what can be saved directly, and output a ready-to-trigger `/learn` recommendation.
+4. **Phase 4 — Clear `.chumbia.touch` & Sign-Off**: Run `bash "$SKILL_DIR/scripts/chumbia_audit.sh" --complete` and conclude with **`CHUMBIA! 💃🕺🎺🦖✨`**.
 
 ---
 
@@ -146,9 +151,15 @@ Before declaring `CHUMBIA!`, you **MUST ALWAYS** piggyback a `/learn` knowledge-
 
 ---
 
-## 🎺 Phase 4: The Chumbia Sign-Off
+## 🎺 Phase 4: Clear `.chumbia.touch` & The Chumbia Sign-Off
 
-When Phases 1, 2, and 3 are complete, end your message with a clear, joyful sign-off (always including the **`🧠 Learnings (/learn Piggyback)`** section!) so the user knows they can optionally fire `/learn` and immediately archive or close the conversation:
+When Phases 1, 2, and 3 are complete:
+1. **Remove the `.chumbia.touch` Breadcrumb**:
+   ```bash
+   bash "$SKILL_DIR/scripts/chumbia_audit.sh" --complete
+   # (or rm -f "$(git rev-parse --show-toplevel)/.chumbia.touch")
+   ```
+2. End your message with a clear, joyful sign-off (always including the **`🧠 Learnings (/learn Piggyback)`** section!) so the user knows they can optionally fire `/learn` and immediately archive or close the conversation:
 
 ```markdown
 ## 💃🕺🎺 CHUMBIA! 🦖✨

@@ -2,6 +2,10 @@
 
 All notable changes to this skill will be documented in this file.
 
+## [1.3.0] - 2026-10-27
+
+- 📌 **`.chumbia.touch` Breadcrumb Lock**: Added Phase 0 creation of `<GIT_ROOT>/.chumbia.touch` (with ISO timestamp, branch, and status) at the start of `chumbia_audit.sh` and removal via `chumbia_audit.sh --complete` in Phase 4. Enables the companion `git-disk-cleanup` skill to detect interrupted or failed `/chumbia` executions across `$GIT_WORKSPACE_DIR`.
+
 ## [1.2.0] - 2026-10-25
 
 - 🎯 **Expanded Trigger Phrases**: Added English readiness-audit triggers (*"check git / git st and commit push if the work is finished, or tell me what is missing"*).

@@ -1,33 +1,76 @@
 #!/usr/bin/env bash
 # chumbia_audit.sh — Non-destructive readiness & cleanup audit for the 'chumbia' skill.
-# Usage: bash scripts/chumbia_audit.sh [repo_path]
+# Also manages the '<GIT_ROOT>/.chumbia.touch' breadcrumb lock so 'git-disk-cleanup'
+# can detect interrupted or incomplete '/chumbia' runs.
+#
+# Usage:
+#   bash scripts/chumbia_audit.sh [repo_path]              # Start audit & write .chumbia.touch
+#   bash scripts/chumbia_audit.sh --complete [repo_path]   # Remove .chumbia.touch upon Phase 4 completion
 
 set -euo pipefail
 
+MODE="audit"
+if [ "${1:-}" = "--complete" ] || [ "${1:-}" = "--clear" ]; then
+  MODE="complete"
+  shift
+fi
+
 TARGET_DIR="${1:-.}"
 cd "$TARGET_DIR"
-
-echo "=== 💃🕺🎺 CHUMBIA READINESS AUDIT ==="
-echo "📂 Directory: $(pwd)"
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "⚠️  Not inside a Git repository."
   exit 0
 fi
 
-git fetch --prune origin 2>/dev/null || true
+GIT_ROOT="$(git rev-parse --show-toplevel)"
+TOUCH_FILE="$GIT_ROOT/.chumbia.touch"
+
+if [ "$MODE" = "complete" ]; then
+  if [ -f "$TOUCH_FILE" ]; then
+    rm -f "$TOUCH_FILE"
+    echo "✅ Removed breadcrumb lock: $TOUCH_FILE (Chumbia completed cleanly!)"
+  else
+    echo "ℹ️  No $TOUCH_FILE present (already clean)."
+  fi
+  exit 0
+fi
+
+echo "=== 💃🕺🎺 CHUMBIA READINESS AUDIT ==="
+echo "📂 Git Root: $GIT_ROOT"
+
+if [ -f "$TOUCH_FILE" ]; then
+  echo "🚨 WARNING: Found leftover $TOUCH_FILE from a previous interrupted/failed Chumbia run!"
+  cat "$TOUCH_FILE" | sed 's/^/   /'
+fi
 
 BRANCH="$(git branch --show-current || echo 'DETACHED')"
+cat > "$TOUCH_FILE" <<EOF
+status: IN_PROGRESS
+started_at: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+branch: $BRANCH
+workdir: $(pwd)
+pid: $$
+EOF
+echo "📌 Created breadcrumb lock: $TOUCH_FILE (will be removed in Phase 4 via --complete)"
+
+git fetch --prune origin 2>/dev/null || true
+
 echo "🌿 Current branch: $BRANCH"
 
 echo ""
 echo "--- 1. Working Tree Status ---"
-STATUS_OUT="$(git status --porcelain)"
+# Ignore .chumbia.touch itself when checking porcelain status
+STATUS_OUT="$(git status --porcelain | grep -v '\.chumbia\.touch$' || true)"
 if [ -z "$STATUS_OUT" ]; then
   echo "✅ Working tree is clean."
 else
   echo "🛑 Modified/untracked files present:"
   echo "$STATUS_OUT"
+fi
+
+if [ -d "$GIT_ROOT/.git/sequencer" ] || [ -f "$GIT_ROOT/.git/CHERRY_PICK_HEAD" ] || [ -f "$GIT_ROOT/.git/REBASE_HEAD" ]; then
+  echo "🛑 Stale or active sequencer/cherry-pick/rebase state detected in .git/!"
 fi
 
 echo ""

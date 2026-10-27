@@ -1,3 +1,9 @@
+## [0.6.20] - 2026-10-27
+
+- 🧹💾 **`git-disk-cleanup` (`v1.0.0`)**: Added workspace-wide disk cleanup and Git worktree/branch hygiene skill (`skills/git-disk-cleanup/SKILL.md` + `scripts/git_disk_cleanup.py`) supporting `$GIT_WORKSPACE_DIR` (`~/git` or `~/workspace`), `.chumbia.touch` interrupted-session detection, timestamp freshness guard (`--protect-days 7`), merged vs. dirty worktree audit, and "Gold" media archive protection.
+- 💃📌 **`chumbia` (`v1.3.0`)**: Added Phase 0 `<GIT_ROOT>/.chumbia.touch` breadcrumb creation in `scripts/chumbia_audit.sh` and Phase 4 removal via `chumbia_audit.sh --complete` so `git-disk-cleanup` can detect interrupted `/chumbia` sessions.
+- 🚀 Bumped version to 0.6.20.
+
 ## [0.6.19] - 2026-10-27
 
 - 📖 Docs: Clarified what `agc` is and added repository links in `README.md` (fixes #2).
