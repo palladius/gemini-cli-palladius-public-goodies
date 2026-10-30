@@ -22,12 +22,15 @@ Usage:
 
 import argparse
 import dataclasses
+import datetime
 import json
 import os
 import re
 import subprocess
 import sys
 from typing import Any, Dict, List, Optional, Tuple
+
+CACHE_REL_PATH = os.path.join(".cache", "bloat-prevention.json")
 
 DEFAULT_PROMPT_FILES = (
     "GEMINI.md",
@@ -506,16 +509,128 @@ def check_obsolete_dot_agent_dir(repo_root: str) -> List[str]:
     return warnings
 
 
+def get_repo_root_and_relpath(file_path: str) -> Tuple[str, str]:
+    """Return (repo_root, rel_path_from_repo_root) for a file."""
+    abs_path = os.path.abspath(file_path)
+    work_dir = os.path.dirname(abs_path) if os.path.exists(abs_path) else os.getcwd()
+    try:
+        res = subprocess.run(
+            ["git", "-C", work_dir, "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if res.returncode == 0 and res.stdout.strip():
+            top = os.path.realpath(res.stdout.strip())
+            real_dir = os.path.realpath(os.path.dirname(abs_path))
+            real_file = os.path.join(real_dir, os.path.basename(abs_path))
+            return top, os.path.relpath(real_file, top)
+    except Exception:
+        pass
+    return work_dir, os.path.basename(abs_path)
+
+
+def get_file_head_commit(file_path: str) -> Optional[str]:
+    """Return the latest short commit hash touching file_path in HEAD."""
+    abs_path = os.path.abspath(file_path)
+    work_dir = os.path.dirname(abs_path) if os.path.exists(abs_path) else os.getcwd()
+    try:
+        res = subprocess.run(
+            ["git", "-C", work_dir, "log", "-n1", "--format=%h", "--", abs_path],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if res.returncode == 0 and res.stdout.strip():
+            return res.stdout.strip()
+    except Exception:
+        pass
+    return None
+
+
+def _ensure_cache_git_excluded(repo_root: str) -> None:
+    """Ensure .cache/ is listed in .git/info/exclude so cache writes never dirty git status."""
+    exclude_file = os.path.join(repo_root, ".git", "info", "exclude")
+    if not os.path.isfile(exclude_file):
+        return
+    try:
+        with open(exclude_file, "r", encoding="utf-8") as f:
+            content = f.read()
+        if ".cache/" not in content and "/.cache" not in content:
+            with open(exclude_file, "a", encoding="utf-8") as f:
+                if not content.endswith("\n"):
+                    f.write("\n")
+                f.write(".cache/\n")
+    except Exception:
+        pass
+
+
+def load_bloat_cache(repo_root: str) -> Dict[str, Any]:
+    """Load <repo_root>/.cache/bloat-prevention.json if it exists."""
+    cache_path = os.path.join(repo_root, CACHE_REL_PATH)
+    if os.path.isfile(cache_path):
+        try:
+            with open(cache_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, dict) and isinstance(data.get("files"), dict):
+                return data
+        except Exception:
+            pass
+    return {"schema_version": "1.0", "updated_at": None, "files": {}}
+
+
+def save_bloat_cache(repo_root: str, cache_data: Dict[str, Any]) -> str:
+    """Save <repo_root>/.cache/bloat-prevention.json and return its path."""
+    _ensure_cache_git_excluded(repo_root)
+    cache_path = os.path.join(repo_root, CACHE_REL_PATH)
+    os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+    now = datetime.datetime.now().astimezone()
+    cache_data["schema_version"] = "1.0"
+    cache_data["updated_at"] = now.isoformat(timespec="seconds")
+    with open(cache_path, "w", encoding="utf-8") as f:
+        json.dump(cache_data, f, indent=2)
+        f.write("\n")
+    return cache_path
+
+
+def update_file_in_bloat_cache(
+    repo_root: str,
+    rel_file: str,
+    commit_short: str,
+    probability: float,
+    status: str = "CLEAN",
+) -> Dict[str, Any]:
+    """Record a file's latest check timestamp and commit in .cache/bloat-prevention.json."""
+    cache_data = load_bloat_cache(repo_root)
+    now = datetime.datetime.now().astimezone()
+    human_ts = now.strftime("%Y-%m-%d %H:%M")
+    entry = {
+        "last_checked_at": now.isoformat(timespec="seconds"),
+        "last_checked_human": human_ts,
+        "last_checked_commit": commit_short,
+        "last_probability": round(float(probability), 2),
+        "status": status,
+        "badge": f"< last checked: {human_ts} @ #{commit_short} >",
+    }
+    cache_data.setdefault("files", {})[rel_file] = entry
+    save_bloat_cache(repo_root, cache_data)
+    return entry
+
+
 def format_agent_friendly_text(
     hunks: List[HunkAnalysis],
     min_probability: float = 0.0,
     workspace_warnings: Optional[List[str]] = None,
+    cache_notes: Optional[List[str]] = None,
 ) -> str:
     """Format hunks into the requested agent-friendly text blocks."""
     prefix_lines: List[str] = []
     if workspace_warnings:
         for w in workspace_warnings:
             prefix_lines.append(f"⚠️  {w}")
+    if cache_notes:
+        for c in cache_notes:
+            prefix_lines.append(f"🕒 {c}")
 
     filtered = [h for h in hunks if h.final_probability >= min_probability]
     if not filtered:
@@ -551,6 +666,7 @@ def format_llm_json_output(
     min_probability: float = 0.0,
     top_level_error: Optional[str] = None,
     workspace_warnings: Optional[List[str]] = None,
+    cache_metadata: Optional[Dict[str, Any]] = None,
 ) -> str:
     """Format strictly valid JSON output required when `--llm` or `--json` is used.
 
@@ -560,8 +676,10 @@ def format_llm_json_output(
       - probability (float, ALWAYS present)
       - reason (str, ALWAYS present)
       - warnings (list[str])
+      - cache (dict)
     """
     warnings_list = list(workspace_warnings or [])
+    cache_dict = dict(cache_metadata or {})
     if top_level_error is not None:
         payload = {
             "error": True,
@@ -569,6 +687,7 @@ def format_llm_json_output(
             "probability": 0.0,
             "reason": f"Analysis could not run: {top_level_error}",
             "warnings": warnings_list,
+            "cache": cache_dict,
             "findings": [],
         }
         return json.dumps(payload, indent=2)
@@ -617,6 +736,7 @@ def format_llm_json_output(
         "probability": overall_prob,
         "reason": overall_reason,
         "warnings": warnings_list,
+        "cache": cache_dict,
         "total_hunks_analyzed": len(hunks),
         "flagged_hunks_count": len(findings),
         "findings": findings,
@@ -638,6 +758,7 @@ def run_git_diff_for_file(
     file_path: str,
     limit: int = 20,
     uncommitted: bool = False,
+    since_commit: Optional[str] = None,
 ) -> Tuple[bool, str]:
     """Run git log -p or git diff for a target file."""
     abs_path = os.path.abspath(file_path)
@@ -655,9 +776,10 @@ def run_git_diff_for_file(
             "--no-color",
             "-U2",
             f"-n{limit}",
-            "--",
-            abs_path,
         ]
+        if since_commit:
+            cmd.append(f"{since_commit}..HEAD")
+        cmd.extend(["--", abs_path])
 
     try:
         res = subprocess.run(cmd, capture_output=True, text=True, check=False)
@@ -718,6 +840,18 @@ def main(argv: Optional[List[str]] = None) -> int:
         action="store_true",
         help="Output JSON even in deterministic mode.",
     )
+    parser.add_argument(
+        "--no-cache",
+        "--full-history",
+        action="store_true",
+        dest="no_cache",
+        help="Bypass .cache/bloat-prevention.json and scan full commit history.",
+    )
+    parser.add_argument(
+        "--mark-clean",
+        action="store_true",
+        help="Mark target file(s) at their current HEAD commit as CLEAN in .cache/bloat-prevention.json.",
+    )
 
     args = parser.parse_args(argv)
 
@@ -740,13 +874,48 @@ def main(argv: Optional[List[str]] = None) -> int:
     errors: List[str] = []
     checked_dirs = set()
     workspace_warnings: List[str] = []
+    cache_notes: List[str] = []
+    cache_metadata: Dict[str, Any] = {}
 
     for fpath in target_files:
-        abs_dir = os.path.dirname(os.path.abspath(fpath)) if os.path.exists(fpath) else os.getcwd()
-        if abs_dir not in checked_dirs:
-            checked_dirs.add(abs_dir)
-            workspace_warnings.extend(check_obsolete_dot_agent_dir(abs_dir))
-        ok, raw_out = run_git_diff_for_file(fpath, limit=args.limit, uncommitted=args.uncommitted)
+        repo_root, rel_in_repo = get_repo_root_and_relpath(fpath)
+        if repo_root not in checked_dirs:
+            checked_dirs.add(repo_root)
+            workspace_warnings.extend(check_obsolete_dot_agent_dir(repo_root))
+
+        head_commit = get_file_head_commit(fpath)
+        if args.mark_clean and head_commit:
+            entry = update_file_in_bloat_cache(repo_root, rel_in_repo, head_commit, 0.05, status="CLEAN")
+            cache_notes.append(
+                f"{rel_in_repo}: Marked CLEAN in {CACHE_REL_PATH} {entry['badge']}"
+            )
+            cache_metadata[rel_in_repo] = entry
+            continue
+
+        since_commit: Optional[str] = None
+        if not args.uncommitted and not args.no_cache:
+            repo_cache = load_bloat_cache(repo_root)
+            cached_entry = repo_cache.get("files", {}).get(rel_in_repo)
+            if isinstance(cached_entry, dict) and cached_entry.get("last_checked_commit"):
+                since_commit = str(cached_entry["last_checked_commit"])
+                cache_metadata[rel_in_repo] = cached_entry
+                badge = cached_entry.get("badge") or f"< last checked: {cached_entry.get('last_checked_human')} @ #{since_commit} >"
+                if head_commit and since_commit == head_commit:
+                    cache_notes.append(
+                        f"{rel_in_repo}: {badge} — 0 new commits since last check (cached prob: {cached_entry.get('last_probability', 0.05):.2f})"
+                    )
+                    continue
+                else:
+                    cache_notes.append(
+                        f"{rel_in_repo}: {badge} — scanning new commits {since_commit}..HEAD"
+                    )
+
+        ok, raw_out = run_git_diff_for_file(
+            fpath,
+            limit=args.limit,
+            uncommitted=args.uncommitted,
+            since_commit=since_commit,
+        )
         if not ok:
             errors.append(f"{fpath}: {raw_out}")
             continue
@@ -754,10 +923,22 @@ def main(argv: Optional[List[str]] = None) -> int:
         file_hunks = parse_git_diff_output(raw_out, default_file_path=rel_display)
         all_hunks.extend(file_hunks)
 
-    if errors and not all_hunks:
+        # If this file had no hunks >= threshold in commit history mode, auto-save to cache!
+        if not args.uncommitted and head_commit:
+            flagged_for_file = [h for h in file_hunks if h.final_probability >= max(args.threshold, 0.20)]
+            if not flagged_for_file:
+                max_p = max((h.final_probability for h in file_hunks), default=0.05)
+                entry = update_file_in_bloat_cache(repo_root, rel_in_repo, head_commit, max_p, status="CLEAN")
+                cache_metadata[rel_in_repo] = entry
+                if not since_commit:
+                    cache_notes.append(
+                        f"{rel_in_repo}: Saved {entry['badge']} to {CACHE_REL_PATH}"
+                    )
+
+    if errors and not all_hunks and not cache_notes:
         joined_err = "; ".join(errors)
         if args.llm or args.json:
-            print(format_llm_json_output([], top_level_error=joined_err, workspace_warnings=workspace_warnings))
+            print(format_llm_json_output([], top_level_error=joined_err, workspace_warnings=workspace_warnings, cache_metadata=cache_metadata))
         else:
             print(f"❌ Error running git diff: {joined_err}", file=sys.stderr)
         return 1
@@ -773,6 +954,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                 all_hunks,
                 min_probability=args.threshold,
                 workspace_warnings=workspace_warnings,
+                cache_metadata=cache_metadata,
             )
         )
     else:
@@ -781,6 +963,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                 all_hunks,
                 min_probability=args.threshold,
                 workspace_warnings=workspace_warnings,
+                cache_notes=cache_notes,
             )
         )
 

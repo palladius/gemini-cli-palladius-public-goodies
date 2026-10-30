@@ -1,5 +1,8 @@
 # CHANGELOG for ai-coding
 
+## 0.1.2 (2026-10-30)
+- Added incremental `.cache/bloat-prevention.json` caching (`< last checked: YYYY-MM-DD HH:MM @ #commit >`) to `analyze_bloat_history.py`, scanning only `<last_checked_commit>..HEAD` on subsequent runs and supporting `--mark-clean` and `--no-cache` (`--full-history`).
+
 ## 0.1.1 (2026-10-27)
 - Enforced canonical `.agents/` (plural) directory and added `OBSOLETE_DOT_AGENT` / directory check (`WARNING: .agent/ is obsoleted, use .agents/ instead!`) to `analyze_bloat_history.py`.
 

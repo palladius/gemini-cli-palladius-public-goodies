@@ -8,7 +8,7 @@ description: >-
   and provides analyze_bloat_history.py to audit Git history or uncommitted diffs.
 compatibility: Gemini CLI
 metadata:
-  version: 0.1.1
+  version: 0.1.2
 ---
 # AI Coding & Agent Prompt Hygiene (`ai-coding`)
 
@@ -76,6 +76,10 @@ python3 $SKILL_DIR/scripts/analyze_bloat_history.py --uncommitted GEMINI.md
 
 # 4. Hybrid LLM evaluation (uses gemini-flash-latest / gemini-3-flash-preview and outputs strict JSON)
 python3 $SKILL_DIR/scripts/analyze_bloat_history.py --llm GEMINI.md
+
+# 5. Mark a cured prompt file as CLEAN in .cache/bloat-prevention.json (or use --no-cache for full history)
+python3 $SKILL_DIR/scripts/analyze_bloat_history.py --mark-clean GEMINI.md
+python3 $SKILL_DIR/scripts/analyze_bloat_history.py --no-cache GEMINI.md
 ```
 
 ### Output Modes
