@@ -62,6 +62,7 @@ This extension includes the following **[Agent Skills](https://antigravity.googl
 *   **`niccolo-game-design`**: (💛) Game architecture with specialized Managers + typed Event Bus (Nystrom's Game Programming Patterns): MapManager owns Game Over/Victory, DropManager pity-timer luck meter, strangler-fig refactor recipe, TS + Godot skeletons.
 *   **`openclaudio-host-monitoring`**: Installs a lightweight CPU and RAM monitoring cron job and visualization script for agents on the local machine.
 *   **`openclaudio-update-advisor`**: Analisi acida e basata sui fatti della stabilità delle release di OpenClaudio.
+*   **`parla-come-mangi`** (and **`dude`** alias): (💛) Repeats the last part of a technical conversation with zero jargon, physical Bar Sport metaphors, and affectionate Romagnolo/Bro mansplaining (`/parla-come-mangi`, `/dude`).
 *   **`python-coding`**: (💛) Opinionated Python coding practices and standards.
 *   **`riccardo-at-the-computer`**: Determine if Riccardo is active on his desktop.
 *   **`ruby-coding`**: (💛) Opinionated Ruby coding practices and standards.

@@ -1,3 +1,8 @@
+## [0.6.21] - 2026-10-31
+
+- 🥖🍷 **`parla-come-mangi` (`v0.1.0`) & `dude` (`v0.1.0`)**: Added `/parla-come-mangi` skill and its `/dude` wrapper alias skill (`skills/parla-come-mangi/` and `skills/dude/`). Repeats and translates the last technical explanation of the conversation into ultra-concise, zero-jargon street metaphors using an affectionately condescending Romagnolo Bar Sport mansplaining persona in Italian (*"Oh burdel, posa il sangiovese..."*, with Bolognese/Ferrarese overrides) or a "Dude/Bro" mansplainer persona in English.
+- 🚀 Bumped version to 0.6.21.
+
 ## [0.6.20] - 2026-10-27
 
 - 🧹💾 **`git-disk-cleanup` (`v1.0.0`)**: Added workspace-wide disk cleanup and Git worktree/branch hygiene skill (`skills/git-disk-cleanup/SKILL.md` + `scripts/git_disk_cleanup.py`) supporting `$GIT_WORKSPACE_DIR` (`~/git` or `~/workspace`), `.chumbia.touch` interrupted-session detection, timestamp freshness guard (`--protect-days 7`), merged vs. dirty worktree audit, and "Gold" media archive protection.
