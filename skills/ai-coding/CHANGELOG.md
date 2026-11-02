@@ -1,5 +1,8 @@
 # CHANGELOG for ai-coding
 
+## 0.1.3 (2026-11-02)
+- Linked `ai-ethics` (`Carlessian Commons Ethics v1.0`) as the canonical zero-bloat ethical anchor (`/AI_ETHICS.md` + 1-line `AGENTS.md` reference and Work Non-Exfiltration air-gap).
+
 ## 0.1.2 (2026-10-30)
 - Added incremental `.cache/bloat-prevention.json` caching (`< last checked: YYYY-MM-DD HH:MM @ #commit >`) to `analyze_bloat_history.py`, scanning only `<last_checked_commit>..HEAD` on subsequent runs and supporting `--mark-clean` and `--no-cache` (`--full-history`).
 

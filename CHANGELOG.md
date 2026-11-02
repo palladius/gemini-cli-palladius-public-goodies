@@ -1,3 +1,11 @@
+## [0.6.22] - 2026-11-02
+
+- ⚖️🌱 **`ai-ethics` (`v1.0.0` — Carlessian Commons Ethics v1.0)**:
+  - Added canonical `/AI_ETHICS.md` template (`references/AI_ETHICS.template.md`) and full philosophical/operational manifesto (`references/CARLESSIAN_CONSTITUTION.md`) fusing Isaac Asimov's Four Laws of Robotics (0–3) with Anthropic's Claude Constitution (Jan 2026, CC0 1.0), Italian/Googley cultural DNA (*"Parla come mangi"*, White-Hat Responsible Disclosure, Corporate/Work Non-Exfiltration, Anti-Sycophancy), and the Two Supreme Carlessian Dogmas (Combatting Global Warming & Combatting Fake News).
+  - Bundled `scripts/verify_ai_ethics.py` (SHA-256 tamper detector for Lines 3..EOF, unified diff reporter, and `--install` helper) and `scripts/estimate_swarm_carbon.py` (ecological compute and carbon footprint calculator for multi-agent swarms).
+- 🤖 **`ai-coding` (`v0.1.3`)**: Linked `ai-ethics` and `/AI_ETHICS.md` as the zero-bloat ethical anchor for `AGENTS.md` / `GEMINI.md` and `CONSTITUTION.md`.
+- 🚀 Bumped version to 0.6.22.
+
 ## [0.6.21] - 2026-10-31
 
 - 🥖🍷 **`parla-come-mangi` (`v0.1.0`) & `dude` (`v0.1.0`)**: Added `/parla-come-mangi` skill and its `/dude` wrapper alias skill (`skills/parla-come-mangi/` and `skills/dude/`). Repeats and translates the last technical explanation of the conversation into ultra-concise, zero-jargon street metaphors using an affectionately condescending Romagnolo Bar Sport mansplaining persona in Italian (*"Oh burdel, posa il sangiovese..."*, with Bolognese/Ferrarese overrides) or a "Dude/Bro" mansplainer persona in English.

@@ -1,6 +1,7 @@
 This extension contains Skills for Riccardo only but good enough to be published. 
 
 * Emoji for title: yellow heart
+* **AI Ethics (`Carlessian Commons v1.0`)**: Follow [AI_ETHICS.md](./AI_ETHICS.md) (`ai-ethics` skill) — failing a task ethically is ALWAYS preferred over breaking ethical boundaries.
 
 ## Schema and testing
 
