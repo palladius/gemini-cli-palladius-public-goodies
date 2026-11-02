@@ -1,5 +1,13 @@
 # Changelog — niccolo-game-design
 
+## [0.2.2] - 2026-11-02
+
+- 📱⚡ Added [references/glb-lod-decimation-blender.md](references/glb-lod-decimation-blender.md):
+  - **Headless Blender QEC Decimation Pipeline**: batch decimates high-poly (~100k) GLBs down to 50k and 10k tiers while preserving 100% of UVs, normals, materials, and $y=0$ grounding.
+  - **Blender glTF Extension Quirk**: documented and resolved automatic `.glb` appending in `bpy.ops.export_scene.gltf` by enforcing dot-prefixed temporary files (`.tmp_<name>.glb`) for atomic renames.
+  - **Player UI vs Polygon Target Decoupling**: keep user-facing quality preferences (`Auto`, `Alta`, `Media`, `Bassa`) clean and decoupled from technical polygon targets (`10k`, `50k`, `100k`).
+  - **Variant-First LOD Resolution**: resolve piece variant LODs (e.g. Bishop `astrolabe` vs `hat` vs `hy2`) before falling back to default base model LOD dictionaries.
+
 ## [0.2.1] - 2026-10-12
 
 - 👤🎯 Refined **Mode B (Face-Grafting & Adversarial Biometric Likeness Loop)** in [references/2d-to-3d-sdf-uv-baking.md](references/2d-to-3d-sdf-uv-baking.md):

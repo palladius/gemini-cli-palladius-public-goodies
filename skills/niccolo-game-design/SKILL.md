@@ -1,10 +1,9 @@
 ---
 name: niccolo-game-design
-description: >-
-  (💛) Game-architecture skill based on Managers + Event Bus, distilled from Niccolò's code-review feedback and Robert Nystrom's "Game Programming Patterns". Use when designing, reviewing, or refactoring game code (TypeScript/Three.js, Godot, Unity…) that has a god-object game loop, too many singletons, scattered win/lose logic, ad-hoc loot, or 2D-to-3D GLB asset pipelines. Covers EnemyManager, PlayerManager, MapManager (owns Game Over / Victory), DropManager (pity-timer luck meter), GameFlow state machine, object pools, local 2D-to-3D SDF + UV baking / face-grafting, and a strangler-fig refactor recipe.
+description: (💛) Game-architecture skill based on Managers + Event Bus, distilled from Niccolò's code-review feedback and Robert Nystrom's "Game Programming Patterns". Use when designing, reviewing, or refactoring game code (TypeScript/Three.js, Godot, Unity…) that has a god-object game loop, too many singletons, scattered win/lose logic, ad-hoc loot, multi-tier GLB LOD decimation, or 2D-to-3D GLB asset pipelines. Covers EnemyManager, PlayerManager, MapManager (owns Game Over / Victory), DropManager (pity-timer luck meter), GameFlow state machine, object pools, headless Blender QEC LOD tiers (10k/50k), local 2D-to-3D SDF + UV baking / face-grafting, and a strangler-fig refactor recipe.
 compatibility: Gemini CLI, Antigravity, Claude Code
 metadata:
-  version: "0.2.1"
+  version: "0.2.2"
 ---
 
 # 💛 Niccolò Game Design — Managers, Events, and Rules That Own Themselves
@@ -110,6 +109,12 @@ Combat → Pickups → Drops → Map (rules) → GameFlow.
   cap (hard pity), **reset to 0 on an important find**. Seeded RNG + Monte-Carlo tests.
 - **2D-to-3D Local GLB Reconstruction & Portrait Face-Grafting (Zero-GPU)** → see [references/2d-to-3d-sdf-uv-baking.md](references/2d-to-3d-sdf-uv-baking.md).
   Covers **Mode A** (full 2D→3D Signed Distance Field visual-hull + luminance relief carving + Taubin fairing + edge-matched `1024×1024` UV texture baking when replacing untextured primitive meshes without cloud GPU quota) and **Mode B** (projecting/grafting a true 2D portrait face onto an existing `TRELLIS.2` / `Hunyuan3D` `.glb` mesh whose 3D face was distorted).
+- **Multi-Tier GLB LOD Decimation & Mobile Quality Tiers** → see [references/glb-lod-decimation-blender.md](references/glb-lod-decimation-blender.md).
+  Headless Blender 4.x QEC decimation pipeline, atomic file export (`.tmp_*.glb` avoiding Blender glTF extension appending), variant-first LOD resolution, and decoupling player UI (`Auto`/`Alta`/`Media`/`Bassa`) from internal polygon budgets (`10k`/`50k`/`100k`).
+- **3D Horizon Parallax & Natural Liquid Water Aesthetics**:
+  1. **Infinite Horizon Parallax (360° Orbit Non-Occlusion)**: Any 180°/270° cyclorama backdrop or floating cinema screen behind a 360°-orbitable board/arena MUST rotate with the camera's horizontal azimuth (`horizonYaw = Math.atan2(cam.x - target.x, cam.z - target.z)`) so the observer always stays strictly between the playfield and the backdrop at `0°`, `90°`, `180°`, and `270°` (enforced by a 4-angle `THREE.Raycaster` test).
+  2. **Natural 3D Liquid Pools (No Giant Bullseye Rings)**: Never place large concentric rings (`RingGeometry` or canvas `arc` bullseyes) centered on the playfield origin `(0, 0, 0)` — it creates an artificial "giant vinyl record" look. Instead, animate the 3D water surface with gentle non-radial swells (`sin(x) + cos(z)`) and break the equilibrium every 2–3 seconds with **small, localized concentric ripples (`r < 0.45m`)** originating at random localized coordinates $(x_0, z_0)$ where an insect, frog, or fish touches the water.
+  3. **Headless WebGL Render Scripts**: In one-off Playwright + SwiftShader (`--use-gl=angle --use-angle=swiftshader`) capture scripts on macOS, exit with `os._exit(0)` after encoding PNG/GIF/MP4 outputs so `browser.close()` / `server.shutdown()` never hang on GPU context teardown.
 
 ## Refactor recipe (strangler fig — never big-bang)
 
@@ -158,6 +163,8 @@ Combat → Pickups → Drops → Map (rules) → GameFlow.
 - [references/2d-to-3d-sdf-uv-baking.md](references/2d-to-3d-sdf-uv-baking.md) — local 2D-to-3D SDF + seamless `1024×1024` UV baking (Mode A) and 2D portrait face-grafting onto existing 3D `.glb` meshes (Mode B).
 - [references/typescript-skeletons.md](references/typescript-skeletons.md) — heavily commented TS skeletons (Bus, Manager, Context, DropManager).
 - [references/godot-mapping.md](references/godot-mapping.md) — same architecture in Godot 4 (autoloads, signals, scene tree).
+- [references/glb-lod-decimation-blender.md](references/glb-lod-decimation-blender.md) — multi-tier GLB LOD decimation via headless Blender QEC, atomic write workaround, hardware capability heuristic, and variant-first resolution cascade.
+
 
 ## Sources
 
