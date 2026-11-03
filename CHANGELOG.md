@@ -1,3 +1,9 @@
+## [0.6.23] - 2026-11-03
+
+- 🎮✨ **`niccolo-game-design`**: Use YAML folded strip block scalar syntax (`description: >-`) to align with frontmatter linter and pass `test_all_repo_skills_use_folded_description`.
+- 🤖 Signed by `gc-skillume-bot-v0_2`.
+- 🚀 Bumped version to 0.6.23.
+
 ## [0.6.22] - 2026-11-02
 
 - ⚖️🌱 **`ai-ethics` (`v1.0.0` — Carlessian Commons Ethics v1.0)**:
