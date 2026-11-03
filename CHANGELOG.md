@@ -1,3 +1,11 @@
+## [0.6.24] - 2026-11-03
+
+- 📄✨ **`antigravity-pdf-viewer` (`v0.1.0`) & `sidecars/pdf-viewer/`**:
+  - Added interactive high-DPI PDF Viewer UI Sidecar (`sidecars/pdf-viewer/sidecar.json` + `main.mjs`) that intercepts `.pdf` files in Google Antigravity's right-hand Aux Pane (`file_extensions: [".pdf"]`), replacing broken raw `%PDF-1.x` binary text previews.
+  - Features floating mega `◀ Prev` / `▶ Next` page navigation buttons, Single-Page (`📖 Singola`) vs. Continuous Scroll (`📜 Continuo`) modes, keyboard arrow navigation, extracted text inspection (`📝 Testo`), and 1-click Chat Context injection (`💬 Invia a Chat`).
+  - Added `🖨️ Apri in Chrome per Stampa` button with dynamic Chrome profile discovery (`~/.config/google-chrome/Local State`) and `xdg-open-as` integration.
+- 🚀 Bumped version to 0.6.24.
+
 ## [0.6.23] - 2026-11-03
 
 - 🎮✨ **`niccolo-game-design`**: Use YAML folded strip block scalar syntax (`description: >-`) to align with frontmatter linter and pass `test_all_repo_skills_use_folded_description`.

@@ -1,0 +1,19 @@
+{
+  "command": "node",
+  "args": ["main.mjs"],
+  "restart_policy": "always",
+  "display_name": "PDF Viewer 📄",
+  "description": "Visualizzatore PDF ad alta definizione per il pannello laterale di Antigravity (zoom, testo estratto e invio in chat).",
+  "has_web_ui": true,
+  "ui_config": {
+    "display_name": "PDF Viewer 📄",
+    "views": [
+      {
+        "entrypoint": "SIDECAR_UI_ENTRYPOINT_AUX_PANE",
+        "path": "/view.html",
+        "title": "PDF Viewer 📄",
+        "file_extensions": [".pdf"]
+      }
+    ]
+  }
+}

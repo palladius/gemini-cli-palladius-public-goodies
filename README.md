@@ -41,6 +41,7 @@ This extension includes the following **[Agent Skills](https://antigravity.googl
 
 *   **`add-to-portfolio-app`**: Adds a new Talk or Article to Riccardo's personal portfolio application.
 *   **`adk-python`**: Create and manage AI agents using Google's Agent Development Kit (ADK) for Python.
+*   **`antigravity-pdf-viewer`** (and `sidecars/pdf-viewer/`): (💛) High-DPI interactive PDF Viewer UI Sidecar for Google Antigravity's right-hand Aux Pane (`file_extensions: [".pdf"]`) with giant Prev/Next page buttons, Single-Page vs. Continuous Scroll modes, 1-click Chat Context injection, and multi-profile "Open in Chrome for Printing" via `xdg-open-as`.
 *   **`article-creator`**: (🥑) Expert guide for authoring, building, testing, and publishing technical articles to ricc.rocks and Medium.
 *   **`auto-org`**: (🚛📂) Intelligent Desktop & Downloads organizer into `~/Auto.org/` subfolders, staging quarantine, and Markdown triage logs.
 *   **`carlessian-gog`**: Google Workspace CLI managed the Carlesso way—featuring isolated configurations, selective read-only security, and daily workflows (Gmail, Calendar, Drive).
