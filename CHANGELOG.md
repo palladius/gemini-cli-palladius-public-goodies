@@ -1,6 +1,11 @@
-## [0.6.25] - 2026-11-04
+## [0.6.26] - 2026-11-04
 
 - 📄📦 **`antigravity-pdf-viewer` (`v0.1.1`)**: Moved `main.mjs` and `sidecar.json` directly inside `skills/antigravity-pdf-viewer/scripts/` alongside `install_pdf_sidecar.sh` so the skill folder is 100% self-contained.
+- 🚀 Bumped version to 0.6.26.
+
+## [0.6.25] - 2026-11-04
+
+- 🎨✨ **`a2ui` (`v1.0`)**: Streamlined A2UI skill (`skills/a2ui/SKILL.md` + `references/express_basic_catalog.md`) for declarative Generative UI creation (`<a2ui>` Express DSL, `basic` catalog widgets, live `<agent-embed>` interactive chat surfaces, and Python/Web integration).
 - 🚀 Bumped version to 0.6.25.
 
 ## [0.6.24] - 2026-11-03
