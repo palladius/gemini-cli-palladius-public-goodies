@@ -90,13 +90,29 @@ function normalizeFilePath(rawPath) {
   return p;
 }
 
+function findPopplerBin(binName) {
+  const candidates = [
+    `/opt/homebrew/bin/${binName}`,
+    `/usr/local/bin/${binName}`,
+    `/usr/bin/${binName}`,
+  ];
+  for (const c of candidates) {
+    if (existsSync(c)) return c;
+  }
+  return binName;
+}
+
+const PDFINFO_BIN = findPopplerBin('pdfinfo');
+const PDFTOTEXT_BIN = findPopplerBin('pdftotext');
+const PDFTOPPM_BIN = findPopplerBin('pdftoppm');
+
 function getPdfInfo(filePath) {
   const stat = statSync(filePath);
   let pages = 1;
   let title = '';
   let pageSize = '';
   try {
-    const out = execFileSync('/usr/bin/pdfinfo', [filePath], {
+    const out = execFileSync(PDFINFO_BIN, [filePath], {
       encoding: 'utf-8',
       timeout: 5000,
     });
@@ -114,7 +130,7 @@ function getPdfInfo(filePath) {
   }
   let text = '';
   try {
-    text = execFileSync('/usr/bin/pdftotext', [filePath, '-'], {
+    text = execFileSync(PDFTOTEXT_BIN, [filePath, '-'], {
       encoding: 'utf-8',
       timeout: 8000,
       maxBuffer: 10 * 1024 * 1024,
@@ -140,7 +156,7 @@ function renderPagePng(filePath, pageNum, dpi = 160) {
   const safePage = Math.max(1, Math.min(500, parseInt(String(pageNum), 10) || 1));
   const safeDpi = Math.max(72, Math.min(300, parseInt(String(dpi), 10) || 160));
   return execFileSync(
-    '/usr/bin/pdftoppm',
+    PDFTOPPM_BIN,
     ['-png', '-r', String(safeDpi), '-f', String(safePage), '-l', String(safePage), '-singlefile', filePath],
     { timeout: 15000, maxBuffer: 50 * 1024 * 1024 }
   );

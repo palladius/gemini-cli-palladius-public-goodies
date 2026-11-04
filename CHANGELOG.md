@@ -1,3 +1,10 @@
+## [0.6.25] - 2026-11-03
+
+- 🍏📄 **`antigravity-pdf-viewer` (`v0.1.1`) & `sidecars/pdf-viewer/`**:
+  - Added cross-platform Poppler binary discovery (`findPopplerBin`) in `sidecars/pdf-viewer/main.mjs` supporting macOS Homebrew (`/opt/homebrew/bin`, `/usr/local/bin`) alongside Linux `/usr/bin` for `pdftoppm`, `pdfinfo`, and `pdftotext`.
+  - Updated `skills/antigravity-pdf-viewer/scripts/install_pdf_sidecar.sh` to automatically link the skill into `~/.gemini/config/skills/` and enable `"pdf-viewer"` in `~/.gemini/config/config.json`.
+- 🚀 Bumped version to 0.6.25.
+
 ## [0.6.24] - 2026-11-03
 
 - 📄✨ **`antigravity-pdf-viewer` (`v0.1.0`) & `sidecars/pdf-viewer/`**:

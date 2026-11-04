@@ -8,7 +8,7 @@ description: >-
   multi-profile "Open in Chrome for Printing" via xdg-open-as.
 compatibility: Antigravity, Gemini CLI
 metadata:
-  version: 0.1.0
+  version: 0.1.1
 ---
 # Antigravity Inline PDF Viewer Sidecar (`antigravity-pdf-viewer`)
 
@@ -33,10 +33,13 @@ This skill bundles a zero-NPM-dependency Node.js `sidecar_sdk` PDF viewer (`side
 ## Installation & Activation
 
 ### Prerequisites
-Ensure `poppler-utils` is installed (`/usr/bin/pdftoppm`, `/usr/bin/pdfinfo`, `/usr/bin/pdftotext`):
+Ensure `poppler` / `poppler-utils` is installed (`pdftoppm`, `pdfinfo`, `pdftotext` in `/usr/bin` on Linux or `/opt/homebrew/bin` on macOS):
 ```bash
 # Debian / Ubuntu
 sudo apt-get install -y poppler-utils
+
+# macOS (Homebrew)
+brew install poppler
 ```
 
 ### Install the Sidecar into `~/.gemini/config/sidecars/pdf-viewer`
