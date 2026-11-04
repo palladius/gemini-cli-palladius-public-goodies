@@ -23,8 +23,13 @@ mkdir -p "$DEST_DIR"
 
 ln -f "$SCRIPT_DIR/sidecar.json" "$DEST_DIR/sidecar.json"
 ln -f "$SCRIPT_DIR/main.mjs" "$DEST_DIR/main.mjs"
+if [[ -f "$SCRIPT_DIR/xdg-open-as" ]]; then
+  chmod +x "$SCRIPT_DIR/xdg-open-as"
+  ln -f "$SCRIPT_DIR/xdg-open-as" "$DEST_DIR/xdg-open-as"
+fi
 
 echo "✅ Installed Antigravity PDF Viewer sidecar to $DEST_DIR"
 echo "   - $DEST_DIR/main.mjs"
 echo "   - $DEST_DIR/sidecar.json"
+echo "   - $DEST_DIR/xdg-open-as"
 echo "👉 Open the Sidecars panel in Antigravity (or restart the pdf-viewer sidecar) and click any .pdf file link!"

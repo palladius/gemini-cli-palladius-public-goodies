@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# xdg-open-as
+# Opens a URL or local file in Google Chrome with the profile matching the requested identity (email).
+# Works on Linux and macOS (delegates to chrome-for-identity if present, or resolves Local State directly).
+#
+# Usage:
+#   xdg-open-as <identity_email> <url_or_file>
+
+set -euo pipefail
+
+IDENTITY="${1:-}"
+URL="${2:-}"
+
+if [[ -z "$IDENTITY" || -z "$URL" ]]; then
+  echo "Usage: xdg-open-as <identity_email> <URL_or_file>" >&2
+  exit 1
+fi
+
+SCRIPT_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RESOLVER="$SCRIPT_DIR/chrome-for-identity"
+
+# Append login_hint for Google URLs if not already present
+if [[ "$URL" =~ ^https://accounts\.google\.com/ ]] && [[ "$URL" != *"login_hint="* ]]; then
+  ENCODED_EMAIL=$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1]))" "$IDENTITY")
+  URL="${URL}&login_hint=${ENCODED_EMAIL}"
+fi
+
+if [[ -x "$RESOLVER" ]]; then
+  exec "$RESOLVER" "$IDENTITY" "$URL"
+fi
+
+# Self-contained fallback: resolve Chrome profile directory from Local State via python3
+PROFILE_DIR=$(python3 - "$IDENTITY" << 'PYEOF' 2>/dev/null || true
+import json, os, sys
+target = sys.argv[1].strip().lower()
+home = os.path.expanduser("~")
+paths = [
+    os.path.join(home, ".config", "google-chrome", "Local State"),
+    os.path.join(home, ".config", "chromium", "Local State"),
+    os.path.join(home, "Library", "Application Support", "Google", "Chrome", "Local State"),
+]
+for p in paths:
+    if not os.path.exists(p):
+        continue
+    try:
+        with open(p, "r", encoding="utf-8") as f:
+            cache = json.load(f).get("profile", {}).get("info_cache", {})
+        for d, info in cache.items():
+            email = (info.get("user_name") or info.get("email") or "").lower()
+            if email == target:
+                print(d)
+                sys.exit(0)
+    except Exception:
+        pass
+PYEOF
+)
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  if [[ -n "$PROFILE_DIR" ]]; then
+    exec open -na "Google Chrome" --args "--profile-directory=$PROFILE_DIR" "$URL"
+  else
+    exec open -a "Google Chrome" "$URL"
+  fi
+elif command -v google-chrome >/dev/null 2>&1; then
+  if [[ -n "$PROFILE_DIR" ]]; then
+    exec google-chrome "--profile-directory=$PROFILE_DIR" "$URL"
+  else
+    exec google-chrome "$URL"
+  fi
+else
+  exec /usr/bin/xdg-open "$URL"
+fi

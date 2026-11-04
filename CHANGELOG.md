@@ -1,3 +1,8 @@
+## [0.6.27] - 2026-11-04
+
+- 📄🖨️ **`antigravity-pdf-viewer` (`v0.1.2`)**: Bundled a self-contained `$SKILL_DIR/scripts/xdg-open-as` helper (with built-in Python `Local State` `--profile-directory` resolver + `chrome-for-identity` delegation) alongside `main.mjs`, `sidecar.json`, and `install_pdf_sidecar.sh`.
+- 🚀 Bumped version to 0.6.27.
+
 ## [0.6.26] - 2026-11-04
 
 - 📄📦 **`antigravity-pdf-viewer` (`v0.1.1`)**: Moved `main.mjs` and `sidecar.json` directly inside `skills/antigravity-pdf-viewer/scripts/` alongside `install_pdf_sidecar.sh` so the skill folder is 100% self-contained.
