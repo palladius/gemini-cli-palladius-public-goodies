@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-SRC_DIR="$REPO_ROOT/sidecars/pdf-viewer"
+# Resolve physical directory of this script (even when invoked through a symlink)
+SCRIPT_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEST_DIR="${HOME}/.gemini/config/sidecars/pdf-viewer"
 
-if [[ ! -d "$SRC_DIR" ]]; then
-  echo "❌ Error: Sidecar source directory not found at $SRC_DIR" >&2
+if [[ ! -f "$SCRIPT_DIR/main.mjs" || ! -f "$SCRIPT_DIR/sidecar.json" ]]; then
+  echo "❌ Error: main.mjs or sidecar.json not found in $SCRIPT_DIR" >&2
   exit 1
 fi
 
@@ -22,8 +21,10 @@ if [[ -L "$DEST_DIR" ]]; then
 fi
 mkdir -p "$DEST_DIR"
 
-ln -f "$SRC_DIR/sidecar.json" "$DEST_DIR/sidecar.json"
-ln -f "$SRC_DIR/main.mjs" "$DEST_DIR/main.mjs"
+ln -f "$SCRIPT_DIR/sidecar.json" "$DEST_DIR/sidecar.json"
+ln -f "$SCRIPT_DIR/main.mjs" "$DEST_DIR/main.mjs"
 
 echo "✅ Installed Antigravity PDF Viewer sidecar to $DEST_DIR"
+echo "   - $DEST_DIR/main.mjs"
+echo "   - $DEST_DIR/sidecar.json"
 echo "👉 Open the Sidecars panel in Antigravity (or restart the pdf-viewer sidecar) and click any .pdf file link!"

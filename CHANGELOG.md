@@ -1,3 +1,8 @@
+## [0.6.25] - 2026-11-04
+
+- 📄📦 **`antigravity-pdf-viewer` (`v0.1.1`)**: Moved `main.mjs` and `sidecar.json` directly inside `skills/antigravity-pdf-viewer/scripts/` alongside `install_pdf_sidecar.sh` so the skill folder is 100% self-contained.
+- 🚀 Bumped version to 0.6.25.
+
 ## [0.6.24] - 2026-11-03
 
 - 📄✨ **`antigravity-pdf-viewer` (`v0.1.0`) & `sidecars/pdf-viewer/`**:

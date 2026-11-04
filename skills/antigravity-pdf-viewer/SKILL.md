@@ -8,7 +8,7 @@ description: >-
   multi-profile "Open in Chrome for Printing" via xdg-open-as.
 compatibility: Antigravity, Gemini CLI
 metadata:
-  version: 0.1.0
+  version: 0.1.1
 ---
 # Antigravity Inline PDF Viewer Sidecar (`antigravity-pdf-viewer`)
 
@@ -17,7 +17,14 @@ By default, clicking a `[file.pdf](file:///path/to/file.pdf)` link in Google Ant
 
 However, Antigravity's `fileView` component checks `o4(".pdf")` for any running **UI Sidecar** declaring `"entrypoint": "SIDECAR_UI_ENTRYPOINT_AUX_PANE"` and `"file_extensions": [".pdf"]` in its `sidecar.json`!
 
-This skill bundles a zero-NPM-dependency Node.js `sidecar_sdk` PDF viewer (`sidecars/pdf-viewer/`) powered by Poppler (`pdftoppm`, `pdfinfo`, `pdftotext`).
+This skill bundles a self-contained, zero-NPM-dependency Node.js `sidecar_sdk` PDF viewer directly inside `scripts/` (`scripts/main.mjs` + `scripts/sidecar.json`), powered by Poppler (`pdftoppm`, `pdfinfo`, `pdftotext`).
+
+---
+
+## Bundled Files (`$SKILL_DIR/scripts/`)
+- `scripts/main.mjs`: Complete Node.js `sidecar_sdk` server + HTML/CSS/JS Aux Pane UI.
+- `scripts/sidecar.json`: Antigravity UI Sidecar manifest registering `file_extensions: [".pdf"]`.
+- `scripts/install_pdf_sidecar.sh`: Self-contained installer that links `scripts/main.mjs` and `scripts/sidecar.json` into `~/.gemini/config/sidecars/pdf-viewer/`.
 
 ---
 
@@ -40,18 +47,12 @@ sudo apt-get install -y poppler-utils
 ```
 
 ### Install the Sidecar into `~/.gemini/config/sidecars/pdf-viewer`
-Because Antigravity's Go sidecar scanner uses `os.ReadDir` (which requires `~/.gemini/config/sidecars/pdf-viewer` to be a real directory rather than a directory symlink), run the bundled installer script:
+Because Antigravity's Go sidecar scanner uses `os.ReadDir` (which requires `~/.gemini/config/sidecars/pdf-viewer` to be a real directory rather than a directory symlink), run the bundled installer script from `$SKILL_DIR`:
 
 ```bash
-bash "$(dirname "$0")/scripts/install_pdf_sidecar.sh"
-```
-Or manually from the `palladius-public-goodies` root:
-```bash
-mkdir -p ~/.gemini/config/sidecars/pdf-viewer
-ln -f sidecars/pdf-viewer/sidecar.json ~/.gemini/config/sidecars/pdf-viewer/sidecar.json
-ln -f sidecars/pdf-viewer/main.mjs ~/.gemini/config/sidecars/pdf-viewer/main.mjs
+bash "$SKILL_DIR/scripts/install_pdf_sidecar.sh"
 ```
 
 ### Environment Variables (Optional)
 - `PDF_VIEWER_PRINT_IDENTITY`: Override the default email identity passed to `xdg-open-as` when clicking **🖨️ Apri in Chrome per Stampa**.
-- `XDG_OPEN_AS_BIN`: Custom path to the `xdg-open-as` executable (auto-detected in `~/git/gic/bin/xdg-open-as`, `~/bin/xdg-open-as`, `~/.local/bin/xdg-open-as`, or `$PATH`).
+- `XDG_OPEN_AS_BIN`: Custom path to the `xdg-open-as` executable (auto-detected in `$GIC/bin/xdg-open-as`, `~/bin/xdg-open-as`, `~/.local/bin/xdg-open-as`, or `$PATH`).
