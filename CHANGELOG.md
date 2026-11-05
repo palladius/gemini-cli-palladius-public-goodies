@@ -1,3 +1,12 @@
+## [0.6.32] - 2026-11-05
+
+- 🌤️🎨 **`zurich-morning-weather` (`v0.1.0`)**:
+  - Added automated daily 45° top-down isometric 3D miniature diorama generator of Zurich using Nano Banana Pro (Gemini 3 Pro Image) with live weather conditions from Open-Meteo.
+  - Renders Grossmünster twin towers, Fraumünster turquoise steeple, Limmat river, and blue-and-white VBZ tram.
+  - Automatically embeds centered weather typography at top (City, 3D weather glyph, ordinal date, current/min/max temperature).
+  - Emits both full-resolution PNG and compressed 85% JPEG for native Telegram delivery via `MEDIA:`.
+- 🚀 Bumped version to 0.6.32.
+
 ## [0.6.31] - 2026-11-05
 
 - 📸💛 **`gemini-model-selector` (`v0.3.1`)**: Added high-DPI terminal screenshot (`skills/gemini-model-selector/references/output-screenshot.png`) showcasing `gemini-list-models.py --full --by-date -n 10` and the `UNKNOWN (*)` / `(*) TODO(Gemini)` self-healing workflow, and updated `SKILL.md` to reference `short_description`.
