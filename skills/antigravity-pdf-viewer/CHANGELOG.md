@@ -1,8 +1,14 @@
 # CHANGELOG for antigravity-pdf-viewer
 
-## 0.1.1 (2026-11-03)
-- Added macOS Homebrew Poppler discovery (`/opt/homebrew/bin` and `/usr/local/bin` alongside `/usr/bin`) for `pdftoppm`, `pdfinfo`, and `pdftotext` in `sidecars/pdf-viewer/main.mjs`.
-- Updated `scripts/install_pdf_sidecar.sh` to automatically symlink `antigravity-pdf-viewer` into `~/.gemini/config/skills/` and enable `"pdf-viewer"` in `~/.gemini/config/config.json`.
+## 0.1.3 (2026-11-05)
+- Added cross-platform Poppler binary discovery (`findPopplerBin`) in `scripts/main.mjs` supporting macOS Homebrew (`/opt/homebrew/bin`, `/usr/local/bin`) alongside Linux `/usr/bin` for `pdftoppm`, `pdfinfo`, and `pdftotext`.
+
+## 0.1.2 (2026-11-04)
+- Bundled a self-contained `scripts/xdg-open-as` helper (with built-in Python `Local State` `--profile-directory` resolver + `chrome-for-identity` delegation) and added native `--profile-directory` fallback in `scripts/main.mjs`.
+- Standardized all documentation and paths around `$SKILL_DIR/scripts/`.
+
+## 0.1.1 (2026-11-04)
+- Bundled `main.mjs` and `sidecar.json` directly inside `skills/antigravity-pdf-viewer/scripts/` alongside `install_pdf_sidecar.sh` so the skill is 100% self-contained without relying on external parent paths.
 
 ## 0.1.0 (2026-11-03)
 - Initial release of `antigravity-pdf-viewer` (`sidecars/pdf-viewer/` + `skills/antigravity-pdf-viewer/`).

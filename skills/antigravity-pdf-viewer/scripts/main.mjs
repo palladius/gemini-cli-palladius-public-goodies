@@ -5,18 +5,21 @@
 import { execFileSync, spawn } from 'node:child_process';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { homedir, userInfo } from 'node:os';
-import { basename, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SidecarApp, Response } from 'sidecar_sdk';
 
 const app = new SidecarApp();
+const CURRENT_DIR = dirname(fileURLToPath(import.meta.url));
 
 function findXdgOpenAs() {
   const candidates = [
     process.env.XDG_OPEN_AS_BIN,
+    process.env.GIC ? join(process.env.GIC, 'bin', 'xdg-open-as') : '',
     join(homedir(), 'git', 'gic', 'bin', 'xdg-open-as'),
     join(homedir(), 'bin', 'xdg-open-as'),
     join(homedir(), '.local', 'bin', 'xdg-open-as'),
+    join(CURRENT_DIR, 'xdg-open-as'),
   ].filter(Boolean);
   for (const c of candidates) {
     if (existsSync(c)) return c;
@@ -744,7 +747,7 @@ app.api('/api/open-chrome-print', (data) => {
   if (!filePath) {
     return { ok: false, error: `File PDF non trovato: ${raw || ''}` };
   }
-  const { defaultIdentity } = detectChromeIdentities();
+  const { defaultIdentity, profiles } = detectChromeIdentities();
   const identity = data.identity || defaultIdentity;
   const xdgOpenAs = findXdgOpenAs();
 
@@ -756,13 +759,24 @@ app.api('/api/open-chrome-print', (data) => {
       });
       return { ok: true, identity, file: filePath };
     }
-    const child = spawn('google-chrome', [filePath], {
+    const matched =
+      profiles.find((p) => p.email.toLowerCase() === String(identity).toLowerCase()) ||
+      profiles[0];
+    const chromeArgs = matched?.dir
+      ? [`--profile-directory=${matched.dir}`, filePath]
+      : [filePath];
+    const cmd = process.platform === 'darwin' ? 'open' : 'google-chrome';
+    const spawnArgs =
+      process.platform === 'darwin'
+        ? ['-na', 'Google Chrome', '--args', ...chromeArgs]
+        : chromeArgs;
+    const child = spawn(cmd, spawnArgs, {
       detached: true,
       stdio: 'ignore',
       env: { ...process.env, DISPLAY: process.env.DISPLAY || ':0' },
     });
     child.unref();
-    return { ok: true, identity: identity || 'google-chrome', file: filePath };
+    return { ok: true, identity: identity || matched?.email || 'google-chrome', file: filePath };
   } catch (err) {
     return { ok: false, error: err.message };
   }

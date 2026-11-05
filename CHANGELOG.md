@@ -1,8 +1,22 @@
-## [0.6.25] - 2026-11-03
+## [0.6.28] - 2026-11-05
 
-- 🍏📄 **`antigravity-pdf-viewer` (`v0.1.1`) & `sidecars/pdf-viewer/`**:
-  - Added cross-platform Poppler binary discovery (`findPopplerBin`) in `sidecars/pdf-viewer/main.mjs` supporting macOS Homebrew (`/opt/homebrew/bin`, `/usr/local/bin`) alongside Linux `/usr/bin` for `pdftoppm`, `pdfinfo`, and `pdftotext`.
-  - Updated `skills/antigravity-pdf-viewer/scripts/install_pdf_sidecar.sh` to automatically link the skill into `~/.gemini/config/skills/` and enable `"pdf-viewer"` in `~/.gemini/config/config.json`.
+- 🍏📄 **`antigravity-pdf-viewer` (`v0.1.3`)**: Added cross-platform Poppler binary discovery (`findPopplerBin`) in `scripts/main.mjs` supporting macOS Homebrew (`/opt/homebrew/bin`, `/usr/local/bin`) alongside Linux `/usr/bin` for `pdftoppm`, `pdfinfo`, and `pdftotext`.
+- 🤖 Signed by `gc-skillume-bot-v0_2`.
+- 🚀 Bumped version to 0.6.28.
+
+## [0.6.27] - 2026-11-04
+
+- 📄🖨️ **`antigravity-pdf-viewer` (`v0.1.2`)**: Bundled a self-contained `$SKILL_DIR/scripts/xdg-open-as` helper (with built-in Python `Local State` `--profile-directory` resolver + `chrome-for-identity` delegation) alongside `main.mjs`, `sidecar.json`, and `install_pdf_sidecar.sh`.
+- 🚀 Bumped version to 0.6.27.
+
+## [0.6.26] - 2026-11-04
+
+- 📄📦 **`antigravity-pdf-viewer` (`v0.1.1`)**: Moved `main.mjs` and `sidecar.json` directly inside `skills/antigravity-pdf-viewer/scripts/` alongside `install_pdf_sidecar.sh` so the skill folder is 100% self-contained.
+- 🚀 Bumped version to 0.6.26.
+
+## [0.6.25] - 2026-11-04
+
+- 🎨✨ **`a2ui` (`v1.0`)**: Streamlined A2UI skill (`skills/a2ui/SKILL.md` + `references/express_basic_catalog.md`) for declarative Generative UI creation (`<a2ui>` Express DSL, `basic` catalog widgets, live `<agent-embed>` interactive chat surfaces, and Python/Web integration).
 - 🚀 Bumped version to 0.6.25.
 
 ## [0.6.24] - 2026-11-03
