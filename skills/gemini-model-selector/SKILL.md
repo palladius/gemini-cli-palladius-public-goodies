@@ -1,22 +1,22 @@
 ---
 name: gemini-model-selector
 description: >-
-  💛 Provides current recommendations for Gemini, Nano Banana, Omni, Veo, and Lyria model selection, Twitter-sized capability descriptions, deprecation alerts, and migration paths. Updated November 2026.
+  💛 Provides current recommendations for Gemini, Nano Banana, Omni, Veo, and Lyria model selection, concise capability descriptions, deprecation alerts, and migration paths. Updated November 2026.
 compatibility: Antigravity / Gemini CLI
 metadata:
-  version: 0.3.0
+  version: 0.3.1
   tags: gemini, models, argon, nano-banana, omni, veo, lyria
 ---
 
 # 💛 Gemini Model Selector (November 2026)
 
-This skill provides current, recommended model IDs for **Gemini 4**, **Nano Banana 2.1**, **Omni 1.1 Flash**, **Veo**, and **Lyria 3.5**, along with punchy Twitter-sized descriptions of what each model actually does, API endpoint requirements (`client.interactions` vs `generateContent`), and deprecation alerts.
+This skill provides current, recommended model IDs for **Gemini 4**, **Nano Banana 2.1**, **Omni 1.1 Flash**, **Veo**, and **Lyria 3.5**, along with concise (`<=280` chars) `short_description` summaries of what each model actually does, API endpoint requirements (`client.interactions` vs `generateContent`), and deprecation alerts.
 
 *Last Updated: 05 November 2026*
 
 ## Recommended Models & What They Actually Do
 
-| Task Type | Recommended Model | 📅 Released | 🐦 What It Actually Does (`<=280B` Twitter Description) |
+| Task Type | Recommended Model | 📅 Released | 📝 What It Actually Does (`<=280` chars `short_description`) |
 | :--- | :--- | :---: | :--- |
 | **Complex Reasoning / Coding / Research (Flagship)** | `gemini-4-argon` | `2026-10-13` | Flagship 1M-ctx reasoning, coding & research powerhouse (65k out). Replaces `3.1-pro` for complex architecture, STEM, and multi-step agentic workflows. |
 | **Balanced Agentic & Multimodal (Default)** | `gemini-3.8-flash` | `2026-09-02` | Default 1M-ctx fast workhorse (65k out) balancing thinking, multimodal understanding, and low-latency agentic tool calling. |
@@ -35,17 +35,21 @@ This skill provides current, recommended model IDs for **Gemini 4**, **Nano Bana
 
 ## Source of Truth YAML & Live Discovery CLI
 
-All release dates and `<280B` `twitter_description` entries live in the public YAML catalog:
+All release dates and `<=280` char `short_description` entries live in the public YAML catalog:
 - **YAML Catalog**: `~/git/gemini-tools/etc/gemini_models.yaml` (`github.com/palladius/gemini-tools`)
 - **CLI**: `~/git/gemini-tools/bin/list-gemini-models.py` (symlinked at `~/git/gic/bin/gemini-list-models.py`)
 
 ```bash
-# Show the 10 newest models with release dates and Twitter descriptions
+# Show the 10 newest models with release dates and short descriptions
 gemini-list-models.py --full --by-date -n 10
 
 # Show AI self-healing instructions for populating UNKNOWN (*) models in etc/gemini_models.yaml
 gemini-list-models.py --ai-help
 ```
+
+### Terminal Output & Self-Healing `UNKNOWN (*)` Demo
+
+![Terminal output of gemini-list-models.py --full --by-date -n 10](references/output-screenshot.png)
 
 ## Deprecation Alerts (Action Required)
 

@@ -1,3 +1,8 @@
+## [0.6.31] - 2026-11-05
+
+- 📸💛 **`gemini-model-selector` (`v0.3.1`)**: Added high-DPI terminal screenshot (`skills/gemini-model-selector/references/output-screenshot.png`) showcasing `gemini-list-models.py --full --by-date -n 10` and the `UNKNOWN (*)` / `(*) TODO(Gemini)` self-healing workflow, and updated `SKILL.md` to reference `short_description`.
+- 🚀 Bumped version to 0.6.31.
+
 ## [0.6.30] - 2026-11-05
 
 - 📄🤖 **`ai-coding` (`v0.1.4`)**: Added [`skills/ai-coding/references/google-docs-best-practices.md`](skills/ai-coding/references/google-docs-best-practices.md) with collaborative Google Docs AI-editing invariants: protect the Human Header Zone above `<hr>` (`---`), write only after `<hr>`, restrict autonomous edits to AI-owned `H2+` (`##`) sections, re-read immediately before writing to prevent live race conditions, and honor header page-budget constraints.
