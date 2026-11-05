@@ -1,5 +1,8 @@
 # CHANGELOG for ai-coding
 
+## 0.1.4 (2026-11-05)
+- Added [`references/google-docs-best-practices.md`](references/google-docs-best-practices.md) defining collaborative Google Docs AI-editing invariants: Human Header Zone & `<hr>` (`---`) read-only fence, scoped `H2+` (`##`) heading ownership, read-immediately-before-write anti-race-condition protocol, and header page-budget adherence.
+
 ## 0.1.3 (2026-11-02)
 - Linked `ai-ethics` (`Carlessian Commons Ethics v1.0`) as the canonical zero-bloat ethical anchor (`/AI_ETHICS.md` + 1-line `AGENTS.md` reference and Work Non-Exfiltration air-gap).
 

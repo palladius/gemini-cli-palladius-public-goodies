@@ -2,13 +2,14 @@
 name: ai-coding
 description: >-
   (💛) Best practices for AI-assisted coding and maintaining agent system instructions
-  (AGENTS.md, GEMINI.md, CLAUDE.md, CONTRIBUTING.md, SPECS.md, INSTRUCTIONS.md, SKILL.md).
+  (AGENTS.md, GEMINI.md, CLAUDE.md, CONTRIBUTING.md, SPECS.md, INSTRUCTIONS.md, SKILL.md)
+  and collaborative Google Docs (references/google-docs-best-practices.md).
   Enforces inclusive AGENTS.md over vendor-specific files, prevents prompt bloat
   (instruction cramming, single-concept overfitting H2 sections, append-only drift),
   and provides analyze_bloat_history.py to audit Git history or uncommitted diffs.
 compatibility: Gemini CLI
 metadata:
-  version: 0.1.3
+  version: 0.1.4
 ---
 # AI Coding & Agent Prompt Hygiene (`ai-coding`)
 
@@ -29,6 +30,7 @@ System instruction files (`AGENTS.md`, `GEMINI.md`, `CLAUDE.md`, `CONTRIBUTING.m
   ```
 - **Canonical `.agents/` (plural):** Place modular rules in `.agents/rules/<name>.md` (`trigger: glob` or `model_decision`). `.agent/` (singular) is obsolete — always `git mv .agent .agents`.
 - **Canonical Ethical Anchor (`AI_ETHICS.md` & `ai-ethics` skill):** Keep ethical principles out of long inline prose in `AGENTS.md`. Instead, place the tamper-evident `/AI_ETHICS.md` (`Carlessian Commons Ethics v1.0`) in the repository root and link it with a single concise bullet in `AGENTS.md` (and `CONSTITUTION.md` if present). **REQUIRED SUB-SKILL:** Use `ai-ethics` (`verify_ai_ethics.py --install` / `--check`) and enforce the **Work Non-Exfiltration Air-Gap** whenever operating on a work machine (`which gcert`).
+- **Collaborative Google Docs Editing:** See [`references/google-docs-best-practices.md`](references/google-docs-best-practices.md) for `<hr>` header-fence and `H2+` section rules.
 
 ---
 
