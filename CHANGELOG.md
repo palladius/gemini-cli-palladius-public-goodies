@@ -1,3 +1,8 @@
+## [0.6.29] - 2026-11-05
+
+- 💛📝 **`gemini-model-selector` (`v0.3.0`)**: Promoted skill from `palladius-private-goodies` to `palladius-public-goodies` (100% public Gemini API catalog), updated to November 2026 (`gemini-4-argon`, `gemini-nano-banana-2.1`, `gemini-3.8-flash`, `gemini-omni-1.1-flash`, `lyria-3.5`, `gemini-3.8-flash-tts`, `antigravity-preview-09-2026`), and added concise `<=280` char `short_description` capability summaries backed by `~/git/gemini-tools/etc/gemini_models.yaml`.
+- 🚀 Bumped version to 0.6.29.
+
 ## [0.6.28] - 2026-11-05
 
 - 🍏📄 **`antigravity-pdf-viewer` (`v0.1.3`)**: Added cross-platform Poppler binary discovery (`findPopplerBin`) in `scripts/main.mjs` supporting macOS Homebrew (`/opt/homebrew/bin`, `/usr/local/bin`) alongside Linux `/usr/bin` for `pdftoppm`, `pdfinfo`, and `pdftotext`.
