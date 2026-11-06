@@ -3,3 +3,6 @@ skills/musicgen-lyria3/kate-likes-this/
 tmp-screenshots/
 *.skill
 __pycache__/
+.env
+skills/gemini-notebook-api/.env
+.cache/

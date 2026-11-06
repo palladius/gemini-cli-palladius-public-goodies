@@ -1,3 +1,11 @@
+## [0.6.34] - 2026-11-06
+
+- 📓💛 **`gemini-notebook-api` (`v1.0.0`)**:
+  - Added public parameterized skill for the **Gemini Notebook API v1** (`https://notebook.googleapis.com/v1` and MCP `https://notebook.googleapis.com/mcp`).
+  - Added `skills/gemini-notebook-api/.env.dist` (`GMAIL_ACCOUNT`, `QUOTA_PROJECT_ID`, `NOTEBOOK_CLIENT_ID_FILE`, `NOTEBOOK_CLOUDSDK_CONFIG`, `GEMINI_API_KEY`) and configured `.gitignore` + `.git-privatize.list` for `gprism`.
+  - Documented the 6 real-world caveats in **"What Could Possibly Go Wrong?"** (`403 WORKSPACE_ACCOUNT_NOT_SUPPORTED`, OAuth `"This app is blocked"` bypass via custom Desktop OAuth Client ID, `x-goog-user-project` quota header, `pdftotext` PDF-to-Markdown conversion, `20 RPM` `CreateSource` rate limit, and local source caching for `ask`).
+- 🚀 Bumped version to 0.6.34.
+
 ## [0.6.33] - 2026-11-06
 
 - 🎭💛 **`marpione` & `marpi1` (`v0.1.0`)**:
