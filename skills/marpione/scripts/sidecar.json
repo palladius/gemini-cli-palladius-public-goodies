@@ -1,0 +1,18 @@
+{
+  "command": "node",
+  "args": ["main.mjs"],
+  "restart_policy": "always",
+  "display_name": "Marpione Slides 🎭",
+  "description": "Marpione (marpi1) — Visualizzatore interattivo di slide Marp con Copy PNG e Paste to Conversation per Antigravity.",
+  "has_web_ui": true,
+  "ui_config": {
+    "display_name": "Marpione Slides 🎭",
+    "views": [
+      {
+        "entrypoint": "SIDECAR_UI_ENTRYPOINT_AUX_PANE",
+        "path": "/view.html",
+        "title": "Marpione Slides 🎭"
+      }
+    ]
+  }
+}

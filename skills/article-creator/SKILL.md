@@ -55,7 +55,8 @@ Verify that generated HTML builds correctly and links are functional:
 ### Step 4: Post-Publishing Canonical Sync
 1.  Update the frontmatter of `ARTICLE.md` by setting `canonicalURL: <Medium_URL>`.
 2.  Re-run `just build`. This auto-appends the italic *Originally published at...* footer to the `ricc.rocks` output file.
-3.  Commit and push to `ricc.rocks` repository to trigger deployment.
+3.  In `~/git/ricc.rocks`, run `just test && just clean` before committing and pushing (`just clean` wipes the ~920 MB generated `public/` folder so build artifacts do not bloat the disk).
+4.  Commit and push to `ricc.rocks` repository to trigger deployment.
 
 ### Step 5: Portfolio & Social Promotion
 1.  Run the `add-to-portfolio-app` skill to register this new post in `~/git/vibecoding/apps-portfolio`.

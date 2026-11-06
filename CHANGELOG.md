@@ -1,3 +1,11 @@
+## [0.6.33] - 2026-11-06
+
+- 🎭💛 **`marpione` & `marpi1` (`v0.1.0`)**:
+  - Added interactive Marp Inline Slide Deck Widget (`<agent-embed>`) and Antigravity Aux Pane UI Sidecar (`~/.gemini/config/sidecars/marpione`) under codenames `marpione` and `marpi1`.
+  - Features left/right overlay & bottom cursors (`1 -> 2 -> 3 ...`), color-coded chapter scrubber bar, slide selector dropdown, speaker notes inspector (`📝 Notes`), 1-click **`📋 Copy PNG`** (`ClipboardItem` `image/png` via offscreen `<canvas>`), and **`💬 Paste to Conversation`** via the local Sidecar bridge (`/_sidecar/send-message`).
+  - Includes `$SKILL_DIR/scripts/install_marpione.sh` for 1-command installation of the sidecar, CLI binaries (`~/.local/bin/marpione` & `marpi1`), and skills across macOS and Linux (`derek`).
+- 🚀 Bumped version to 0.6.33 -- signed by `gc-skillume-bot-v0_2`.
+
 ## [0.6.32] - 2026-11-05
 
 - 🌤️🎨 **`zurich-morning-weather` (`v0.1.0`)**:
