@@ -9,6 +9,7 @@ description: >-
 compatibility: Antigravity, Gemini CLI
 metadata:
   version: 0.1.3
+  tags: antigravity_sidecar, pdf, utility
 ---
 # Antigravity Inline PDF Viewer Sidecar (`antigravity-pdf-viewer`)
 
