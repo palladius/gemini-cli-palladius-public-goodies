@@ -9,8 +9,8 @@ description: >-
   (GMAIL_ACCOUNT, QUOTA_PROJECT_ID, NOTEBOOK_CLIENT_ID_FILE).
 compatibility: Antigravity / Gemini CLI / OpenClaw / Hermes Agent
 metadata:
-  version: "1.0.0"
-  tags: "notebooklm, gemini-notebook, notebook-api, mcp, pdf, rag, gprism"
+  version: "1.0.1"
+  tags: "notebooklm, gemini-notebook, notebook-api, mcp, pdf, rag"
 ---
 
 # (💛) Gemini Notebook API v1 & MCP Skill (`gemini-notebook-api`) 📓✨
@@ -20,20 +20,19 @@ metadata:
 Provides programmatic and MCP access to the **Gemini Notebook API v1** (`https://notebook.googleapis.com/v1` and MCP server `https://notebook.googleapis.com/mcp`, official docs at `https://developers.google.com/notebook/docs`).
 
 Because the Gemini Notebook API has strict consumer-account requirements and OAuth client restrictions that trip up almost every developer on their first try, this skill bundles:
-1. A clean **`.env.dist` / `.env`** configuration pattern (compatible with **`gprism`** for Secret Manager sync).
+1. A clean **`.env.dist` -> `.env`** (git-ignored) configuration pattern.
 2. A zero-dependency Python CLI (`$SKILL_DIR/scripts/notebook_cli.py`) supporting `config`, `auth`, `list`, `create`, `get`, `sources`, `add-url`, `add-md`, `add-pdf`, and `ask`.
 3. A battle-tested **"What Could Possibly Go Wrong?"** troubleshooting guide.
 
 ---
 
-## 1. Configuration (`.env.dist` -> `.env` + `gprism`) 🔐
+## 1. Configuration (`.env.dist` -> git-ignored `.env`) 🔐
 
-Never hardcode personal accounts, project IDs, or OAuth client paths in committed files. Copy [`$SKILL_DIR/.env.dist`](.env.dist) to `$SKILL_DIR/.env` (which is git-ignored and listed in `.git-privatize.list` for `gprism`):
+Never hardcode personal accounts, project IDs, or OAuth client paths in committed files. Copy [`$SKILL_DIR/.env.dist`](.env.dist) to a git-ignored `$SKILL_DIR/.env`:
 
 ```bash
 cp $SKILL_DIR/.env.dist $SKILL_DIR/.env
-# Edit $SKILL_DIR/.env with your consumer @gmail.com and GCP project ID, then optionally sync via gprism:
-gprism push --all
+# Edit $SKILL_DIR/.env with your consumer @gmail.com and GCP project ID
 ```
 
 ### Environment Variables Reference
@@ -50,7 +49,6 @@ The CLI loads variables in this precedence order:
 1. Process environment variables (`export QUOTA_PROJECT_ID=...`)
 2. `$SKILL_DIR/.env`
 3. Current working directory `.env`
-4. `~/git/gic/.env.gprism` (if present)
 
 ---
 

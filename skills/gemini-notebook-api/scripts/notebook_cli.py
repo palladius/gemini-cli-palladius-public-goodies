@@ -25,7 +25,6 @@ def load_dotenv_files() -> dict[str, str]:
     """Load key=value pairs from .env files without overwriting process env."""
     loaded: dict[str, str] = {}
     candidates = [
-        Path.home() / "git" / "gic" / ".env.gprism",
         Path.cwd() / ".env",
         SKILL_DIR / ".env",
     ]
