@@ -20,10 +20,16 @@ import sys
 import tempfile
 from pathlib import Path
 
-CARLESSIAN_COMMONS_VERSION = "1.0"
+CARLESSIAN_COMMONS_VERSION = "1.1"
+CARLESSIAN_COMMONS_V1_1_SHA256 = (
+    "1cc43a4ed145d95b72d3b61152e239aa824e722f8d7a8772dfa0d15aefec14e9"
+)
 CARLESSIAN_COMMONS_V1_0_SHA256 = (
     "4f25569c45da2af754db36c7044773eae3ae2844c3559787cfe2b8f096c2edd6"
 )
+LEGACY_SHA256_VERSIONS = {
+    CARLESSIAN_COMMONS_V1_0_SHA256: "1.0",
+}
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_PATH = SKILL_DIR / "references" / "AI_ETHICS.template.md"
@@ -78,7 +84,7 @@ def verify_repo(repo_root: Path, strict_links: bool = False) -> dict:
         "exists": ethics_file.exists(),
         "header_valid": False,
         "body_valid": False,
-        "expected_sha256": CARLESSIAN_COMMONS_V1_0_SHA256,
+        "expected_sha256": CARLESSIAN_COMMONS_V1_1_SHA256,
         "actual_sha256": None,
         "tampered": False,
         "diff": "",
@@ -105,9 +111,9 @@ def verify_repo(repo_root: Path, strict_links: bool = False) -> dict:
     # Validate Line 1 & Line 2 (customizable header)
     line1 = lines[0].strip()
     line2 = lines[1].strip()
-    if not line1.startswith("# AI_ETHICS.md") or "Carlessian Commons Ethics v1.0" not in line1:
+    if not line1.startswith("# AI_ETHICS.md") or "Carlessian Commons Ethics v1." not in line1:
         result["errors"].append(
-            "Line 1 must start with '# AI_ETHICS.md — Carlessian Commons Ethics v1.0'."
+            f"Line 1 must start with '# AI_ETHICS.md — Carlessian Commons Ethics v{CARLESSIAN_COMMONS_VERSION}'."
         )
     elif not line2.lower().startswith("copyright"):
         result["errors"].append(
@@ -120,7 +126,17 @@ def verify_repo(repo_root: Path, strict_links: bool = False) -> dict:
     actual_sha = compute_body_sha256(lines[2:])
     result["actual_sha256"] = actual_sha
 
-    if actual_sha != CARLESSIAN_COMMONS_V1_0_SHA256:
+    if actual_sha == CARLESSIAN_COMMONS_V1_1_SHA256:
+        result["body_valid"] = True
+    elif actual_sha in LEGACY_SHA256_VERSIONS:
+        legacy_ver = LEGACY_SHA256_VERSIONS[actual_sha]
+        result["body_valid"] = True
+        result["version"] = legacy_ver
+        result["warnings"].append(
+            f"AI_ETHICS.md is on legacy Carlessian Commons Ethics v{legacy_ver} (latest is v{CARLESSIAN_COMMONS_VERSION} with EU AI Act Safety Ladder). "
+            "Run with '--install --overwrite' to upgrade."
+        )
+    else:
         result["tampered"] = True
         template_lines = load_template_lines()
         expected_body = normalize_body(template_lines[2:]).splitlines(keepends=True)
@@ -136,10 +152,8 @@ def verify_repo(repo_root: Path, strict_links: bool = False) -> dict:
         )
         result["diff"] = diff_text
         result["errors"].append(
-            "🚨 ETHICS TAMPERING DETECTED: Lines 3..EOF do not match Carlessian Commons Ethics v1.0 SHA-256!"
+            f"🚨 ETHICS TAMPERING DETECTED: Lines 3..EOF do not match Carlessian Commons Ethics v{CARLESSIAN_COMMONS_VERSION} SHA-256!"
         )
-    else:
-        result["body_valid"] = True
 
     # Check AGENTS.md / GEMINI.md reference
     prompt_files = [
@@ -199,10 +213,10 @@ def install_ethics(
     year_val = year or datetime.date.today().year
     slug = repo_name or repo_root.resolve().name
 
-    line1 = "# AI_ETHICS.md — Carlessian Commons Ethics v1.0"
+    line1 = f"# AI_ETHICS.md — Carlessian Commons Ethics v{CARLESSIAN_COMMONS_VERSION}"
     line2 = (
         f"Copyright (c) {year_val} {author} ({slug}) — "
-        "Inspired by Isaac Asimov & Anthropic's Claude Constitution (CC0 1.0)."
+        "Inspired by Isaac Asimov, Anthropic's Claude Constitution (CC0 1.0) & the EU AI Act."
     )
     body = normalize_body(template_lines[2:])
     full_content = f"{line1}\n{line2}\n{body}"
@@ -215,10 +229,10 @@ def run_self_test() -> int:
     print("🧪 Running verify_ai_ethics.py self-test suite...")
     template_lines = load_template_lines()
     template_sha = compute_body_sha256(template_lines[2:])
-    assert template_sha == CARLESSIAN_COMMONS_V1_0_SHA256, (
-        f"Template SHA mismatch: expected {CARLESSIAN_COMMONS_V1_0_SHA256}, got {template_sha}"
+    assert template_sha == CARLESSIAN_COMMONS_V1_1_SHA256, (
+        f"Template SHA mismatch: expected {CARLESSIAN_COMMONS_V1_1_SHA256}, got {template_sha}"
     )
-    print("  ✅ Test 1/4 PASS: Canonical template matches CARLESSIAN_COMMONS_V1_0_SHA256.")
+    print("  ✅ Test 1/4 PASS: Canonical template matches CARLESSIAN_COMMONS_V1_1_SHA256.")
 
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_path = Path(tmpdir)
@@ -324,7 +338,7 @@ def main() -> int:
             overwrite=args.overwrite,
         )
         print(f"✅ Installed {installed} (Carlessian Commons Ethics v{CARLESSIAN_COMMONS_VERSION})")
-        print(f"🔒 Canonical Body SHA-256: {CARLESSIAN_COMMONS_V1_0_SHA256}")
+        print(f"🔒 Canonical Body SHA-256: {CARLESSIAN_COMMONS_V1_1_SHA256}")
         print("\n📌 Add this 1-line enforcement bullet to AGENTS.md / GEMINI.md:")
         print(f"   {AGENTS_MD_SNIPPET}")
         print("\n📌 If the repo has a CONSTITUTION.md, add this preamble:")

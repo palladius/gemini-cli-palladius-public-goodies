@@ -1,3 +1,10 @@
+## [0.6.36] - 2026-11-07
+
+- 🇪🇺⚖️ **`ai-ethics` (`v1.1.0` — Carlessian Commons Ethics v1.1 + EU AI Act Safety Ladder)**:
+  - Integrated the **EU AI Act (`Regulation (EU) 2024/1689`) "Safety Ladder"** (*Prohibited*, *High-Risk*, *General-Purpose / Transparency*, *Lower Risk*) into `SKILL.md`, `references/CARLESSIAN_CONSTITUTION.md`, and `references/AI_ETHICS.template.md` (`SHA-256: 1cc43a4ed145d95b...`).
+  - Added developer reference `references/EU_AI_ACT.md` mapping Articles 5, 6, 9–15, 50, 51–55, and 95 to concrete software architecture and code safeguards (HITL override gates, automatic audit logging, AI bot disclosure, and `SynthID`/`C2PA` synthetic media provenance).
+- 🚀 Bumped version to 0.6.36.
+
 ## [0.6.35] - 2026-11-06
 
 - 🧹💛 **`gemini-notebook-api` (`v1.0.1`)**:
