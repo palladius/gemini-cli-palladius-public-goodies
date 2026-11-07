@@ -10,7 +10,10 @@ import sqlite3
 import sys
 from pathlib import Path
 
-CLI_DIR = Path.home() / ".gemini" / "antigravity-cli"
+HOME = Path.home()
+CLI_DIR = HOME / ".gemini" / "antigravity-cli"
+AG2_DIR = HOME / ".gemini" / "antigravity"
+EMORR_DIR = HOME / ".emorr-agy"
 
 
 def get_session_info(cid_prefix: str) -> dict | None:
@@ -56,15 +59,41 @@ def get_session_info(cid_prefix: str) -> dict | None:
 
 
 def archive_session(cid: str, title: str = "") -> None:
-    annot_dir = CLI_DIR / "annotations"
-    annot_dir.mkdir(parents=True, exist_ok=True)
-    annot_file = annot_dir / f"{cid}.pbtxt"
     t = title or "Transferred to T3"
-    annot_file.write_text(f'title: "{t} (Transferred to T3)"\narchived: true\n', encoding="utf-8")
+    content = f'title: "{t} (Transferred to T3)"\narchived: true\narchived:true\n'
+
+    # 1. Write CLI annotation
+    annot_cli = CLI_DIR / "annotations"
+    annot_cli.mkdir(parents=True, exist_ok=True)
+    (annot_cli / f"{cid}.pbtxt").write_text(content, encoding="utf-8")
+
+    # 2. Write AG2UI annotation
+    annot_ag2 = AG2_DIR / "annotations"
+    annot_ag2.mkdir(parents=True, exist_ok=True)
+    (annot_ag2 / f"{cid}.pbtxt").write_text(content, encoding="utf-8")
+
+    # 3. Write emorr-agy cache to mark not worth resuscitating
+    cache_dir = EMORR_DIR / "cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_file = cache_dir / f"{cid}.json"
+    cache_file.write_text(
+        json.dumps(
+            {
+                "about": f"{t} (Transferred to T3)",
+                "user_input_pending": False,
+                "worth_resuscitate": False,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    # 4. Remove stale lock
     lock_file = CLI_DIR / "presence" / f"{cid}.lock"
     if lock_file.exists():
         lock_file.unlink()
-    print(f"🪦 Session {cid[:8]} archived successfully.")
+
+    print(f"🪦 Session {cid[:8]} archived across CLI, AG2UI, and emorr-agy successfully.")
 
 
 def main():
