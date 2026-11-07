@@ -80,6 +80,11 @@ def main():
         "--api-key", "-k",
         help="Gemini API key (overrides GEMINI_API_KEY env var)"
     )
+    parser.add_argument(
+        "--model", "-m",
+        default="gemini-3-pro-image",
+        help="Gemini image model (default: gemini-3-pro-image)"
+    )
 
     args = parser.parse_args()
 
@@ -156,7 +161,7 @@ def main():
 
     try:
         response = client.models.generate_content(
-            model="gemini-3-pro-image-preview",
+            model=args.model,
             contents=contents,
             config=types.GenerateContentConfig(
                 response_modalities=["TEXT", "IMAGE"],

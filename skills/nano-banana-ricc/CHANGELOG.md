@@ -1,5 +1,8 @@
 # CHANGELOG for nano-banana-ricc
 
+## 0.8 (2026-11-06)
+- 🔧 Updated default model in `scripts/generate_image.py` from retired `gemini-3-pro-image-preview` to `gemini-3-pro-image` and added `--model` CLI flag.
+
 ## 0.7 (2026-05-15)
 - 🚚 Added specific instruction to add a Camion emoji if called by Hermes (Ermete Bottazzi).
 

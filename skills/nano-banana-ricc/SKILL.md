@@ -4,7 +4,7 @@ description: >-
   (💛) Generate or edit images via Gemini 3 Pro Image (🍌 Nano Banana Pro) with Riccardo character consistency.
 compatibility: Gemini CLI
 metadata:
-  version: 0.7
+  version: 0.8
 ---
 # Nano Banana Riccardo (Gemini 3 Pro Image)
 

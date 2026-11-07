@@ -1,3 +1,11 @@
+## [0.6.37] - 2026-11-07
+
+- 🍌💛 **`nano-banana-ricc` (`v0.8.0`)**:
+  - Updated default model in `scripts/generate_image.py` from retired `gemini-3-pro-image-preview` to production `gemini-3-pro-image`.
+  - Added CLI flag `--model` (`-m`) to customize image generation model.
+  - Bumped skill metadata version to 0.8.
+- 🚀 Bumped version to 0.6.37 -- signed by `gc-skillume-bot-v0_2`.
+
 ## [0.6.36] - 2026-11-07
 
 - 🇪🇺⚖️ **`ai-ethics` (`v1.1.0` — Carlessian Commons Ethics v1.1 + EU AI Act Safety Ladder)**:
