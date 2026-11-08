@@ -1,3 +1,9 @@
+## [0.6.38] - 2026-11-07
+
+- 🇨🇭🍌 **`zurich-morning-weather` (`v0.1.1`)**:
+  - Updated default model in `scripts/generate_weather_art.py` from retired `gemini-3-pro-image-preview` to `gemini-3-pro-image` and added `--model` (`-m`) CLI flag.
+  - Updated `SKILL.md` CLI usage to reference `$SKILL_DIR`.
+
 ## [0.6.37] - 2026-11-07
 
 - 🍌💛 **`nano-banana-ricc` (`v0.8.0`)**:

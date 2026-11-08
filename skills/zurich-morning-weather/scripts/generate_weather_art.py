@@ -160,6 +160,7 @@ def main():
     parser.add_argument("--resolution", "-r", default="2K", choices=["1K", "2K", "4K"], help="Image resolution")
     parser.add_argument("--aspect-ratio", "-a", default="3:4", choices=["3:4", "16:9", "4:3", "1:1", "9:16"], help="Aspect ratio (default: 3:4 vertical)")
     parser.add_argument("--api-key", "-k", default=None, help="Gemini API Key override")
+    parser.add_argument("--model", "-m", default="gemini-3-pro-image", help="Gemini image model (default: gemini-3-pro-image)")
     args = parser.parse_args()
 
     api_key = get_api_key(args.api_key)
@@ -199,11 +200,11 @@ def main():
     from google.genai import types
 
     client = genai.Client(api_key=api_key)
-    print(f"Generating Zurich vertical weather artwork ({args.resolution}, {args.aspect_ratio})...")
+    print(f"Generating Zurich vertical weather artwork ({args.resolution}, {args.aspect_ratio}) with {args.model}...")
 
     image_config = {"image_size": args.resolution, "aspect_ratio": args.aspect_ratio}
     response = client.models.generate_content(
-        model="gemini-3-pro-image-preview",
+        model=args.model,
         contents=prompt,
         config=types.GenerateContentConfig(
             response_modalities=["TEXT", "IMAGE"],

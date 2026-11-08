@@ -4,7 +4,7 @@ description: >-
   (💛) Generates daily 45° top-down isometric 3D miniature diorama weather scenes of Zurich using Nano Banana Pro (Gemini 3 Pro Image) with live weather data, iconic landmarks, and typography.
 compatibility: Gemini CLI, Hermes Agent
 metadata:
-  version: 0.1.0
+  version: 0.1.1
 ---
 
 # Zurich Morning Weather Skill (🍌🇨🇭)
@@ -24,7 +24,7 @@ Generates a daily 45° top-down isometric miniature 3D cartoon diorama of Zurich
 Run the bundled script using `uv`:
 
 ```bash
-uv run ~/.hermes/skills/gemini-cli-palladius-public-goodies/skills/zurich-morning-weather/scripts/generate_weather_art.py
+uv run $SKILL_DIR/scripts/generate_weather_art.py
 ```
 
 ### Options
