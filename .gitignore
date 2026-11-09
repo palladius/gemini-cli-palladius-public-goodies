@@ -6,3 +6,4 @@ __pycache__/
 .env
 skills/gemini-notebook-api/.env
 .cache/
+node_modules/
