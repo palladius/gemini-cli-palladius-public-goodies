@@ -3,6 +3,8 @@
 agy2t3 — Helper to inspect Antigravity CLI sessions and prepare T3 handover briefs.
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import os

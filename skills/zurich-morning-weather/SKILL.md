@@ -4,19 +4,21 @@ description: >-
   (💛) Generates daily 45° top-down isometric 3D miniature diorama weather scenes of Zurich using Nano Banana Pro (Gemini 3 Pro Image) with live weather data, iconic landmarks, and typography.
 compatibility: Gemini CLI, Hermes Agent
 metadata:
-  version: 0.1.1
+  version: 0.2.0
 ---
 
 # Zurich Morning Weather Skill (🍌🇨🇭)
 
-Generates a daily 45° top-down isometric miniature 3D cartoon diorama of Zurich featuring its most iconic landmarks (Grossmünster, Fraumünster, Limmat river, and blue-and-white VBZ tram), automatically themed to the live morning weather forecast with clean top-centered weather typography.
+Generates a daily 45° isometric 3D diorama of Zurich styled like a vertical iPhone weather card with live telemetry and a 3D water thermometer.
 
 ## Features
 
-- **Live Weather Sync**: Automatically queries Open-Meteo for Zurich (`47.3769° N, 8.5417° E`) to retrieve current temperature, daily min/max, and WMO weather condition code.
-- **Iconic Landmarks**: Accurately renders Grossmünster Romanesque twin towers, Fraumünster turquoise steeple, Münsterbrücke stone bridge, and blue-and-white Zurich municipal tram.
-- **Atmospheric Lighting**: Translates WMO weather codes into atmospheric rendering directions (e.g., golden autumn sun, low-lying river mist, wet cobblestone reflections, or fresh winter snowfall).
-- **Embedded Typography**: Generates crisp, centered text directly on the image with the city name, 3D weather glyph, ordinal date, and current/min/max temperature.
+- **Live Weather & Sun Sync**: Queries Open-Meteo for daily `🌡️ min° % max°C`, rain/umbrella verdict, sunrise/sunset (`🌅 / 🌇`), and supports dual-card travel mode (`--auto-travel`).
+- **Iconic Landmarks + Water Thermometer**: Renders Grossmünster, Fraumünster, Münsterbrücke with VBZ tram, and a 3D glass thermometer in the Limmat/Zürichsee (`🌊 XX°C`).
+- **Atmospheric Lighting**: Translates WMO weather codes into atmospheric rendering directions (e.g., golden sun, low-lying river mist, wet cobblestone reflections, or fresh winter snowfall).
+- **Embedded iPhone-Card Typography**:
+  - Top-center: **Zurich**, 3D weather/umbrella glyph, compact date (`Mon **9 Nov 2026**`), and `🌡️ min° % max°C • ☔/🌂`.
+  - Bottom corners: subtle footer with current morning temperature (`Now X°C` bottom-left) and sunrise/sunset (`🌅 HH:MM • 🌇 HH:MM` bottom-right).
 - **Dual Format Output**: Emits both full-resolution PNG and compressed 85% JPEG for instant native messaging delivery via `MEDIA:`.
 
 ## CLI Usage
@@ -32,6 +34,11 @@ uv run $SKILL_DIR/scripts/generate_weather_art.py
 ```bash
 # Custom output path
 uv run .../generate_weather_art.py --output /tmp/custom_zurich.png
+
+# Generate for another city or generate BOTH Zurich + travel city automatically
+uv run .../generate_weather_art.py --city "Lido degli Estensi"
+uv run .../generate_weather_art.py --travel-city "Fernando de Noronha"
+uv run .../generate_weather_art.py --auto-travel
 
 # Custom resolution (1K, 2K, 4K)
 uv run .../generate_weather_art.py --resolution 2K

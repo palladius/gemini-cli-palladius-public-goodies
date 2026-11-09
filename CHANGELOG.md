@@ -1,3 +1,15 @@
+## [0.6.39] - 2026-11-09
+
+- ⚰️💀 **`agy-cli-to-t3-import`**:
+  - Added `from __future__ import annotations` in `scripts/agy2t3.py` so `dict | None` union type hints work with macOS system Python 3.9.
+- 🚀 Bumped version to 0.6.39.
+
+## [0.6.39] - 2026-11-08
+
+- 🇨🇭🍌 **`zurich-morning-weather` (`v0.2.0`)**:
+  - Updated vertical iPhone-card typography: compact date (`Sun **8 Nov 2026**`), top-center daily range `🌡️ min° % max°C` + rain/umbrella verdict, miniature 3D glass water thermometer in the Limmat/Lake Zurich, and subtle bottom corners for current morning temp (`Now X°C`) and sunrise/sunset (`🌅 HH:MM • 🌇 HH:MM`).
+  - Added fast `wiewarm.ch` JSON API primary lookup for Zürichsee water temperature.
+
 ## [0.6.38] - 2026-11-07
 
 - 🇨🇭🍌 **`zurich-morning-weather` (`v0.1.1`)**:
