@@ -4,27 +4,28 @@ description: >-
   💛 Provides current recommendations for Gemini, Nano Banana, Omni, Veo, and Lyria model selection, concise capability descriptions, deprecation alerts, and migration paths. Updated November 2026.
 compatibility: Antigravity / Gemini CLI
 metadata:
-  version: 0.3.1
-  tags: gemini, models, argon, nano-banana, omni, veo, lyria
+  version: 0.3.2
+  tags: gemini, models, carbon, argon, nano-banana, omni, veo, lyria
 ---
 
 # 💛 Gemini Model Selector (November 2026)
 
-This skill provides current, recommended model IDs for **Gemini 4**, **Nano Banana 2.1**, **Omni 1.1 Flash**, **Veo**, and **Lyria 3.5**, along with concise (`<=280` chars) `short_description` summaries of what each model actually does, API endpoint requirements (`client.interactions` vs `generateContent`), and deprecation alerts.
+This skill provides current, recommended model IDs for **Gemini 4 (Carbon & Argon)**, **Nano Banana 2.1**, **Omni 1.2 Flash**, **Veo**, and **Lyria 3.5**, along with concise (`<=280` chars) `short_description` summaries of what each model actually does, API endpoint requirements (`client.interactions` vs `generateContent`), and deprecation alerts.
 
-*Last Updated: 05 November 2026*
+*Last Updated: 11 November 2026*
 
 ## Recommended Models & What They Actually Do
 
 | Task Type | Recommended Model | 📅 Released | 📝 What It Actually Does (`<=280` chars `short_description`) |
 | :--- | :--- | :---: | :--- |
-| **Complex Reasoning / Coding / Research (Flagship)** | `gemini-4-argon` | `2026-10-13` | Flagship 1M-ctx reasoning, coding & research powerhouse (65k out). Replaces `3.1-pro` for complex architecture, STEM, and multi-step agentic workflows. |
+| **Deep Frontier Reasoning / Sustained Agentic Coding / Security** | `gemini-4-carbon` | `2026-11-10` | Strongest 1M-ctx frontier reasoning model for sustained agentic coding, multimodal knowledge work, scientific proofs & security auditing ($2/$10 per 1M intro pricing, up to 1M decode with `background=True`). |
+| **Interactive Frontier Reasoning / Research / Fast Loops** | `gemini-4-argon` | `2026-10-13` | Efficient 1M-ctx frontier reasoning model for interactive coding, research, and fast production loops (65k out; pairs with `gemini-4-carbon` for sustained deep reasoning). |
 | **Balanced Agentic & Multimodal (Default)** | `gemini-3.8-flash` | `2026-09-02` | Default 1M-ctx fast workhorse (65k out) balancing thinking, multimodal understanding, and low-latency agentic tool calling. |
 | **High-Throughput / Low-Cost** | `gemini-3.5-flash-lite` | `2026-07-21` | Fastest, lowest-cost 1M-ctx 3.5 model for high-throughput batch classification, extraction & routing (`gemini-3.1-flash-lite` for ultra-lightweight). |
 | **Image Generation & Editing (Default)** | `gemini-nano-banana-2.1` | `2026-10-06` | **Nano Banana 2.1**: flagship high-efficiency 1K/2K/4K image generator & conversational editor supporting multi-image fusion with up to 14 reference images. |
 | **Image Generation (Pro / Lite)** | `gemini-3-pro-image` / `gemini-3.1-flash-lite-image` | `2026-05-28` / `2026-06-30` | **Nano Banana Pro** (studio photorealism & typography) and **Nano Banana 2 Lite** (ultra-fast general image generation & editing). |
-| **Video Generation, Editing & 40s Extension** | `gemini-omni-1.1-flash` | `2026-08-27` | **Omni Flash** video+audio generator & editor: text/image-to-video, first/last frame transitions, object add/remove, AR zoom & 40s extensions via `client.interactions` API. |
-| **Studio Text-to-Speech & Voice Design** | `gemini-3.8-flash-tts` | `2026-09-22` | Expressive studio TTS: Voice Design from text prompts, Voice Replication, dual-speaker podcasts, backchanneling (`\|mhm\|`, `\|yeah\|`) & vocal bursts (`<laugh>`, `<gasp>`). |
+| **Video Generation, Editing & 30s Extension (Default)** | `gemini-omni-1.2-flash` | `2026-11-05` | **Omni 1.2 Flash** video+audio generator & editor: 3–15s clips (10s default), 3–10s keyframe transitions & extensions up to 30s total, up to 6 ref images, 30% lower output pricing ($12/1M) & 2x rate limits via `client.interactions`. |
+| **Studio Text-to-Speech & Voice Design** | `gemini-3.8-flash-tts` | `2026-09-22` | Expressive studio TTS: Voice Design from text prompts, Voice Remixing (`POST /v1beta/voices`), Voice Replication, dual-speaker podcasts, backchanneling (`\|mhm\|`, `\|yeah\|`) & vocal bursts (`<laugh>`, `<gasp>`). |
 | **High-Volume Fast TTS** | `gemini-3.8-flash-lite-tts` | `2026-09-22` | Ultra-fast, low-cost TTS for high-volume voice agents, article reading, IVR, global dubbing, and accessibility screen readers. |
 | **Speech-to-Text (Static / Live)** | `gemini-3.5-transcribe` / `gemini-3.5-transcribe-live` | `2026-08-26` | Dedicated high-speed ASR with smart/verbatim modes (`3.5-transcribe`) and real-time streaming speech translation (`3.5-transcribe-live`). |
 | **Live Bidi Audio & Video** | `gemini-3.8-live` / `gemini-3.8-live-extended-thinking` | `2026-09-15` | Low-latency Live API (`bidiGenerateContent`) conversation (`3.8-live`) and "Thinker-Talker" Live model for complex reasoning + multi-step tool use (`extended-thinking`). |
@@ -51,8 +52,10 @@ gemini-list-models.py --ai-help
 
 ![Terminal output of gemini-list-models.py --full --by-date -n 10](references/output-screenshot.png)
 
-## Deprecation Alerts (Action Required)
+## Deprecation & Auto-Routing Alerts (Action Required)
 
-- **Legacy Gemini 2.5 / 2.0 / 1.5**: Models like `gemini-2.5-*`, `gemini-2.0-*`, and `gemini-1.5-*` are **legacy and deprecated**. Replace with `gemini-3.8-flash` (or `gemini-4-argon` for complex reasoning).
+- **Gemini Omni 1.1 Flash (`gemini-omni-1.1-flash`)**: Superseded by `gemini-omni-1.2-flash` (released Nov 5, 2026). Effective **December 3, 2026**, requests to `gemini-omni-1.1-flash` automatically route to `gemini-omni-1.2-flash`.
+- **Gemini Embedding 2 Preview (`gemini-embedding-2-preview`)**: Deprecated effective **November 6, 2026** (automatically routes to `gemini-embedding-2`).
+- **Legacy Gemini 2.5 / 2.0 / 1.5**: Models like `gemini-2.5-*`, `gemini-2.0-*`, and `gemini-1.5-*` are **legacy and deprecated** (effective Dec 1, 2026, `gemini-2.5-pro` routes to `gemini-3.8-flash` and `gemini-2.5-flash` routes to `gemini-3.5-flash-lite`). Replace with `gemini-3.8-flash`, `gemini-4-argon`, or `gemini-4-carbon`.
 - **Legacy Image Models (`gemini-3.1-flash-image`, `gemini-3.1-flash-image-preview`, `gemini-2.5-flash-image`)**: Replaced by `gemini-nano-banana-2.1` and `gemini-3.1-flash-lite-image`.
-- **Veo 2 & Veo 3 (`veo-2.0-generate-001`, `veo-3.0-generate-001`, `veo-3.0-fast-generate-001`)**: Deprecated (cutoff June 30, 2026). Migrate to `gemini-omni-1.1-flash` or `veo-3.1-lite-generate-preview`.
+- **Veo 2 & Veo 3 (`veo-2.0-generate-001`, `veo-3.0-generate-001`, `veo-3.0-fast-generate-001`)**: Deprecated (cutoff June 30, 2026). Migrate to `gemini-omni-1.2-flash` or `veo-3.1-lite-generate-preview`.

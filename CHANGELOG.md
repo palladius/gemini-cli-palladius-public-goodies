@@ -1,3 +1,8 @@
+## [0.6.40] - 2026-11-11
+
+- 💛🚀 **`gemini-model-selector` (`v0.3.2`)**: Self-healed skill with the 2 newly released November 2026 models (`gemini-4-carbon` released `2026-11-10` and `gemini-omni-1.2-flash` released `2026-11-05`) plus auto-routing/deprecation alerts for `gemini-omni-1.1-flash` (Dec 3, 2026) and `gemini-embedding-2-preview` (Nov 6, 2026).
+- 🚀 Bumped version to 0.6.40.
+
 ## [0.6.39] - 2026-11-09
 
 - ⚰️💀 **`agy-cli-to-t3-import`**:
