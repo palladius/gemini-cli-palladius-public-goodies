@@ -9,7 +9,7 @@ description: >-
   and auditing system prompt markdowns.
 compatibility: Gemini CLI
 metadata:
-  version: 0.0.3
+  version: 0.0.4
 ---
 # Git Coding Best Practices
 
@@ -28,6 +28,7 @@ Untracked files may contain active, uncommitted work by the user or other agents
 
 Before proposing or executing any `git commit`, you must perform the following actions in the repository:
 1. **Bump Version:** Find the main configuration file containing the version (e.g., `gemini-extension.json`, `plugin.json`, `package.json`, etc.) and increment it according to Semantic Versioning (usually a patch bump, like `0.1.4` -> `0.1.5`).
+   - **Fetch first:** run `git fetch origin` and read the version on `origin/main` before picking the next number. Parallel agent sessions (other worktrees) may have already claimed it.
 2. **Update CHANGELOG.md:** Add a new entry to the `CHANGELOG.md` file documenting the changes under the new version header. Follow the `[Keep a Changelog]` format.
 3. **Run Anti-Bloat Check on System Prompts:** If your diff touches `GEMINI.md`, `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `SPECS.md`, `INSTRUCTIONS.md`, or `SKILL.md`, run `$SKILL_DIR/scripts/analyze_bloat_history.py --uncommitted <FILENAME>` before committing (see Mandate #6 and the `ai-coding` skill).
 
