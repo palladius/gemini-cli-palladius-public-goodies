@@ -1,3 +1,9 @@
+## [0.6.43] - 2026-11-13
+
+- 🏖️ **`git-coding` (`v0.0.5`)**:
+  - Updated Mandate #4 (`Push Etiquette`) and Workflow Example to run `autopush-enabled`: when it exits `0` (Relaxx Mode 🏖️), agents automatically `git commit` and `git push` without asking the user for confirmation.
+- 🚀 Bumped version to 0.6.43.
+
 ## [0.6.42] - 2026-11-13
 
 - 🇨🇭🍌🔊 **`zurich-morning-weather` (`v0.2.1`)**:

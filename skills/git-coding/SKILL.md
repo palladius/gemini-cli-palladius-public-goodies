@@ -9,7 +9,7 @@ description: >-
   and auditing system prompt markdowns.
 compatibility: Gemini CLI
 metadata:
-  version: 0.0.4
+  version: 0.0.5
 ---
 # Git Coding Best Practices
 
@@ -37,8 +37,10 @@ Before proposing or executing any `git commit`, you must perform the following a
 - Prefer commit messages that are clear, concise, and focused more on "why" than "what".
 - If the repository uses `gitmoji`, use the appropriate emoji in the commit title (e.g., 🐛 for bugs, ✨ for features, 🤖 for chores, etc.).
 
-### 4. Push Etiquette
-- **NEVER** push changes to a remote repository automatically unless explicitly requested by the user.
+### 4. Push Etiquette (`autopush-enabled`)
+- Before finishing a commit workflow, check if `autopush-enabled` is available in `$PATH` and run it.
+- **If `autopush-enabled` exits `0` (Relaxx Mode 🏖️):** **ALWAYS** `git commit` and `git push` (or `just autopush`) automatically **without asking the user for confirmation**.
+- **If `autopush-enabled` exits non-zero (or is not installed):** **NEVER** push automatically unless explicitly requested by the user.
 
 ### 5. Renaming
 
@@ -89,5 +91,5 @@ When asked to "commit the recent changes":
 3. Find the version file and bump it.
 4. Add the changes to `CHANGELOG.md`.
 5. Stage the files (`git add ...`).
-6. Propose the commit message to the user or execute it if given permission.
+6. If `autopush-enabled` exits `0`, commit and push (`git pull --rebase && git push`) automatically without asking; otherwise propose the commit/push to the user.
 7. Ensure to attach GH issue if available in the messages. If so, also comment on the issue post-commit/push with a digest of what has been done. It reads nicely.
