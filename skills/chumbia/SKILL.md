@@ -14,7 +14,7 @@ description: >-
   and concludes with CHUMBIA! so the conversation can be safely archived or destroyed.
 compatibility: gemini-cli, antigravity, claude, t3-code
 metadata:
-  version: "1.5.0"
+  version: "1.5.1"
   author: "Riccardo Carlesso"
   tags: "cleanup, git, worktree, branch, workflow, session-end, chumbia, hygiene, learn, learnings, breadcrumbs, superpowers, t3-code, mcp, auto-archive"
 ---
@@ -67,7 +67,7 @@ Run a non-destructive diagnostic check (or run `bash "$SKILL_DIR/scripts/chumbia
 3. **Test Suite (`just test`)**:
    - If a `justfile` with a `test` recipe exists (`just -l | grep -E '^\s*test\b'`), are the tests passing?
 4. **Branch & Upstream Sync**:
-   - Run `git fetch --prune origin`.
+   - Run `timeout 8 git fetch --prune origin`.
    - Identify base branch (`origin/main`, `origin/master`).
    - If on `main`: are there unpushed local commits (`git rev-list --count origin/main..HEAD`)?
    - If on a feature branch (`<feature-branch>`): has `<feature-branch>` been merged into `origin/main` (`git merge-base --is-ancestor HEAD origin/main`), or is there still an open PR/MR waiting to land?
@@ -120,7 +120,7 @@ GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
   4. Navigate safely out of the worktree back to the primary repo root before deleting the worktree:
      ```bash
      cd "$MAIN_ROOT"
-     git fetch --prune origin
+     timeout 8 git fetch --prune origin
      git checkout main && git pull --ff-only origin main
      git worktree remove "$WORKTREE_PATH"
      if [ -n "$FEATURE_BRANCH" ] && [ "$FEATURE_BRANCH" != "main" ]; then
@@ -141,7 +141,7 @@ GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
 - Delete the remote feature branch(es) created for this session/repo that are confirmed merged into `origin/main`:
   ```bash
   git push origin --delete "<feature-branch>"
-  git fetch --prune origin
+  timeout 8 git fetch --prune origin
   ```
 
 ### 4. `just clean` & Ephemeral Artifact / `node_modules/` Sweep
@@ -195,7 +195,7 @@ When Phases 1, 2, and 3 are complete:
 
    - **If on Antigravity (Desktop / IDE / agy CLI)**:
      Render the interactive **Chumbia Archival Applet** inline in chat:
-     1. Copy `$SKILL_DIR/scripts/chumbia_applet.html` to `<appDataDir>/brain/<conversation-id>/chumbia_applet.html` (via `write_to_file` or copy command).
+     1. Write `$SKILL_DIR/scripts/chumbia_applet.html` to `<appDataDir>/brain/<conversation-id>/chumbia_applet.html` using the native file-creation tool (`write_file` / `write_to_file`, **not** shell `cp`) with `ArtifactMetadata` (`UserFacing: true`, `RequestFeedback: false`). Ensure the HTML loads the CSP-allowlisted Tailwind script (`https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js`) rather than `https://cdn.tailwindcss.com` (blocked by `<agent-embed>` CSP).
      2. Render the inline embed widget in your response:
         ```html
         <agent-embed src="file:///<appDataDir>/brain/<conversation-id>/chumbia_applet.html"></agent-embed>

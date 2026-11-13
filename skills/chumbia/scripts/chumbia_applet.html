@@ -4,35 +4,35 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chumbia Archival Applet</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
   </style>
 </head>
-<body class="p-4 bg-transparent select-none">
-  <div id="card" class="max-w-md mx-auto bg-white dark:bg-zinc-900 border border-emerald-500/30 rounded-2xl p-5 shadow-xl transition-all duration-300">
+<body class="p-3 m-0 bg-transparent text-[var(--foreground,#18181b)] antialiased select-none">
+  <div id="card" class="max-w-md mx-auto bg-[var(--card,#ffffff)] border border-[var(--card-border,rgba(16,185,129,0.3))] rounded-2xl p-5 shadow-xl transition-all duration-300">
     <div class="flex items-center gap-3 mb-3">
       <div class="text-3xl">🎺</div>
       <div>
-        <h3 class="font-bold text-lg text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-          CHUMBIA! <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 font-mono">TUTTO VERIFICATO</span>
+        <h3 class="font-bold text-lg text-[var(--foreground,#18181b)] flex items-center gap-2">
+          CHUMBIA! <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 font-mono">TUTTO VERIFICATO</span>
         </h3>
-        <p class="text-xs text-zinc-500 dark:text-zinc-400">Tutti i gate superati: `origin/main` allineato e pulizie completate.</p>
+        <p class="text-xs text-[var(--muted-foreground,#71717a)]">Tutti i gate superati: <code>origin/main</code> allineato e pulizie completate.</p>
       </div>
     </div>
 
-    <div class="bg-zinc-50 dark:bg-zinc-800/60 rounded-xl p-3 mb-4 text-xs space-y-1.5 text-zinc-700 dark:text-zinc-300">
+    <div class="bg-[var(--secondary,#f4f4f5)] rounded-xl p-3 mb-4 text-xs space-y-1.5 text-[var(--foreground,#3f3f46)]">
       <div class="flex items-center justify-between">
-        <span class="flex items-center gap-1.5"><span>✅</span> Working tree & Sequencer</span>
-        <span class="text-emerald-600 dark:text-emerald-400 font-semibold">Pulito</span>
+        <span class="flex items-center gap-1.5"><span>✅</span> Working tree &amp; Sequencer</span>
+        <span class="text-emerald-600 font-semibold">Pulito</span>
       </div>
       <div class="flex items-center justify-between">
         <span class="flex items-center gap-1.5"><span>✅</span> Sincronizzazione Main</span>
-        <span class="text-emerald-600 dark:text-emerald-400 font-semibold">0 unpushed</span>
+        <span class="text-emerald-600 font-semibold">0 unpushed</span>
       </div>
       <div class="flex items-center justify-between">
-        <span class="flex items-center gap-1.5"><span>🧹</span> Pulizia Worktree & Task</span>
-        <span class="text-emerald-600 dark:text-emerald-400 font-semibold">Completata</span>
+        <span class="flex items-center gap-1.5"><span>🧹</span> Pulizia Worktree &amp; Task</span>
+        <span class="text-emerald-600 font-semibold">Completata</span>
       </div>
     </div>
 
@@ -40,13 +40,13 @@
       <button id="btn-archive" onclick="triggerArchive()" class="flex-1 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium py-2.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm cursor-pointer">
         <span>📦</span> Archivia Chat
       </button>
-      <button id="btn-keep" onclick="triggerKeep()" class="bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium py-2.5 px-4 rounded-xl transition-all text-sm cursor-pointer">
+      <button id="btn-keep" onclick="triggerKeep()" class="bg-[var(--secondary,#f4f4f5)] hover:opacity-80 text-[var(--foreground,#3f3f46)] font-medium py-2.5 px-4 rounded-xl transition-all text-sm cursor-pointer">
         Mantieni Aperta
       </button>
     </div>
 
-    <div id="confirmation" class="hidden mt-3 p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl text-center">
-      <p id="confirmation-text" class="text-xs font-semibold text-blue-700 dark:text-blue-300"></p>
+    <div id="confirmation" class="hidden mt-3 p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl text-center">
+      <p id="confirmation-text" class="text-xs font-semibold text-blue-600"></p>
     </div>
   </div>
 

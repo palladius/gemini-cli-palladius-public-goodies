@@ -82,7 +82,11 @@ is_worktree: $IS_WORKTREE
 pid: $$
 TOUCH_EOF
 
-git fetch --prune origin 2>/dev/null || true
+if command -v timeout >/dev/null 2>&1; then
+  GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh -o ConnectTimeout=5}" timeout 8 git fetch --prune origin 2>/dev/null || true
+else
+  GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh -o ConnectTimeout=5}" git fetch --prune origin 2>/dev/null || true
+fi
 
 # Determine Main ref
 if git show-ref --verify --quiet refs/remotes/origin/main; then

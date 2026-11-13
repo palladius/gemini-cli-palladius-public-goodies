@@ -40,3 +40,10 @@ All notable changes to this skill will be documented in this file.
 - 🟦 **Antigravity Interactive Archival Applet (`<agent-embed>`)**:
   - Creato template standalone `scripts/chumbia_applet.html` con card Tailwind e bottone azzurro interattivo ("📦 Archivia Chat") + "Mantieni Aperta".
   - Supporto al rendering inline dell'applet via `<agent-embed>` in chat su Antigravity IDE/Desktop con fallback su bridge sidecar o auto-archiviazione via slash command.
+
+## [1.5.1] - 2026-11-13
+
+- ⏱️ **Bounded SSH/Network Timeout on `git fetch`**:
+  - Aggiornato `scripts/chumbia_audit.sh` e i comandi manuali in `SKILL.md` per usare `timeout 8 git fetch --prune origin` con `GIT_SSH_COMMAND="ssh -o ConnectTimeout=5"`, evitando blocchi multi-minuto quando la porta SSH 22 verso GitHub e' filtrata da firewall restrittivi.
+- 🛡️ **Antigravity `<agent-embed>` CSP Compatibility**:
+  - Sostituito `https://cdn.tailwindcss.com` (bloccato dalla Content Security Policy degli iframe `<agent-embed>`) con lo script allowlisted `https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js` e token semantici CSS (`var(--card)`, `var(--foreground)`) in `scripts/chumbia_applet.html`, richiedendo `ArtifactMetadata` (`UserFacing: true`, `RequestFeedback: false`) alla creazione del file HTML.
