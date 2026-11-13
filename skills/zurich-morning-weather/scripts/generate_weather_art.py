@@ -571,18 +571,94 @@ def generate_card_for_city(
         print(f"Saved 16:9 Nest Hub JPG: {out_jpg}", file=sys.stderr)
     return out_jpg
 
+def generate_vannacci_tts_mp3(city_name: str, api_key: str, out_mp3: Path) -> Path | None:
+    """Generates the General Vannacci Tuscan (Viareggio) morning weather monologue at +10% speed via Gemini 2.5 Flash TTS."""
+    import base64
+    import subprocess
+    import wave
+
+    geo = geocode_city(city_name)
+    air = fetch_air_weather(geo["lat"], geo["lon"], geo["timezone"])
+    water = fetch_zuerichsee_water_temp() if geo["is_zurich"] else fetch_marine_water_temp(geo["lat"], geo["lon"])
+    water_str = (
+        f"Un parliamo poi dell'acqua della Limmat e del Lago di Zurigo: {round(water)} gradi appena, roba da veri incursori paracadutisti col costume di ghisa! "
+        if water is not None
+        else ""
+    )
+    umbrella_str = (
+        "oggi niente scuse, pigliate tutti l'ombrello, mettetevi la giacca impermeabile e filate dritti a scuola e a lavorare!"
+        if air["umbrella"]
+        else "oggi niente ombrello, ma copritevi bene lo stesso e filate dritti a scuola e a lavorare!"
+    )
+    prompt = (
+        "Recita questo bollettino meteo in italiano con il MARCATISSIMO ACCENTO TOSCANO DI VIAREGGIO (Versilia) "
+        "tipico del Generale Roberto Vannacci: tono fiero, marziale, ironico e scanzonato, con la tipica C aspirata toscana e cadenza toscana verace:\n\n"
+        f"Attenti! Buongiorno famiglia Carlesso! "
+        f"Maremma bona, siccome ho perso le elezioni, m'hanno messo qui dentro a questo aggeggio a fare il meteo... per gl'italiani a Zurigo! "
+        f"E allora guardiamolo bene questo tempo di oggi a {geo['name']}: il cielo l'è {air['condition_it']}, "
+        f"la temperatura minima la scende a {air['min_temp']} gradi, mentre la massima l'arriva a {air['max_temp']} gradi nel pomeriggio. "
+        f"{water_str}"
+        f"Quindi ascoltate gli ordini: {umbrella_str} "
+        f"Rompete le righe! Un saluto dal vostro generale Robertino delle previsioni di Zurigo!"
+    )
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "responseModalities": ["AUDIO"],
+            "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Charon"}}},
+        },
+    }
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={api_key}"
+    try:
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=40) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        pcm = base64.b64decode(
+            next(p["inlineData"]["data"] for p in data["candidates"][0]["content"]["parts"] if "inlineData" in p)
+        )
+        raw_wav = out_mp3.with_suffix(".raw.wav")
+        with wave.open(str(raw_wav), "wb") as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(24000)
+            wf.writeframes(pcm)
+        subprocess.run(
+            [
+                "ffmpeg", "-y", "-loglevel", "error",
+                "-i", str(raw_wav),
+                "-filter:a", "atempo=1.10",
+                "-c:a", "libmp3lame", "-b:a", "128k",
+                str(out_mp3),
+            ],
+            check=True,
+            timeout=15,
+        )
+        raw_wav.unlink(missing_ok=True)
+        print(f"Saved Vannacci Audio MP3: {out_mp3}")
+        print(f"MEDIA:{out_mp3}")
+        return out_mp3
+    except Exception as e:
+        print(f"Warning: Vannacci TTS generation failed ({e}), continuing with silent MP4", file=sys.stderr)
+        return None
+
+
 def cast_image_to_nest_hub(
     image_path: Path,
     nest_ip: str = "192.168.86.248",
     title: str = "Zurich Morning Weather",
     duration_sec: int = 1800,
+    city_name: str = "Zurich",
+    api_key: str | None = None,
 ) -> bool:
     """
-    Casts a 16:9 JPEG image persistently to the Google Nest Hub (Default Media Receiver).
-    Why MP4 with silent AAC + faststart:
-    - Casting a static JPEG has duration=None (IDLE/PAUSED), causing Nest Hub to revert to Ambient Mode (clock/photos) within seconds.
-    - Casting a 1fps video without audio or without -movflags +faststart stalls the Nest Hub hardware decoder in state=UNKNOWN.
-    - Encoding a 10s H.264+AAC segment and looping it via -stream_loop + -movflags +faststart takes ~0.5s and keeps player_state=PLAYING for 30 minutes.
+    Casts a 16:9 JPEG image persistently to the Google Nest Hub (Default Media Receiver),
+    starting with the General Vannacci Tuscan (+10% speed) morning weather voice intro (~43s)
+    followed by 30 minutes of silent display so the Nest Hub never reverts to Ambient Mode.
     """
     import socket
     import subprocess
@@ -596,9 +672,14 @@ def cast_image_to_nest_hub(
         print(f"Warning: Could not determine LAN IP for Nest Hub {nest_ip} ({e})", file=sys.stderr)
         return False
 
+    intro_mp3 = image_path.parent / f"{image_path.stem}_vannacci.mp3"
+    tts_mp3 = generate_vannacci_tts_mp3(city_name, api_key, intro_mp3) if api_key else None
+
+    intro_mp4 = image_path.parent / f"{image_path.stem}_intro.mp4"
     seg_mp4 = image_path.parent / f"{image_path.stem}_seg10.mp4"
+    concat_txt = image_path.parent / f"{image_path.stem}_concat.txt"
     cast_mp4 = image_path.parent / f"{image_path.stem}_cast.mp4"
-    loops = max(1, (duration_sec // 10) - 1)
+    loops = max(1, (duration_sec // 10) - 4)
 
     try:
         subprocess.run(
@@ -606,32 +687,60 @@ def cast_image_to_nest_hub(
                 "ffmpeg", "-y", "-loglevel", "error",
                 "-loop", "1", "-framerate", "5", "-i", str(image_path),
                 "-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
-                "-c:v", "libx264", "-preset", "fast", "-tune", "stillimage", "-crf", "24",
+                "-c:v", "libx264", "-preset", "ultrafast", "-tune", "stillimage", "-crf", "24",
                 "-profile:v", "main", "-level", "4.0", "-pix_fmt", "yuv420p",
                 "-vf", "scale=1280:720", "-r", "10", "-g", "100",
-                "-c:a", "aac", "-b:a", "32k", "-t", "10",
-                str(seg_mp4),
+                "-c:a", "aac", "-b:a", "64k", "-ar", "44100", "-ac", "2",
+                "-t", "10", str(seg_mp4),
             ],
             check=True,
             timeout=20,
         )
-        subprocess.run(
-            [
-                "ffmpeg", "-y", "-loglevel", "error",
-                "-stream_loop", str(loops), "-i", str(seg_mp4),
-                "-c", "copy", "-movflags", "+faststart",
-                str(cast_mp4),
-            ],
-            check=True,
-            timeout=20,
-        )
-        seg_mp4.unlink(missing_ok=True)
+        if tts_mp3 and tts_mp3.exists():
+            subprocess.run(
+                [
+                    "ffmpeg", "-y", "-loglevel", "error",
+                    "-loop", "1", "-framerate", "5", "-i", str(image_path),
+                    "-i", str(tts_mp3),
+                    "-c:v", "libx264", "-preset", "ultrafast", "-tune", "stillimage", "-crf", "24",
+                    "-profile:v", "main", "-level", "4.0", "-pix_fmt", "yuv420p",
+                    "-vf", "scale=1280:720", "-r", "10", "-g", "100",
+                    "-c:a", "aac", "-b:a", "64k", "-ar", "44100", "-ac", "2",
+                    "-shortest", str(intro_mp4),
+                ],
+                check=True,
+                timeout=25,
+            )
+            lines = [f"file '{intro_mp4}'"] + [f"file '{seg_mp4}'"] * loops
+            concat_txt.write_text("\n".join(lines) + "\n")
+            subprocess.run(
+                [
+                    "ffmpeg", "-y", "-loglevel", "error",
+                    "-f", "concat", "-safe", "0", "-i", str(concat_txt),
+                    "-c", "copy", "-movflags", "+faststart",
+                    str(cast_mp4),
+                ],
+                check=True,
+                timeout=20,
+            )
+        else:
+            subprocess.run(
+                [
+                    "ffmpeg", "-y", "-loglevel", "error",
+                    "-stream_loop", str(loops), "-i", str(seg_mp4),
+                    "-c", "copy", "-movflags", "+faststart",
+                    str(cast_mp4),
+                ],
+                check=True,
+                timeout=20,
+            )
+        for tmp_f in (intro_mp4, seg_mp4, concat_txt):
+            tmp_f.unlink(missing_ok=True)
     except Exception as e:
         print(f"Warning: ffmpeg MP4 packaging for Nest Hub failed ({e})", file=sys.stderr)
         return False
 
     port = 8768
-    # Stop any previous HTTP server listening on port 8768
     subprocess.run(f"lsof -tiTCP:{port} -sTCP:LISTEN | xargs kill -9 2>/dev/null || true", shell=True)
 
     server_script = f"""
@@ -673,7 +782,6 @@ class RangeHandler(BaseHTTPRequestHandler):
                     break
                 rem -= len(buf)
 
-# Auto-exit after duration_sec + 120s so no orphan process stays forever
 threading.Timer({duration_sec + 120}, os._exit, args=(0,)).start()
 socketserver.TCPServer.allow_reuse_address = True
 httpd = socketserver.TCPServer(("0.0.0.0", {port}), RangeHandler)
@@ -690,6 +798,8 @@ httpd.serve_forever()
 import time, pychromecast
 cast = pychromecast.get_chromecast_from_host(({repr(nest_ip)}, 8009, None, None, None))
 cast.wait(timeout=5.0)
+cast.set_volume_muted(False)
+cast.set_volume(0.65)
 cast.start_app("CC1AD845")
 time.sleep(2.0)
 mc = cast.media_controller
@@ -711,7 +821,7 @@ print("STATE:" + str(mc.status.player_state))
             capture_output=True, text=True, timeout=25
         )
         if res.returncode == 0 and "STATE:PLAYING" in res.stdout:
-            print(f"📺 Casted 16:9 weather card ({duration_sec // 60}m MP4) to Living Room Nest Hub ({nest_ip}) [PLAYING]: {image_path}", file=sys.stderr)
+            print(f"📺 Casted 16:9 weather card + Vannacci Toscano (+10%) ({duration_sec // 60}m MP4) to Living Room Nest Hub ({nest_ip}) [PLAYING]: {image_path}", file=sys.stderr)
             return True
         else:
             print(f"Warning: Nest Hub cast status={res.stdout.strip()} err={res.stderr.strip()}", file=sys.stderr)
@@ -763,7 +873,13 @@ def main():
             model_name_pref=args.model,
             output_path=None,
         )
-        cast_image_to_nest_hub(wide_jpg, nest_ip=args.nest_ip, title=f"{args.city} Weather — {target_dt.strftime('%a %-d %b %Y')}")
+        cast_image_to_nest_hub(
+            wide_jpg,
+            nest_ip=args.nest_ip,
+            title=f"{args.city} Weather — {target_dt.strftime('%a %-d %b %Y')}",
+            city_name=args.city,
+            api_key=api_key,
+        )
 
     # 3. Optional second card if traveling away from Zurich
     second_city = args.travel_city or (detect_travel_city() if args.auto_travel else None)

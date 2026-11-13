@@ -1,3 +1,11 @@
+## [0.6.42] - 2026-11-13
+
+- 🇨🇭🍌🔊 **`zurich-morning-weather` (`v0.2.1`)**:
+  - Updated daily range separator to `🌡️ min° ÷ max°C` with icy-blue min (`#2563EB`) and coral-red max (`#DC2626`).
+  - Added `--location` / `-l` and comma-separated province disambiguation (`"Argenta, Ferrara"`), omitting water thermometer for inland cities.
+  - Added `--cast-nest` (`16:9` widescreen card + Tuscan `+10%` "Generale Robertino" voice bulletin via `gemini-2.5-flash-preview-tts` + 30-minute `faststart` H.264+AAC MP4 stream for Google Nest Hub).
+- 🚀 Bumped version to 0.6.42.
+
 ## [0.6.41] - 2026-11-12
 
 - 🔀 **`git-coding` (`v0.0.4`)**: Mandate #2 now requires `git fetch origin` and reading the version on `origin/main` before bumping, so parallel agent sessions (worktrees) don't claim the same version number.

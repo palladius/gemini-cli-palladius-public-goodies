@@ -11,7 +11,7 @@ description: >-
   and build caches (via 'just clean'), cancels active background timers, piggybacks a mandatory
   '/learn' session-learnings distillation, settles/archives the thread on T3 Code via MCP
   ('t3_thread_organize') or renders an interactive archival applet on Antigravity ('<agent-embed>'),
-  and concludes with CHUMBIA! so the conversation can be safely archived or destroyed.
+  and concludes with CHUMBIA! so the session can be archived.
 compatibility: gemini-cli, antigravity, claude, t3-code
 metadata:
   version: "1.5.0"
