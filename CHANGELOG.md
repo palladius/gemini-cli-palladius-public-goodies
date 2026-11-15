@@ -1,3 +1,10 @@
+## [0.6.44] - 2026-11-15
+
+- 🍓🎮 **`raspberry-pi-game-optimization` (`v0.1.0`)**:
+  - Standardized YAML frontmatter using folded strip block scalar (`description: >-`).
+  - Added compatibility tags (`Gemini CLI, Antigravity, T3 Code`), metadata version, and single-skill `CHANGELOG.md`.
+- 🚀 Bumped version to 0.6.44.
+
 ## [0.6.43] - 2026-11-13
 
 - 🏖️ **`git-coding` (`v0.0.5`)**:

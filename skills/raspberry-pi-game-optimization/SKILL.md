@@ -1,6 +1,10 @@
 ---
 name: raspberry-pi-game-optimization
-description: "(💛🍓) Optimize Web, Flutter/CanvasKit, HTML5 Canvas2D, and Three.js/WebGL games for Raspberry Pi 400 ('Sguisatazzo') and low-end ARM64 SBCs. Covers Broadcom BCM2711 Cortex-A72 (1 MB L2 cache) & VideoCore VI (V3D 4.2) hardware constraints, WebKit2GTK DMA-BUF & ImageDecoder fixes, Flutter targetWidth texture downscaling, RepaintBoundary isolation, and zero-idle-CPU ticker design."
+description: >-
+  (💛🍓) Optimize Web, Flutter/CanvasKit, HTML5 Canvas2D, and Three.js/WebGL games for Raspberry Pi 400 ('Sguisatazzo') and low-end ARM64 SBCs. Covers Broadcom BCM2711 Cortex-A72 (1 MB L2 cache) & VideoCore VI (V3D 4.2) hardware constraints, WebKit2GTK DMA-BUF & ImageDecoder fixes, Flutter targetWidth texture downscaling, RepaintBoundary isolation, and zero-idle-CPU ticker design.
+compatibility: Gemini CLI, Antigravity, T3 Code
+metadata:
+  version: 0.1.0
 ---
 
 # 🍓🐧 Raspberry Pi 400 ("Sguisatazzo") Game Optimization Guide
