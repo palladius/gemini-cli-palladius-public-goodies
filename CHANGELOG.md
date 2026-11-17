@@ -1,3 +1,22 @@
+## [0.6.43] - 2026-11-16
+
+- 📰💛 **`publish-to-medium` (`v0.3.0`)**:
+  - Added new multi-platform cross-posting skill (`SKILL.md`, `references/medium.md`, `references/linkedin.md`) enforcing a strict Human-in-the-Loop Draft-Only (`NEVER PUBLISH`) gate and bidirectional Canonical URL SEO architecture.
+  - Added zero-dependency `scripts/preflight_article.py` validator, offline-cached `scripts/render_blocks.py` (3x Retina Mermaid -> PNG and 300-DPI `pdflatex` / KaTeX math -> PNG), and single-connection WebSocket CDP stager `scripts/cdp_medium_draft.py` (native Blink Copy+Paste auto-uploading remote images + direct `DOM.setFileInputFiles` upload for local PNGs/GIFs + reload persistence verification).
+- 🚀 Bumped version to 0.6.43.
+
+## [0.6.42] - 2026-11-13
+
+- 💃🕺🎺 **`chumbia` (`v1.5.1`)**:
+  - Added bounded network timeout (`timeout 8 git fetch --prune origin` + `GIT_SSH_COMMAND="ssh -o ConnectTimeout=5"`) in `scripts/chumbia_audit.sh` and `SKILL.md` to prevent multi-minute hangs behind firewalls that block outbound SSH port 22.
+  - Switched `scripts/chumbia_applet.html` from `https://cdn.tailwindcss.com` (blocked by `<agent-embed>` CSP) to the allowlisted `https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js` with semantic CSS variables (`var(--card)`, `var(--foreground)`) and documented mandatory `ArtifactMetadata` (`UserFacing: true`, `RequestFeedback: false`).
+- 🚀 Bumped version to 0.6.42.
+
+## [0.6.41] - 2026-11-12
+
+- 📽️💛 **`presentation-that-riccardo-likes` (`v1.3.0`)**: Upgraded skill with Riccardo's Clean Editorial Slide Flow (Anti-Tax-Form Contract: zero `01 /` or `02 /` prefixes, zero arbitrary ALL-CAPS sub-headers, zero visible `FIG XX` pills, 100%-fit cover-cropped photos with 4 smooth rounded corners instead of dark `#0f172a` dead frames), 3-column tabulated Speaker Bio social grid (official vector brand icons + clickable links), whisper-thin `7pt` proportional footer (`DD Mon YYYY, Venue | XX/YY`), Multi-Event Crystallization, and In-Place Google Slides Comment Actioning.
+- 🚀 Bumped version to 0.6.41.
+
 ## [0.6.40] - 2026-11-11
 
 - 💛🚀 **`gemini-model-selector` (`v0.3.2`)**: Self-healed skill with the 2 newly released November 2026 models (`gemini-4-carbon` released `2026-11-10` and `gemini-omni-1.2-flash` released `2026-11-05`) plus auto-routing/deprecation alerts for `gemini-omni-1.1-flash` (Dec 3, 2026) and `gemini-embedding-2-preview` (Nov 6, 2026).
