@@ -505,12 +505,14 @@ def inspect_and_set_canonical_in_settings(
     story_id: str,
     canonical_url: str | None,
     topics: list[str] | None,
-    screenshot_path: Path | None,
+    seo_title: str | None = None,
+    seo_description: str | None = None,
+    screenshot_path: Path | None = None,
 ) -> dict[str, Any]:
     settings_url = f"https://medium.com/p/{story_id}/settings"
     cdp.navigate(sess, settings_url, wait_sec=3.5)
 
-    # 1. Populate up to 5 Topics via 'Add a topic...' input on /settings if provided
+    # 1. Populate up to 5 Topics/Keywords via 'Add a topic...' input on /settings if provided
     topics_added: list[str] = []
     if topics:
         topic_box = cdp.eval_js(
@@ -535,7 +537,6 @@ def inspect_and_set_canonical_in_settings(
                 cdp.press_enter(sess)
                 time.sleep(0.35)
                 topics_added.append(clean_t)
-            # Click the local 'Save' button inside Reader interests section (never Publish!)
             cdp.eval_js(
                 sess,
                 """(() => {
@@ -546,7 +547,78 @@ def inspect_and_set_canonical_in_settings(
                     if (saveBtn) saveBtn.click();
                 })()""",
             )
-            time.sleep(1.2)
+            time.sleep(1.0)
+
+    # 1b. Populate SEO Title and SEO Description on /settings so the author does not have to type them manually!
+    seo_title_saved = False
+    if seo_title:
+        st_box = cdp.eval_js(
+            sess,
+            """(() => {
+                const headings = Array.from(document.querySelectorAll('h3, h4, label, div'));
+                const hdr = headings.find(h => /^SEO Title$/i.test((h.innerText || '').trim()));
+                const sec = hdr ? hdr.closest('section, div')?.parentElement || hdr.parentElement : null;
+                const inp = sec ? sec.querySelector('input[type="text"], input:not([type]), textarea') : null;
+                if (!inp) return null;
+                inp.scrollIntoView({ block: 'center' });
+                const r = inp.getBoundingClientRect();
+                return { x: r.left + 25, y: r.top + r.height / 2 };
+            })()""",
+        )
+        if st_box:
+            cdp.click_xy(sess, st_box["x"], st_box["y"])
+            time.sleep(0.2)
+            cdp.press_command_shortcut(sess, "a", "KeyA", 65, "SelectAll")
+            cdp.insert_text(sess, seo_title[:60].strip() if len(seo_title) > 70 else seo_title.strip())
+            time.sleep(0.4)
+            seo_title_saved = bool(
+                cdp.eval_js(
+                    sess,
+                    """(() => {
+                        const hdr = Array.from(document.querySelectorAll('h3, h4, label, div')).find(h => /^SEO Title$/i.test((h.innerText || '').trim()));
+                        const sec = hdr ? hdr.closest('section, div')?.parentElement || hdr.parentElement : null;
+                        const saveBtn = sec ? Array.from(sec.querySelectorAll('button')).find(b => /^save$/i.test((b.innerText || '').trim()) && !b.disabled) : null;
+                        if (saveBtn) { saveBtn.click(); return true; }
+                        return false;
+                    })()""",
+                )
+            )
+            time.sleep(0.9)
+
+    seo_desc_saved = False
+    if seo_description:
+        sd_box = cdp.eval_js(
+            sess,
+            """(() => {
+                const headings = Array.from(document.querySelectorAll('h3, h4, label, div'));
+                const hdr = headings.find(h => /^SEO Description$/i.test((h.innerText || '').trim()));
+                const sec = hdr ? hdr.closest('section, div')?.parentElement || hdr.parentElement : null;
+                const inp = sec ? sec.querySelector('textarea, input[type="text"], input:not([type]), [contenteditable="true"]') : null;
+                if (!inp) return null;
+                inp.scrollIntoView({ block: 'center' });
+                const r = inp.getBoundingClientRect();
+                return { x: r.left + 25, y: r.top + Math.min(24, r.height / 2) };
+            })()""",
+        )
+        if sd_box:
+            cdp.click_xy(sess, sd_box["x"], sd_box["y"])
+            time.sleep(0.2)
+            cdp.press_command_shortcut(sess, "a", "KeyA", 65, "SelectAll")
+            cdp.insert_text(sess, seo_description[:156].strip())
+            time.sleep(0.4)
+            seo_desc_saved = bool(
+                cdp.eval_js(
+                    sess,
+                    """(() => {
+                        const hdr = Array.from(document.querySelectorAll('h3, h4, label, div')).find(h => /^SEO Description$/i.test((h.innerText || '').trim()));
+                        const sec = hdr ? hdr.closest('section, div')?.parentElement || hdr.parentElement : null;
+                        const saveBtn = sec ? Array.from(sec.querySelectorAll('button')).find(b => /^save$/i.test((b.innerText || '').trim()) && !b.disabled) : null;
+                        if (saveBtn) { saveBtn.click(); return true; }
+                        return false;
+                    })()""",
+                )
+            )
+            time.sleep(0.9)
 
     # 2. Expand Advanced Settings if collapsed (target <button> directly, not outer wrapper <div>!)
     cdp.eval_js(
@@ -660,6 +732,8 @@ def inspect_and_set_canonical_in_settings(
     return {
         "settings_url": settings_url,
         "topics_added": topics_added,
+        "seo_title_saved": seo_title_saved,
+        "seo_desc_saved": seo_desc_saved,
         "before": before_info,
         "canonical_set_attempted": updated,
         "after": after_info,
@@ -1343,6 +1417,8 @@ def run_method_b_paste(
     raw_html = html_path.read_text(encoding="utf-8")
     m_topics = re.search(r'data-topics="([^"]*)"', raw_html)
     topics_list = [t.strip() for t in html_lib.unescape(m_topics.group(1)).split(",") if t.strip()] if m_topics else []
+    m_desc = re.search(r'data-description="([^"]*)"', raw_html)
+    seo_description = html_lib.unescape(m_desc.group(1)).strip() if m_desc else ""
     filtered_html, local_upload_queue, skipped_imgs = prepare_html_and_local_uploads(raw_html, html_path.parent)
     with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False, encoding="utf-8") as tmp_f:
         tmp_f.write(filtered_html)
@@ -1370,6 +1446,8 @@ def run_method_b_paste(
             story_id=story_id,
             canonical_url=canonical_url,
             topics=topics_list,
+            seo_title=title,
+            seo_description=seo_description,
             screenshot_path=out_dir / "method_b_settings.png",
         )
         # Navigate back to /p/<story_id>/edit to force a FULL SERVER RELOAD and prove image persistence!

@@ -55,8 +55,13 @@ Live testing revealed three compounding traps with isolated Puppeteer / MCP brow
    - **Editor DOM Auditing**: Scope `querySelectorAll('figure, img, pre')` to `.postArticle-content, section.section--body` — Medium's bottom `"Writing on Medium"` onboarding carousel injects 5 empty `<figure>` elements outside the article body.
 7. **Videos (`.mp4`), Animated `.gif`s, and Mermaid**:
    - Reachable `HTTP 200` animated `.gif` URLs (`< 25 MB`) upload cleanly as inline animated images; `HTTP 404` `.gif` URLs trigger `"Uh oh! Something went wrong uploading the image"`.
-   - Raw `.mp4` `<video>` tags are stripped — upload videos to YouTube and place the bare `https://www.youtube.com/watch?v=<ID>` URL on its own paragraph line (press `Enter` in the editor to trigger Embedly).
-   - `mermaid` fences paste as plain code blocks — render Mermaid diagrams to `.png` images before staging.
+   - Raw `.mp4` `<video>` tags are stripped — upload videos to YouTube and place the bare `https://www.youtube.com/watch?v=<ID>` URL on its own paragraph line (press `Enter` in the editor to trigger Embedly), or auto-swap `.mp4` to a companion `.gif` (`<= 24 MB`).
+   - `mermaid` fences and LaTeX math (`$$...$$`) are rasterized locally to 3x Retina / 300-DPI PNGs via `$SKILL_DIR/scripts/render_blocks.py`.
+8. **Enterprise Chrome DLP Prompts on Local File Uploads (`DOM.setFileInputFiles`)**:
+   - On managed corporate Chrome workstations, uploading local disk files (`.png`/`.gif`) via `<input type="file">` triggers an enterprise DLP confirmation dialog asking the user to confirm the images are public.
+   - **Zero-Popup Best Practice**: Deploy public images, companion `.gif`s, and `rendered/*.png` diagrams to your primary HTTPS blog **first** so Medium ingests 100% of them server-side via native HTML paste without triggering local file-upload DLP dialogs. When staging before blog deploy, inform the user upfront so they can approve the DLP prompt.
+9. **Story Settings Complete Metadata (`Topics`, `SEO Title`, `SEO Description`, `Canonical Link`)**:
+   - On `/p/<story_id>/settings`, `cdp_medium_draft.py` automatically populates and saves **all four** metadata fields (`Add a topic...` up to 5 keywords from `data-topics`, `SEO Title` from `data-title`, `SEO Description` from `data-description`, and `Customize Canonical Link` after waiting `900ms` for React to mount the URL input upon checking *This story was originally published elsewhere*) so the human author only needs to click **Publish**.
 
 ---
 

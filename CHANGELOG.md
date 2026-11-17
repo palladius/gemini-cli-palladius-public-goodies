@@ -1,3 +1,9 @@
+## [0.6.44] - 2026-11-17
+
+- 🗑️ **`article-creator`**: Removed legacy duplicate `skills/article-creator` from `public-goodies` (consolidated into `private-goodies` `v2.0.0`, while keeping public Medium/LinkedIn staging in `publish-to-medium`).
+- 📰💛 **`publish-to-medium` (`v0.3.1`)**: Added automatic **SEO Title**, **SEO Description**, and **5 Topics/Keywords** Story Settings population in `scripts/cdp_medium_draft.py` plus enterprise Chrome DLP file-upload prompt guidance in `references/medium.md`.
+- 🚀 Bumped version to 0.6.44.
+
 ## [0.6.43] - 2026-11-16
 
 - 📰💛 **`publish-to-medium` (`v0.3.0`)**:
