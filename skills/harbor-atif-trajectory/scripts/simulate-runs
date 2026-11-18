@@ -1,0 +1,121 @@
+#!/usr/bin/env -S uv run python
+"""Simulate runs for Google agents and generate validated ATIF trajectories."""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+# Add repo root to sys.path
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+from riccardo.converters.transcript_to_atif import (
+    convert_antigravity_cli_to_atif,
+    convert_gemini_cli_to_atif,
+    convert_antigravity20_ide_to_atif,
+    validate_trajectory_file,
+)
+from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
+
+console = Console()
+
+
+def load_jsonl(path: Path) -> list[dict]:
+    records = []
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if line:
+            records.append(json.loads(line))
+    return records
+
+
+def main():
+    console.print(
+        Panel.fit(
+            "[bold cyan]🦖 Harbor ATIF Simulator for Google Agents[/bold cyan]\n"
+            "[green]Converting sample transcripts to validated ATIF-v1.8 format[/green]"
+        )
+    )
+
+    transcripts_dir = REPO_ROOT / "riccardo" / "samples" / "transcripts"
+    out_dir = REPO_ROOT / "riccardo" / "samples" / "trajectories"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    sims = [
+        {
+            "name": "Antigravity CLI (agy)",
+            "file": transcripts_dir / "agy_cli.transcript.jsonl",
+            "out": out_dir / "antigravity_cli.trajectory.json",
+            "converter": convert_antigravity_cli_to_atif,
+            "session_id": "agy-sample-healthcheck",
+            "model": "gemini-3.0-flash",
+        },
+        {
+            "name": "Google Gemini CLI",
+            "file": transcripts_dir / "gemini_cli.session.jsonl",
+            "out": out_dir / "gemini_cli.trajectory.json",
+            "converter": convert_gemini_cli_to_atif,
+            "session_id": "gemini-session-883",
+            "model": "gemini-2.5-pro",
+        },
+        {
+            "name": "Antigravity 2.0 IDE",
+            "file": transcripts_dir / "antigravity20_ide.transcript.jsonl",
+            "out": out_dir / "antigravity20_ide.trajectory.json",
+            "converter": convert_antigravity20_ide_to_atif,
+            "session_id": "antigravity20-pair-riccardo",
+            "model": "gemini-3.0-pro",
+        },
+    ]
+
+    table = Table(title="Generated ATIF Trajectories", border_style="bright_blue")
+    table.add_column("Agent / Run", style="bold")
+    table.add_column("Model")
+    table.add_column("Steps", justify="right")
+    table.add_column("Tokens (In/Out/Cache)", justify="right")
+    table.add_column("ATIF Validation", style="bold")
+    table.add_column("Output File")
+
+    for sim in sims:
+        records = load_jsonl(sim["file"])
+        trajectory = sim["converter"](
+            records,
+            session_id=sim["session_id"],
+            model_name=sim["model"],
+        )
+
+        # Write to JSON
+        sim["out"].write_text(json.dumps(trajectory.to_json_dict(), indent=2))
+
+        # Validate with Harbor TrajectoryValidator
+        is_valid, errors = validate_trajectory_file(sim["out"])
+        status_str = "[green]✓ VALID (ATIF-v1.8)[/green]" if is_valid else f"[red]✗ ERRORS: {errors}[/red]"
+
+        fm = trajectory.final_metrics
+        token_str = (
+            f"{fm.total_prompt_tokens or 0} / {fm.total_completion_tokens or 0} / {fm.total_cached_tokens or 0}"
+            if fm
+            else "N/A"
+        )
+
+        table.add_row(
+            sim["name"],
+            sim["model"],
+            str(len(trajectory.steps)),
+            token_str,
+            status_str,
+            str(sim["out"].relative_to(REPO_ROOT)),
+        )
+
+    console.print(table)
+    console.print(
+        f"\n[bold green]Success![/bold green] All trajectories generated in [yellow]{out_dir.relative_to(REPO_ROOT)}[/yellow]"
+    )
+
+
+if __name__ == "__main__":
+    main()

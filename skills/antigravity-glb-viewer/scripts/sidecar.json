@@ -1,0 +1,19 @@
+{
+  "command": "node",
+  "args": ["main.mjs"],
+  "restart_policy": "always",
+  "display_name": "GLB Viewer 🧊",
+  "description": "Interactive 3D viewer for local .glb / .gltf models (Three.js, vendored). Auto-rotates left↔right, orbit/zoom/pan with the mouse, wireframe + triangle count. Open with sidecar://glb-viewer/?path=/abs/model.glb",
+  "has_web_ui": true,
+  "ui_config": {
+    "display_name": "GLB Viewer 🧊",
+    "views": [
+      {
+        "entrypoint": "SIDECAR_UI_ENTRYPOINT_AUX_PANE",
+        "path": "/view.html",
+        "title": "GLB Viewer 🧊",
+        "file_extensions": [".glb", ".gltf"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,124 @@
+#!/usr/bin/env -S uv run python
+"""Convert any Google agent transcript into a validated ATIF trajectory file."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+# Add repo root to sys.path
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+from riccardo.converters.transcript_to_atif import (
+    convert_antigravity_cli_to_atif,
+    convert_gemini_cli_to_atif,
+    convert_antigravity20_ide_to_atif,
+    validate_trajectory_file,
+)
+from rich.console import Console
+
+console = Console()
+
+
+def detect_format(records: list[dict]) -> str:
+    for r in records:
+        if r.get("type") in ("session_metadata", "gemini", "message_update"):
+            return "gemini-cli"
+        if r.get("type") in ("PLANNER_RESPONSE", "USER_INPUT"):
+            for tc in r.get("tool_calls", []):
+                if "replace_file_content" in tc.get("name", ""):
+                    return "antigravity20-ide"
+            return "agy"
+    return "agy"
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Convert Google Agent transcripts (agy, gemini-cli, Antigravity IDE) to ATIF-v1.8."
+    )
+    parser.add_argument(
+        "input_file",
+        type=Path,
+        help="Path to input transcript (JSONL).",
+    )
+    parser.add_argument(
+        "--format",
+        choices=["auto", "agy", "gemini-cli", "antigravity20-ide"],
+        default="auto",
+        help="Source transcript format (default: auto).",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        default=None,
+        help="Output ATIF trajectory JSON path (default: <input>.trajectory.json).",
+    )
+    parser.add_argument(
+        "--session-id",
+        type=str,
+        default=None,
+        help="Optional session ID for the trajectory.",
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default=None,
+        help="Model name (e.g. gemini-3.0-flash, gemini-2.5-pro).",
+    )
+
+    args = parser.parse_args()
+
+    if not args.input_file.exists():
+        console.print(f"[red]Error: Input file {args.input_file} not found.[/red]")
+        sys.exit(1)
+
+    records = []
+    for line in args.input_file.read_text().splitlines():
+        line = line.strip()
+        if line:
+            records.append(json.loads(line))
+
+    fmt = args.format
+    if fmt == "auto":
+        fmt = detect_format(records)
+        console.print(f"[dim]Auto-detected format: [cyan]{fmt}[/cyan][/dim]")
+
+    session_id = args.session_id or f"{fmt}-run-{args.input_file.stem}"
+
+    if fmt == "gemini-cli":
+        model = args.model or "gemini-2.5-pro"
+        trajectory = convert_gemini_cli_to_atif(
+            records, session_id=session_id, model_name=model
+        )
+    elif fmt == "antigravity20-ide":
+        model = args.model or "gemini-3.0-pro"
+        trajectory = convert_antigravity20_ide_to_atif(
+            records, session_id=session_id, model_name=model
+        )
+    else:
+        model = args.model or "gemini-3.0-flash"
+        trajectory = convert_antigravity_cli_to_atif(
+            records, session_id=session_id, model_name=model
+        )
+
+    out_path = args.output or args.input_file.with_suffix(".trajectory.json")
+    out_path.write_text(json.dumps(trajectory.to_json_dict(), indent=2))
+
+    is_valid, errors = validate_trajectory_file(out_path)
+    if is_valid:
+        console.print(
+            f"[bold green]✓ Successfully converted to ATIF-v1.8:[/bold green] {out_path}"
+        )
+    else:
+        console.print(
+            f"[bold red]✗ Converted but failed ATIF validation:[/bold red] {errors}"
+        )
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

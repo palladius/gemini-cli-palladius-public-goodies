@@ -1,0 +1,119 @@
+#!/usr/bin/env -S uv run python
+"""Inspect and pretty-print an ATIF trajectory file."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from rich.console import Console
+from rich.panel import Panel
+from rich.syntax import Syntax
+from rich.table import Table
+
+console = Console()
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Inspect an ATIF trajectory file.")
+    parser.add_argument(
+        "trajectory_file",
+        type=Path,
+        help="Path to trajectory JSON file.",
+    )
+    args = parser.parse_args()
+
+    if not args.trajectory_file.exists():
+        console.print(f"[red]File {args.trajectory_file} does not exist.[/red]")
+        sys.exit(1)
+
+    data = json.loads(args.trajectory_file.read_text())
+
+    schema_version = data.get("schema_version", "unknown")
+    session_id = data.get("session_id", "none")
+    agent = data.get("agent", {})
+    agent_name = agent.get("name", "unknown")
+    agent_version = agent.get("version", "unknown")
+    model_name = agent.get("model_name", "unknown")
+    notes = data.get("notes")
+
+    # Header Panel
+    header_text = (
+        f"[bold cyan]Schema:[/bold cyan] {schema_version}   "
+        f"[bold cyan]Session ID:[/bold cyan] {session_id}\n"
+        f"[bold cyan]Agent:[/bold cyan] [green]{agent_name}[/green] (v{agent_version})   "
+        f"[bold cyan]Model:[/bold cyan] [yellow]{model_name}[/yellow]"
+    )
+    if notes:
+        header_text += f"\n[dim italic]{notes}[/dim italic]"
+
+    console.print(Panel(header_text, title=f"🦖 ATIF Inspector: {args.trajectory_file.name}", border_style="blue"))
+
+    # Metrics Summary
+    fm = data.get("final_metrics") or {}
+    t_in = fm.get("total_prompt_tokens", "N/A")
+    t_out = fm.get("total_completion_tokens", "N/A")
+    t_cache = fm.get("total_cached_tokens", "N/A")
+    t_steps = fm.get("total_steps", len(data.get("steps", [])))
+
+    table = Table(title="Trajectory Metrics", border_style="dim")
+    table.add_column("Total Steps", justify="center")
+    table.add_column("Prompt Tokens", justify="right")
+    table.add_column("Completion Tokens", justify="right")
+    table.add_column("Cached Tokens", justify="right")
+    table.add_row(str(t_steps), str(t_in), str(t_out), str(t_cache))
+    console.print(table)
+    console.print()
+
+    # Steps
+    for step in data.get("steps", []):
+        s_id = step.get("step_id")
+        source = step.get("source")
+        message = step.get("message", "")
+        thinking = step.get("reasoning_content")
+        tool_calls = step.get("tool_calls")
+        observation = step.get("observation")
+
+        source_color = {
+            "user": "magenta",
+            "agent": "green",
+            "system": "blue",
+        }.get(source, "white")
+
+        console.print(f"[bold {source_color}]▶ Step {s_id} [{source.upper()}][/bold {source_color}]")
+
+        if thinking:
+            console.print(
+                Panel(
+                    f"[dim]{thinking}[/dim]",
+                    title="🧠 Thought Process",
+                    border_style="yellow",
+                    padding=(0, 1),
+                )
+            )
+
+        if message:
+            console.print(f"  [bold]Message:[/bold] {message}")
+
+        if tool_calls:
+            for tc in tool_calls:
+                fn = tc.get("function_name")
+                call_id = tc.get("tool_call_id")
+                args_str = json.dumps(tc.get("arguments", {}), indent=2)
+                console.print(f"  🛠️  [bold cyan]Tool Call:[/bold cyan] [bold]{fn}[/bold] ([dim]{call_id}[/dim])")
+                console.print(Syntax(args_str, "json", theme="monokai", padding=(0, 4)))
+
+        if observation:
+            for res in observation.get("results", []):
+                call_ref = res.get("source_call_id", "")
+                content = res.get("content", "")
+                console.print(f"  📥 [bold blue]Observation Result[/bold blue] (for [dim]{call_ref}[/dim]):")
+                console.print(f"     [italic]{content}[/italic]")
+
+        console.print("[dim]─[/dim]" * 50)
+
+
+if __name__ == "__main__":
+    main()

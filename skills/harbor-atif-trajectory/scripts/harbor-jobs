@@ -1,0 +1,432 @@
+#!/usr/bin/env -S uv run python
+"""Harbor Jobs Explorer & Full Task/Trajectory Reader."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.syntax import Syntax
+from rich.table import Table
+from rich.text import Text
+
+console = Console()
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+
+def get_task_instruction(task_path_str: str | None, trial_path: Path | None = None) -> str | None:
+    """Find the full instruction markdown for a task."""
+    # 1. Check local repo path if available
+    if task_path_str:
+        p = Path(task_path_str)
+        candidates = [
+            p / "instruction.md",
+            REPO_ROOT / p / "instruction.md",
+            REPO_ROOT / "examples" / "tasks" / p.name / "instruction.md",
+        ]
+        for c in candidates:
+            if c.exists():
+                return c.read_text().strip()
+
+    # 2. Extract from trial.log if available
+    if trial_path and (trial_path / "trial.log").exists():
+        tlog = (trial_path / "trial.log").read_text()
+        m = re.search(r"--prompt='([^']+)'", tlog)
+        if m:
+            return m.group(1).strip()
+        m2 = re.search(r'--prompt="([^"]+)"', tlog)
+        if m2:
+            return m2.group(1).strip()
+
+    return None
+
+
+def find_jobs(jobs_dir: Path) -> list[dict[str, Any]]:
+    """Scan jobs_dir and collect full metadata for each job."""
+    if not jobs_dir.exists():
+        return []
+
+    jobs = []
+    for item in sorted(jobs_dir.iterdir(), reverse=True):
+        if not item.is_dir() or item.name.startswith("."):
+            continue
+
+        job_info: dict[str, Any] = {
+            "id": item.name,
+            "path": item,
+            "started_at": None,
+            "finished_at": None,
+            "agent": "unknown",
+            "model": "unknown",
+            "task_name": "unknown",
+            "task_path": None,
+            "instruction": None,
+            "reward": "N/A",
+            "status": "UNKNOWN",
+            "trials": [],
+            "error": None,
+        }
+
+        # Check job-level result.json
+        job_result_file = item / "result.json"
+        if job_result_file.exists():
+            try:
+                res = json.loads(job_result_file.read_text())
+                job_info["started_at"] = res.get("started_at")
+                job_info["finished_at"] = res.get("finished_at")
+                stats = res.get("stats", {})
+                evals = stats.get("evals", {})
+                for eval_name, eval_data in evals.items():
+                    parts = eval_name.split("__")
+                    if len(parts) >= 2:
+                        job_info["agent"] = parts[0]
+                        job_info["model"] = parts[1]
+
+                    r_stats = eval_data.get("reward_stats", {}).get("reward", {})
+                    if "1.0" in r_stats:
+                        job_info["reward"] = "1.0 (PASS)"
+                        job_info["status"] = "PASSED"
+                    elif "0.0" in r_stats:
+                        job_info["reward"] = "0.0 (FAIL)"
+                        job_info["status"] = "FAILED"
+
+                    exc_stats = eval_data.get("exception_stats", {})
+                    if exc_stats:
+                        job_info["error"] = ", ".join(exc_stats.keys())
+                        job_info["status"] = f"ERROR: {job_info['error']}"
+            except Exception:
+                pass
+
+        # Scan trial subdirectories
+        for sub in item.iterdir():
+            if sub.is_dir() and not sub.name.startswith("."):
+                trial_data: dict[str, Any] = {
+                    "name": sub.name,
+                    "path": sub,
+                    "task_name": None,
+                    "task_path": None,
+                    "instruction": None,
+                    "reward": None,
+                    "exception": None,
+                    "trajectory": None,
+                }
+
+                trial_res_file = sub / "result.json"
+                if trial_res_file.exists():
+                    try:
+                        tres = json.loads(trial_res_file.read_text())
+                        trial_data["task_name"] = tres.get("task_name") or sub.name
+                        t_id = tres.get("task_id", {})
+                        if isinstance(t_id, dict) and t_id.get("path"):
+                            trial_data["task_path"] = t_id.get("path")
+
+                        cfg_agent = tres.get("config", {}).get("agent", {})
+                        if cfg_agent.get("name"):
+                            job_info["agent"] = cfg_agent.get("name")
+                        if cfg_agent.get("model_name"):
+                            job_info["model"] = cfg_agent.get("model_name")
+                    except Exception:
+                        pass
+
+                # Fallback to trial config.json
+                trial_cfg_file = sub / "config.json"
+                if trial_cfg_file.exists() and not trial_data["task_path"]:
+                    try:
+                        tcfg = json.loads(trial_cfg_file.read_text())
+                        t_obj = tcfg.get("task", {})
+                        if isinstance(t_obj, dict) and t_obj.get("path"):
+                            trial_data["task_path"] = t_obj.get("path")
+                    except Exception:
+                        pass
+
+                # Fetch full instruction
+                trial_data["instruction"] = get_task_instruction(
+                    trial_data["task_path"], trial_path=sub
+                )
+                if not job_info["instruction"] and trial_data["instruction"]:
+                    job_info["instruction"] = trial_data["instruction"]
+                if not job_info["task_name"] or job_info["task_name"] == "unknown":
+                    job_info["task_name"] = trial_data["task_name"] or trial_data["task_path"] or sub.name
+                if trial_data["task_path"]:
+                    job_info["task_path"] = trial_data["task_path"]
+
+                # Verifier reward
+                reward_file = sub / "verifier" / "reward.txt"
+                if reward_file.exists():
+                    rew_val = reward_file.read_text().strip()
+                    trial_data["reward"] = rew_val
+                    if rew_val == "1":
+                        job_info["reward"] = "1.0 (PASS)"
+                        job_info["status"] = "PASSED"
+                    elif rew_val == "0" and job_info["status"] == "UNKNOWN":
+                        job_info["reward"] = "0.0 (FAIL)"
+                        job_info["status"] = "FAILED"
+
+                # Exception
+                exc_file = sub / "exception.txt"
+                if exc_file.exists():
+                    exc_text = exc_file.read_text().strip()
+                    trial_data["exception"] = exc_text
+                    if "PASSED" not in job_info["status"]:
+                        job_info["status"] = "ERRORED"
+
+                # Trajectory
+                traj_file = sub / "agent" / "trajectory.json"
+                if traj_file.exists():
+                    trial_data["trajectory"] = traj_file
+
+                job_info["trials"].append(trial_data)
+
+        jobs.append(job_info)
+    return jobs
+
+
+def list_jobs(jobs_dir: Path) -> None:
+    jobs = find_jobs(jobs_dir)
+    if not jobs:
+        console.print(f"[yellow]No jobs found in {jobs_dir}[/yellow]")
+        return
+
+    table = Table(box=None, pad_edge=False, padding=(0, 3), show_header=True)
+    table.add_column("JOB_ID", style="bold cyan")
+    table.add_column("TASK_ID", style="bold")
+    table.add_column("STATUS")
+    table.add_column("MODEL", style="yellow")
+
+    for job in jobs:
+        job_id = job["id"]
+        task_id = str(job["task_name"])
+        if task_id.startswith("harbor/"):
+            task_id = task_id[7:]
+
+        model_str = str(job["model"])
+        if model_str.startswith("gemini/"):
+            model_str = model_str[7:]
+
+        status = job["status"]
+        if "PASS" in status:
+            status_text = "[green]PASSED (1.0)[/green]"
+        elif "ERRORED" in status or "ERROR" in status:
+            status_text = "[red]ERRORED (0.0)[/red]"
+        elif "FAIL" in status:
+            status_text = "[red]FAILED (0.0)[/red]"
+        else:
+            status_text = f"[yellow]{status}[/yellow]"
+
+        table.add_row(job_id, task_id, status_text, model_str)
+
+    console.print(table)
+
+
+
+
+def show_job(jobs_dir: Path, job_id: str) -> None:
+    job_path = jobs_dir / job_id
+    if not job_path.exists():
+        matches = [p for p in jobs_dir.iterdir() if p.is_dir() and p.name.startswith(job_id)]
+        if len(matches) == 1:
+            job_path = matches[0]
+            job_id = job_path.name
+        else:
+            console.print(f"[red]Error: Job '{job_id}' not found in {jobs_dir}[/red]")
+            return
+
+    jobs = find_jobs(jobs_dir)
+    job = next((j for j in jobs if j["id"] == job_id), None)
+    if not job:
+        console.print(f"[red]Error parsing job '{job_id}'[/red]")
+        return
+
+    # Header
+    console.print(
+        Panel(
+            f"[bold cyan]Job ID:[/bold cyan] {job['id']}\n"
+            f"[bold]Started:[/bold] {job['started_at'] or 'N/A'}  |  [bold]Finished:[/bold] {job['finished_at'] or 'N/A'}\n"
+            f"[bold]Agent:[/bold] [yellow]{job['agent']}[/yellow]   [bold]Model:[/bold] [cyan]{job['model']}[/cyan]\n"
+            f"[bold]Overall Status:[/bold] {job['status']}   [bold]Reward:[/bold] {job['reward']}",
+            title="🦖 Harbor Job Report",
+            border_style="bright_blue",
+        )
+    )
+
+    # Trials
+    for t_idx, trial in enumerate(job["trials"], 1):
+        console.print(f"\n[bold magenta]═══════════════ TRIAL {t_idx}: {trial['name']} ═══════════════[/bold magenta]")
+
+        # 1. Full Task Instruction
+        console.print("\n📋 [bold bright_white]TASK INSTRUCTION (Read in Full):[/bold bright_white]")
+        instruction = trial["instruction"]
+        if instruction:
+            console.print(
+                Panel(
+                    Markdown(instruction),
+                    title=f"Task: {trial['task_name'] or trial['task_path']}",
+                    border_style="green",
+                    padding=(1, 2),
+                )
+            )
+        else:
+            console.print("  [dim]No instruction.md found for this task.[/dim]")
+
+        # 2. Verifier Results
+        console.print("\n🎯 [bold bright_white]VERIFICATION & OUTCOME:[/bold bright_white]")
+        rew = trial["reward"]
+        if rew == "1":
+            console.print("  ✅ [bold green]VERIFIER PASSED! Reward: 1.0[/bold green]")
+        elif rew == "0":
+            console.print("  ❌ [bold red]VERIFIER FAILED! Reward: 0.0[/bold red]")
+        else:
+            console.print(f"  ❓ [dim]Verifier reward: {rew}[/dim]")
+
+        # Check verifier stdout
+        verifier_stdout_file = trial["path"] / "verifier" / "test-stdout.txt"
+        if verifier_stdout_file.exists():
+            v_text = verifier_stdout_file.read_text().strip()
+            # If test output has failures, show them
+            if "FAILURES" in v_text or "FAILED" in v_text:
+                console.print("\n  [bold red]Verifier Test Failure Snippet:[/bold red]")
+                fail_lines = []
+                record = False
+                for line in v_text.splitlines():
+                    if "FAILURES" in line or "FAILED" in line:
+                        record = True
+                    if record:
+                        fail_lines.append(line)
+                        if len(fail_lines) > 25:
+                            fail_lines.append("... [truncated]")
+                            break
+                console.print(Panel("\n".join(fail_lines), border_style="red", title="pytest failure"))
+
+        # 3. Exception & Root Cause Analysis
+        if trial["exception"]:
+            console.print("\n⚠️ [bold red]CRITICAL RUNTIME ERROR / EXCEPTION:[/bold red]")
+            exc_text = trial["exception"]
+
+            # Specific diagnostics for Gemini API Key restrictions
+            if "API key not valid" in exc_text or "API target restrictions" in exc_text:
+                console.print(
+                    Panel(
+                        "[bold yellow]Google API Key 400 Restriction Encountered:[/bold yellow]\n\n"
+                        "Google Cloud security policies blocked this request because the ambient "
+                        "[bold]GOOGLE_API_KEY[/bold] is not permitted to call the Generative Language API.\n\n"
+                        "[bold green]Fix:[/bold green] Explicitly select your AI Studio API key:\n"
+                        "  [bold cyan]uv run harbor run ... --api-key-name GEMINI_API_KEY[/bold cyan]\n"
+                        "or export [bold cyan]export GOOGLE_API_KEY=\"$GEMINI_API_KEY\"[/bold cyan]",
+                        title="💡 Automatic Diagnostic",
+                        border_style="yellow",
+                    )
+                )
+
+            # Show the raw exception traceback
+            console.print(
+                Panel(
+                    exc_text[-1200:] if len(exc_text) > 1200 else exc_text,
+                    title="Exception Traceback",
+                    border_style="red",
+                )
+            )
+
+        # 4. Trajectory / Step-by-Step
+        traj_file = trial["trajectory"]
+        if traj_file and traj_file.exists():
+            console.print("\n📜 [bold bright_white]AGENT EXECUTION STEPS (Full Trajectory):[/bold bright_white]")
+            try:
+                tdata = json.loads(traj_file.read_text())
+                steps = tdata.get("steps", [])
+                fm = tdata.get("final_metrics") or {}
+                console.print(
+                    f"  [dim]Schema: {tdata.get('schema_version')} | Steps count: {len(steps)} | "
+                    f"Prompt tokens: {fm.get('total_prompt_tokens', 0)} | Completion tokens: {fm.get('total_completion_tokens', 0)}[/dim]\n"
+                )
+
+                for step in steps:
+                    s_id = step.get("step_id")
+                    source = step.get("source")
+                    msg = step.get("message")
+                    thinking = step.get("reasoning_content")
+                    tool_calls = step.get("tool_calls")
+                    observation = step.get("observation")
+
+                    src_color = "magenta" if source == "user" else ("green" if source == "agent" else "blue")
+                    console.print(f"  [bold {src_color}]▶ Step {s_id} [{source.upper()}]:[/bold {src_color}]")
+
+                    if thinking:
+                        console.print(
+                            Panel(
+                                f"[dim]{thinking}[/dim]",
+                                title="🧠 Agent Thought Process",
+                                border_style="yellow",
+                                padding=(0, 1),
+                            )
+                        )
+
+                    if isinstance(msg, str) and msg.strip():
+                        console.print(f"    [bold]Message:[/bold] {msg}")
+
+                    if tool_calls:
+                        for tc in tool_calls:
+                            fn = tc.get("function_name")
+                            cid = tc.get("tool_call_id")
+                            console.print(f"    🛠️  [bold cyan]Tool Call:[/bold cyan] {fn} ([dim]{cid}[/dim])")
+                            args_str = json.dumps(tc.get("arguments", {}), indent=2)
+                            console.print(Syntax(args_str, "json", theme="monokai", padding=(0, 4)))
+
+                    if observation:
+                        for res in observation.get("results", []):
+                            content = res.get("content", "")
+                            console.print(f"    📥 [bold blue]Observation Result:[/bold blue] {content}")
+
+                    console.print("  " + "[dim]┄[/dim]" * 50)
+
+            except Exception as e:
+                console.print(f"  [red]Failed to load trajectory details: {e}[/red]")
+        else:
+            console.print("  [dim]No trajectory recorded (trial crashed during setup/first turn).[/dim]")
+
+    console.print("\n")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Harbor Jobs Explorer & Full Task/Trajectory Reader.")
+    parser.add_argument(
+        "-l",
+        "--list",
+        action="store_true",
+        help="List all jobs with readable card format.",
+    )
+    parser.add_argument(
+        "-s",
+        "--show",
+        type=str,
+        default=None,
+        metavar="JOB_ID",
+        help="Show full task instruction, exception analysis, and steps for JOB_ID.",
+    )
+    parser.add_argument(
+        "--jobs-dir",
+        type=Path,
+        default=REPO_ROOT / "jobs",
+        help="Custom jobs directory (default: ./jobs).",
+    )
+
+    args = parser.parse_args()
+
+    if args.show:
+        show_job(args.jobs_dir, args.show)
+    elif args.list:
+        list_jobs(args.jobs_dir)
+    else:
+        # Default behavior: list
+        list_jobs(args.jobs_dir)
+
+
+if __name__ == "__main__":
+    main()

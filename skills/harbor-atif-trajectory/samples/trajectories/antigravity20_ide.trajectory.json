@@ -1,0 +1,141 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "antigravity20-pair-riccardo",
+  "agent": {
+    "name": "antigravity20-ide",
+    "version": "2.0.0-preview",
+    "model_name": "gemini-3.0-pro"
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "timestamp": "2026-10-19T09:30:00Z",
+      "source": "user",
+      "message": "<USER_REQUEST>\nCiao Antigravity! Add a new healthcheck route in Go to cmd/server/main.go that returns JSON with status and git commit hash.\n</USER_REQUEST>"
+    },
+    {
+      "step_id": 2,
+      "timestamp": "2026-10-19T09:30:04Z",
+      "source": "agent",
+      "model_name": "gemini-3.0-pro",
+      "message": "Ciao RiccardinoCM26 \ud83e\udd96! Inspecting `cmd/server/main.go` to check the current router setup.",
+      "reasoning_content": "User RiccardinoCM26 \ud83e\udd96 wants a Go healthcheck route returning JSON with status and git commit hash. Let's first inspect cmd/server/main.go to see existing routes.",
+      "tool_calls": [
+        {
+          "tool_call_id": "agy-1-0",
+          "function_name": "view_file",
+          "arguments": {
+            "AbsolutePath": "/workspace/cmd/server/main.go",
+            "StartLine": 1,
+            "EndLine": 40
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "agy-1-0",
+            "content": "package main\n\nimport (\n    \"net/http\"\n    \"github.com/gin-gonic/gin\"\n)\n\nfunc main() {\n    r := gin.Default()\n    r.Run(\":8080\")\n}",
+            "extra": {
+              "status": "SUCCESS"
+            }
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 520,
+        "completion_tokens": 90,
+        "cached_tokens": 200
+      }
+    },
+    {
+      "step_id": 3,
+      "timestamp": "2026-10-19T09:30:10Z",
+      "source": "agent",
+      "model_name": "gemini-3.0-pro",
+      "message": "Adding the `/healthz` endpoint with git commit reporting.",
+      "reasoning_content": "The app uses Gin. We can add a GET `/healthz` route that outputs `gin.H{\"status\": \"ok\", \"commit\": os.Getenv(\"GIT_COMMIT\")}`.",
+      "tool_calls": [
+        {
+          "tool_call_id": "agy-3-0",
+          "function_name": "replace_file_content",
+          "arguments": {
+            "TargetFile": "/workspace/cmd/server/main.go",
+            "StartLine": 8,
+            "EndLine": 11,
+            "ReplacementContent": "    r.GET(\"/healthz\", func(c *gin.Context) {\n        commit := os.Getenv(\"GIT_COMMIT\")\n        if commit == \"\" { commit = \"dev\" }\n        c.JSON(http.StatusOK, gin.H{\"status\": \"ok\", \"commit\": commit})\n    })\n    r.Run(\":8080\")"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "agy-3-0",
+            "content": "File modified successfully.",
+            "extra": {
+              "status": "SUCCESS"
+            }
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 740,
+        "completion_tokens": 120,
+        "cached_tokens": 450
+      }
+    },
+    {
+      "step_id": 4,
+      "timestamp": "2026-10-19T09:30:15Z",
+      "source": "agent",
+      "model_name": "gemini-3.0-pro",
+      "message": "Running test suite to verify the changes.",
+      "reasoning_content": "Let's run `go test ./...` to ensure everything compiles and tests pass cleanly.",
+      "tool_calls": [
+        {
+          "tool_call_id": "agy-5-0",
+          "function_name": "run_command",
+          "arguments": {
+            "CommandLine": "go test ./..."
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "agy-5-0",
+            "content": "ok  github.com/ricc/sample-app/cmd/server  0.035s",
+            "extra": {
+              "status": "SUCCESS"
+            }
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 890,
+        "completion_tokens": 60,
+        "cached_tokens": 700
+      }
+    },
+    {
+      "step_id": 5,
+      "timestamp": "2026-10-19T09:30:20Z",
+      "source": "agent",
+      "model_name": "gemini-3.0-pro",
+      "message": "Fatto! Added the `/healthz` handler to `cmd/server/main.go` and verified tests pass! \ud83d\ude80\ud83e\udd96",
+      "reasoning_content": "Everything passes. Replying with confirmation.",
+      "metrics": {
+        "prompt_tokens": 980,
+        "completion_tokens": 45,
+        "cached_tokens": 900
+      }
+    }
+  ],
+  "notes": "Antigravity 2.0 IDE pair-programming session with RiccardinoCM26 \ud83e\udd96",
+  "final_metrics": {
+    "total_prompt_tokens": 3130,
+    "total_completion_tokens": 315,
+    "total_cached_tokens": 2250,
+    "total_steps": 5
+  }
+}

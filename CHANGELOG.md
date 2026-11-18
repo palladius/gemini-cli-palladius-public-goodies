@@ -1,3 +1,8 @@
+## [0.6.49] - 2026-11-18
+
+- 💛🚀 **`gemini-model-selector` (`v0.3.3`)**: Self-healed skill with the 2 newly released mid-November 2026 models (`gemini-4-hydrogen` GA `2026-11-12` replacing `gemini-3.8-flash` as default daily driver + `xhigh` thinking, and `gemini-decision-1` `2026-11-11` zero-output-token Decisions API classifier) plus Nov 17 `gemini-3.5-transcribe` voice editing.
+- 🚀 Bumped version to 0.6.49.
+
 ## [0.6.48] - 2026-11-18
 
 - 📽️🧸 **`presentation-that-riccardo-likes` (`v1.6.0`)**:
