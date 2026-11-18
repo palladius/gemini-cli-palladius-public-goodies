@@ -2,12 +2,12 @@
 name: presentation-that-riccardo-likes
 description: >-
   (💛) Use when creating, styling, auditing, or refactoring Marp, Reveal.js, Slidev, or Google Slides
-  presentations for Riccardo — enforces minimal-text editorial flow, Tri-Engine diagram routing,
-  light-yellow A/B option pills, 100%-fit rounded visuals without dead frames or FIG pills,
-  tabulated clickable brand icons, whisper-thin footers, QR 1/4-slide sizing, and live PNG verification.
+  presentations for Riccardo — enforces canonical 1..N+1 deck spine (incl. hidden noir Slides Cemetery),
+  native multi-shape Google Slides composability over monolithic flat images, Tri-Engine diagram routing,
+  light-yellow A/B option pills, minimal-text editorial flow, QR 1/4-slide sizing, and PNG verification.
 compatibility: "gemini-cli, antigravity, openclaudio"
 metadata:
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
 # Presentations That Riccardo Likes 📽️🦖🦞
@@ -236,7 +236,39 @@ High-craft visuals take real effort to create; killing a weaker slide in Google 
    - Keep **both** candidate slides active next to each other and place a soft light-yellow highlighter pill (`fill: #FEF9C3`, `border: 1.5pt solid #F59E0B`, text `#78350F` bold `10pt`) in the top-right margin:
      - Slide 1: `Option 1: <short desc>`
      - Slide 2: `Option 2: <short desc>`
-3. **Park Runner-Ups in `skip: true` or a Slide Graveyard**:
-   - Let Riccardo choose visually in 2 seconds. Good runner-up slides are parked with `skip: true` (`slideProperties.isSkipped: true`) or moved to an end-of-deck **Slide Graveyard / Appendix** for future reuse; only genuinely broken drafts are permanently deleted.
+3. **Park Runner-Ups in `skip: true` or the `N+1` Slides Cemetery**:
+   - Let Riccardo choose visually in 2 seconds. Good runner-up slides are parked with `skip: true` (`slideProperties.isSkipped: true`) behind the end-of-deck **Slides Cemetery (`N+1`)** for future reuse; only genuinely broken drafts are permanently deleted.
+
+---
+
+## 16. 🏛️🪦 Canonical `1 .. N+1` Deck Spine & The Noir "Slides Cemetery"
+
+Every presentation created for Riccardo MUST follow this deterministic slide spine:
+
+| Slide Index | Mandatory Role | Required Elements |
+|---|---|---|
+| **Page `1`** | **Hero Cover** | Talk title + subtitle + colorful **`Riccardo Carlesso — Developer Advocate`** speaker tab/badge (signature style) + venue/date badge |
+| **Page `2`** | **About Me (`Who Am I`)** | Authentic regional/contextual photo (100%-fit, 4 rounded corners) + clean 2-paragraph bio + 3-column tabulated social grid (vector brand icons + clickable links) |
+| **Pages `3 .. N-2`** | **Core Story Slides** | Structured into clean Google-colored Chapter Break dividers (`<= 10–20` body words per content slide, rich Speaker Notes) |
+| **Page `N-1`** | **Resources & Links** | Curated takeaway links paired with a **giant `>= 1/4` slide-surface QR code** (~390–420px square) pointing to the canonical resources/repo page |
+| **Page `N`** | **Thank You & Q&A** | Clickable **LinkedIn, Blog (`ricc.rocks`), GitHub, X/Twitter** handles + an optional **session Feedback QR code** |
+| **Page `N+1` (`hidden`)** | **🪦 Slides Cemetery** (`skip: true` / `isSkipped: true`) | **Pitch-black canvas & thick black border (`#09090B`)** + a **very dark, noir Halloween-humorous NanoBanana illustration of "dead `16:9` slides resting as tombstones in a misty gothic cemetery"** (`R.I.P.`). All parked/skipped backup slides (`N+2 .. M`, all `isSkipped: true`) live immediately after this gate! |
+
+---
+
+## 17. 🧩 Native Google Slides Composability ("`N` Native Pieces > `1` Monolithic Image")
+
+### 💡 The Trap of Lazy Monolithic PNGs
+Baking an entire multi-card comparison, board-game progression, or bar chart into **one single NanoBanana or rasterized PNG** looks pretty on first render, **but locks the human speaker out of editing**: clicking the slide in Google Slides only lets Riccardo edit the `H1` title — changing a single year, fixing a `10^k` exponent, or adding a 4th column becomes impossible!
+
+### 🚀 The Iron Rule: Compose from `N` Native Google Slides Elements
+Whenever targeting **Google Slides**, **ALWAYS prefer `N` native editable shapes over 1 monolithic image**:
+1. **Cards, Badges, Bullets, Code Blocks & Bar Charts = 100% Native Shapes & Text**:
+   - Build cards as `ROUND_RECTANGLE` shapes, year/category pills as native shapes, body text/captions/code as native `TEXT_BOX` elements (`Roboto` / `Roboto Mono`), connector arrows as native `LINE`s (`END_ARROW`), and quantitative comparison bars (e.g., aligned `~10^5`, `~10^20`, `~10^47`, `~10^170` log bars) as native colored `ROUND_RECTANGLE` bars + editable `TEXT_BOX` labels!
+2. **Isolate Raster / NanoBanana Images Strictly to Pure Visual Art**:
+   - Use images **only** for the irreducible visual illustrations inside each native card (e.g., 4 separate small square PNGs for the Tic-Tac-Toe grid, Checkers board, Chess board, and Go board — surrounded by native editable Google Slides cards, headers, captions, and bars).
+3. **Exception Check**:
+   - Only embed a full-width rendered diagram PNG when exact topological Bezier routing (`M × N` 16-arrow spaghetti) or pixel-locked multi-pane diagramming genuinely cannot be expressed cleanly with native Google Slides shapes — and even then, keep surrounding callouts, titles, and annotations native whenever possible.
+
 
 

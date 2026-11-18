@@ -1,3 +1,11 @@
+## [0.6.47] - 2026-11-18
+
+- 📽️🪦 **`presentation-that-riccardo-likes` (`v1.5.0`)**:
+  - Added **§16 Canonical `1 .. N+1` Deck Spine & Noir "Slides Cemetery"** (`1`: colorful Riccardo Developer Advocate cover; `2`: About Me; `3..N-2`: core slides; `N-1`: Resources + `>= 1/4` QR; `N`: Thank You + LinkedIn/blog/socials + optional Feedback QR; `N+1` hidden `skip: true`: pitch-black **Slides Cemetery** with dark noir Halloween-humorous NanoBanana graveyard art).
+  - Added **§17 Native Google Slides Composability ("`N` Native Pieces > `1` Monolithic Image")**: mandates building cards, badges, exponents (`10^5 .. 10^170`), code snippets, and bars from native editable Google Slides shapes rather than locking text inside a single raster PNG.
+- 🧭🧩 **`slide-diagram-router` (`v1.1.0`)**: Added the Native-First Google Slides Composability Gate at the top of the router.
+- 🚀 Bumped version to 0.6.47.
+
 ## [0.6.46] - 2026-11-18
 
 - 🧭🍌📐 **`slide-diagram-router` (`v1.0.0`)**: Added new Tri-Engine Slide Diagram Router skill (`SKILL.md`, `references/nanobanana-lego-prompts.md`, and deterministic `2x` Retina renderer `scripts/render_slide_diagram.py` with automated Headless Chrome DOM font/overflow auditing) routing technical visuals across:

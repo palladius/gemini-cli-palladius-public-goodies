@@ -1,3 +1,8 @@
+## [1.5.0] - 2026-11-18
+
+- 🏛️🪦 Added **§16 Canonical `1 .. N+1` Deck Spine & Noir "Slides Cemetery"**: enforces Page `1` (colorful Riccardo Developer Advocate cover), Page `2` (About Me), Pages `3..N-2` (core story), Page `N-1` (Resources + giant QR), Page `N` (Thank You + LinkedIn/blog/socials + optional Feedback QR), and hidden Page `N+1` (`skip: true` / `isSkipped: true` **Slides Cemetery** with all-black border and dark noir Halloween-humorous NanoBanana graveyard art).
+- 🧩 Added **§17 Native Google Slides Composability ("`N` Native Pieces > `1` Monolithic Image")**: forbids locking multi-card layouts, captions, and charts inside a single flat PNG when targeting Google Slides; mandates native `ROUND_RECTANGLE` cards, `TEXT_BOX` labels/exponents, native bars/arrows, and isolated cropped art assets so the speaker can edit every element directly.
+
 ## [1.4.0] - 2026-11-18
 
 - 🧭🍌 Added **§14 Tri-Engine Slide Diagram Routing**, cross-referencing the new `slide-diagram-router` skill (`Engine 1` NanoBanana "Physical Lego" for cloud pipelines, `Engine 2` Deterministic `2x` Topological SVG for many-icon/arrow graphs like `MCP M×N`, and `Engine 3` HiDPI Multi-Tab Contrast Cards for verbatim prompt/JSON columns).

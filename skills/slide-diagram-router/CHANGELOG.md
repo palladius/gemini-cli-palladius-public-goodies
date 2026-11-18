@@ -1,3 +1,7 @@
+## [1.1.0] - 2026-11-18
+
+- 🧩 Added the **Native-First Google Slides Composability Gate**: before rasterizing a multi-card comparison or chart into one monolithic PNG (which leaves only the `H1` title editable in Google Slides), compose cards, badges, code boxes, arrows, and quantitative bars from `N` native Google Slides shapes + isolated inner art assets, and park retired candidates behind the noir `N+1` **Slides Cemetery** (`isSkipped: true`).
+
 ## [1.0.0] - 2026-11-18
 
 - 🧭🍌📐 Initial release of **`slide-diagram-router`**:

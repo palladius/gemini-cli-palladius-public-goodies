@@ -6,13 +6,15 @@ description: >-
   or when proposing A/B visual options without overwriting existing slides.
 compatibility: "gemini-cli, antigravity, openclaudio"
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   author: "Riccardo Carlesso"
 ---
 
 # Tri-Engine Slide Diagram Router & A/B Option Protocol 🧭🍌📐
 
-No single diagram generator wins every slide. Route every technical slide visual to the **exact engine** that matches its cognitive structure, and **never destroy a strong existing slide** when proposing a visual alternative.
+No single diagram generator wins every slide. Route every technical slide visual to the **exact engine** that matches its cognitive structure, **prefer `N` native editable Google Slides shapes over 1 monolithic flat PNG whenever targeting Google Slides**, and **never destroy a strong existing slide** when proposing a visual alternative.
+
+> **🧩 NATIVE-FIRST RULE ON GOOGLE SLIDES:** Before rendering a full-slide raster PNG, check if the slide is a multi-card grid, board comparison, code snippet, or bar chart (`10^5 .. 10^170`). On Google Slides, **always build cards, pills, captions, code blocks, arrows, and bars as `N` native editable Google Slides shapes**, using small isolated PNGs *only* for the inner artwork (e.g., individual game boards or cloud icons). A single monolithic image locks the speaker into editing only the `H1` title!
 
 ---
 
