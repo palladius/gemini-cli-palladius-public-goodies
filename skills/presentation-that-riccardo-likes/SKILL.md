@@ -4,10 +4,11 @@ description: >-
   (💛) Use when creating, styling, auditing, or refactoring Marp, Reveal.js, Slidev, or Google Slides
   presentations for Riccardo — enforces canonical 1..N+1 deck spine (incl. hidden noir Slides Cemetery),
   native multi-shape Google Slides composability over monolithic flat images, Tri-Engine diagram routing,
+  bright cutie-cartoon metaphors with floating 1-punchline text (banning 50% dark glass-capsule cards),
   light-yellow A/B option pills, minimal-text editorial flow, QR 1/4-slide sizing, and PNG verification.
 compatibility: "gemini-cli, antigravity, openclaudio"
 metadata:
-  version: "1.5.0"
+  version: "1.6.0"
 ---
 
 # Presentations That Riccardo Likes 📽️🦖🦞
@@ -269,6 +270,28 @@ Whenever targeting **Google Slides**, **ALWAYS prefer `N` native editable shapes
    - Use images **only** for the irreducible visual illustrations inside each native card (e.g., 4 separate small square PNGs for the Tic-Tac-Toe grid, Checkers board, Chess board, and Go board — surrounded by native editable Google Slides cards, headers, captions, and bars).
 3. **Exception Check**:
    - Only embed a full-width rendered diagram PNG when exact topological Bezier routing (`M × N` 16-arrow spaghetti) or pixel-locked multi-pane diagramming genuinely cannot be expressed cleanly with native Google Slides shapes — and even then, keep surrounding callouts, titles, and annotations native whenever possible.
+
+---
+
+## 18. 🚫🖤➡️🧸✨ Anti-Pattern Ban: No "50% Dark Glass-Capsule" Over Moody Sci-Fi Stock — Use Bright Cutie-Cartoon Metaphors + Floating 1-Punchline
+
+### 💀 The Banned Anti-Pattern (`GLASS_CAPSULE` + Dark Stock Art)
+Never build "WOW / Hook / Intuition" slides using a **dark, moody, generic sci-fi image** covered on the left half by a **50%-width translucent dark rounded rectangle (`GLASS_CAPSULE`)** stuffed with 4 stacked text layers (`ALL-CAPS OVER-TITLE` + `H1 Title` + `Paragraph` + `Colored Footer Chip`):
+1. **Why Dark Sci-Fi Art Fails**: 90% of dark abstract renders (glowing glass shards, cybernetic corridors, neon brains) are dreary and **literally disconnected from the spoken metaphor** (e.g., shattered glass with a key tells the audience zero about *agent harnesses* or *context rot*).
+2. **Why the 50% Dark Card Fails**: It blocks half of the artwork, wastes massive vertical space inside a heavy dark box, and forces the audience's eye through 4 competing text styles that become nearly unreadable from row 5.
+
+### 🚀 The Required Replacement: Bright Cutie-Cartoon Metaphor + Floating 1-Punchline
+1. **Bright, Cutie, Cartoony Literal Metaphor (`Right 55-60%`, Seamless Warm/Light Canvas)**:
+   - Illustrate the **exact concrete concept being spoken** in a bright, warm, joyful 3D/editorial cartoon style on a seamless cream/pastel/sky background (`#FAF8F5` / `#F6FAFF`) whose left `40-45%` is naturally open and uncluttered:
+     - *Talking about harnesses & context rot?* Show a cute robot **literally wearing a yellow climbing/toolbelt harness** dizzy behind a mountain of paper scrolls with a golden key buried in the middle, next to its happy twin holding 3 tidy cards!
+     - *Talking about cutoff & hallucination?* Show a cute robot student at a school desk with a **padlocked policy book + calendar** painting a rainbow unicorn castle mirage in its speech bubble!
+     - *Talking about 5:00 AM memory dreaming?* Show a sleeping robot in a nightcap at Alpine dawn while tiny helper-sprites sweep crumpled log papers with brooms into clean color-coded wiki binders!
+2. **Zero 50% Card Box — Float Text Directly Over the Image**:
+   - Place **1 bold punchline (`"frase ad effetto"`, `24-28pt` bold `#0F172A`, e.g., `"A harness is only as good as its own context"`)** and **AT MOST 1 short supporting sentence (`12.5-14pt` `#334155`, `<= 14` words)** floating directly over the clean open zone of the image — **ZERO `GLASS_CAPSULE` rectangle, ZERO `ALL-CAPS` eyebrow, ZERO bottom colored chip!**
+   - *(Even on intentional dark-sky or retro-CRT slides like a 1983 Cart-Pole GIF, float ONLY the crisp white punchline + 1 short sentence directly on the background — never wrap them in a 50% card box!)*
+3. **Need to Open a New Section? Use a Real Chapter Divider**:
+   - Never overload a hook slide with section-header eyebrows (`CHAPTER 3 | ...`). If a new chapter is starting, insert a dedicated full-color **Chapter Break** slide beforehand.
+
 
 
 

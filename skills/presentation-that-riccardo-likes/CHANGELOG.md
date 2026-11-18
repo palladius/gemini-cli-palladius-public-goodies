@@ -1,3 +1,7 @@
+## [1.6.0] - 2026-11-18
+
+- 🚫🖤➡️🧸✨ Added **§18 Anti-Pattern Ban: No "50% Dark Glass-Capsule" Over Moody Sci-Fi Stock — Use Bright Cutie-Cartoon Metaphors + Floating 1-Punchline**: bans dark abstract stock renders + 50%-width `GLASS_CAPSULE` overlays with 4 stacked text layers (`eyebrow + title + paragraph + colored footer`); mandates bright, cutie, cartoony literal illustrations (e.g., robot in a yellow harness for harness context rot) with **only 1 bold punchline + at most 1 short sentence floating directly over the clean light zone of the image**, and dedicated Chapter Break slides for section transitions.
+
 ## [1.5.0] - 2026-11-18
 
 - 🏛️🪦 Added **§16 Canonical `1 .. N+1` Deck Spine & Noir "Slides Cemetery"**: enforces Page `1` (colorful Riccardo Developer Advocate cover), Page `2` (About Me), Pages `3..N-2` (core story), Page `N-1` (Resources + giant QR), Page `N` (Thank You + LinkedIn/blog/socials + optional Feedback QR), and hidden Page `N+1` (`skip: true` / `isSkipped: true` **Slides Cemetery** with all-black border and dark noir Halloween-humorous NanoBanana graveyard art).

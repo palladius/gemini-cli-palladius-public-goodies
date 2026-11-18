@@ -1,3 +1,9 @@
+## [0.6.48] - 2026-11-18
+
+- 📽️🧸 **`presentation-that-riccardo-likes` (`v1.6.0`)**:
+  - Added **§18 Anti-Pattern Ban: No "50% Dark Glass-Capsule" Over Moody Sci-Fi Stock — Use Bright Cutie-Cartoon Metaphors + Floating 1-Punchline**: bans 50%-width dark translucent cards (`GLASS_CAPSULE`) with 4 stacked text layers (`eyebrow + title + paragraph + chip`) over dark generic sci-fi backgrounds; mandates bright, cutie, cartoony literal visual metaphors with **1 bold punchline + at most 1 short sentence floating directly over the open zone of the image**.
+- 🚀 Bumped version to 0.6.48.
+
 ## [0.6.47] - 2026-11-18
 
 - 📽️🪦 **`presentation-that-riccardo-likes` (`v1.5.0`)**:
