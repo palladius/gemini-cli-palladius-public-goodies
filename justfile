@@ -5,4 +5,4 @@ test DIR="skills":
 
 # Run tests on private goodies
 test-pvt:
-    @just test /usr/local/google/home/ricc/git/gemini-cli-palladius-private-goodies/skills/
+    @just test ~/git/gemini-cli-palladius-private-goodies/skills/

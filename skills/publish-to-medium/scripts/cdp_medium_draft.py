@@ -16,13 +16,16 @@ from __future__ import annotations
 
 import argparse
 import base64
+import getpass
 import html as html_lib
 import json
 import os
 import platform
 import re
+import shutil
 import socket
 import struct
+import subprocess
 import sys
 import tempfile
 import time
@@ -38,6 +41,37 @@ FORBIDDEN_BUTTON_RE = re.compile(
     re.I,
 )
 TEST_DRAFT_PREFIX = "[TEST - DELETE ME]"
+
+
+def send_desktop_notification(title: str, body: str, urgency: str = "normal") -> bool:
+    """Fires a non-intrusive OS desktop toast (Linux notify-send / macOS osascript) so the human
+    knows when focusless CDP browser control begins and when it finishes (releasing clipboard/window).
+    Never raises on headless machines without DISPLAY/DBUS.
+    """
+    try:
+        system = platform.system().lower()
+        if system == "darwin" and shutil.which("osascript"):
+            script = f"display notification {json.dumps(body)} with title {json.dumps(title)}"
+            subprocess.run(["osascript", "-e", script], check=False, timeout=3.0)
+            return True
+        if shutil.which("notify-send") and (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY") or os.environ.get("DBUS_SESSION_BUS_ADDRESS")):
+            subprocess.run(
+                [
+                    "notify-send",
+                    "--app-name=publish-to-medium",
+                    "--urgency",
+                    urgency,
+                    "--expire-time=9000",
+                    title,
+                    body,
+                ],
+                check=False,
+                timeout=3.0,
+            )
+            return True
+    except Exception:
+        pass
+    return False
 
 
 def default_chrome_roots() -> list[Path]:
@@ -356,7 +390,41 @@ class CDPClient:
             pass
 
 
-def find_medium_target(cdp: CDPClient, match_domain: str = "medium.com") -> dict[str, Any]:
+def detect_logged_in_medium_account(cdp: CDPClient, target_id: str) -> str:
+    """Probes the logged-in Medium @handle on a given targetId without mutating page state."""
+    sess = cdp.call("Target.attachToTarget", {"targetId": target_id, "flatten": True})["sessionId"]
+    try:
+        info = cdp.eval_js(
+            sess,
+            """(() => {
+                // 1. Check profile/avatar links in navbar or __APOLLO_STATE__ Userviewer
+                const html = document.documentElement ? document.documentElement.innerHTML : '';
+                const viewerMatch = html.match(/"username"\\s*:\\s*"([^"]+)"/);
+                if (viewerMatch) return viewerMatch[1];
+                const links = Array.from(document.querySelectorAll('a[href*="/@"]')).map(a => a.getAttribute('href') || '');
+                for (const href of links) {
+                    const m = href.match(/\\/@([a-zA-Z0-9_.-]+)/);
+                    if (m) return m[1];
+                }
+                const signIn = Array.from(document.querySelectorAll('a, button')).some(el => /^sign in$/i.test((el.innerText || '').trim()));
+                return signIn ? 'UNAUTHENTICATED' : 'UNKNOWN';
+            })()""",
+            await_promise=False,
+            timeout=5.0,
+        )
+        return str(info or "UNKNOWN")
+    except Exception as e:
+        return f"ERROR:{e}"
+    finally:
+        try:
+            cdp.call("Target.detachFromTarget", {"sessionId": sess}, call_timeout=3.0)
+        except Exception:
+            pass
+
+
+def find_medium_target(
+    cdp: CDPClient, match_domain: str = "medium.com", expect_account: str | None = None
+) -> dict[str, Any]:
     targets = cdp.call("Target.getTargets", call_timeout=30.0).get("targetInfos", [])
     page_targets = [
         t for t in targets
@@ -368,12 +436,28 @@ def find_medium_target(cdp: CDPClient, match_domain: str = "medium.com") -> dict
             f"No open '{match_domain}' tab found among {len(targets)} browser targets. "
             f"Open https://{match_domain} in your authenticated Chrome window first."
         )
-    return page_targets[0]
+    if not expect_account:
+        return page_targets[0]
+
+    expected_norm = expect_account.lstrip("@").strip().lower()
+    seen_accounts: list[str] = []
+    for t in page_targets:
+        tid = t["targetId"]
+        acct = detect_logged_in_medium_account(cdp, tid)
+        seen_accounts.append(f"{tid[:8]}={acct} ({t.get('url')})")
+        if expected_norm in acct.lower():
+            return t
+
+    raise RuntimeError(
+        f"No open '{match_domain}' tab matched --expect-account={expect_account!r}. "
+        f"Found open tabs: {seen_accounts}"
+    )
 
 
 AUDIT_EDITOR_JS = """(() => {
     const bodyText = document.body ? document.body.innerText : '';
-    const savedMatch = bodyText.match(/\\b(Saved|Saving\\.\\.\\.)\\b/i);
+    const hdrText = (document.querySelector('header, nav, .metabar')?.innerText || '') + ' ' + bodyText;
+    const savedMatch = hdrText.match(/(Saving\\.\\.\\.|Saved)/i);
     const errorMatch = bodyText.match(/(Something is wrong and we cannot save your story[^\\n]*)/i);
     const root = document.querySelector('.postArticle-content, section.section--body, main article, article') || document.body;
     const figures = Array.from(root.querySelectorAll('figure')).map(f => ({
@@ -450,6 +534,90 @@ def dismiss_editor_onboarding_overlay(cdp: CDPClient, sess: str) -> None:
         pass
 
 
+def ensure_story_title_at_top(cdp: CDPClient, sess: str, full_title: str) -> str:
+    """Verifies that the leading block in Medium's editor is `h3.graf--title` containing `full_title`.
+    If pasting `#medium-story-body` overwrote the Title with the opening subtitle paragraph, inserts
+    a new top block above it, types `full_title`, and formats it as Medium's Big Title (Ctrl+Alt+1 / Cmd+Opt+1).
+    """
+    state = cdp.eval_js(
+        sess,
+        f"""(() => {{
+            const expected = {json.dumps(full_title.strip())};
+            const root = document.querySelector('.postArticle-content .section-inner, .postArticle-content, article') || document.body;
+            const first = root.querySelector('h3, h1, p, figure, blockquote, pre');
+            if (!first) return {{ status: 'empty' }};
+            const txt = (first.innerText || '').trim();
+            if (first.tagName === 'H3' && txt === expected) {{
+                return {{ status: 'already_ok', text: txt }};
+            }}
+            first.scrollIntoView({{ block: 'center' }});
+            const r = first.getBoundingClientRect();
+            return {{ status: 'needs_insert', x: r.left + 8, y: r.top + 10, firstTag: first.tagName, firstText: txt.slice(0, 60) }};
+        }})()""",
+    ) or {}
+    if state.get("status") != "needs_insert":
+        return str(state.get("text") or full_title)
+
+    # Place caret at offset 0 of the very first block, press Enter + ArrowUp, type full_title, and apply Ctrl+Alt+1 (Big Title)
+    cdp.click_xy(sess, state["x"], state["y"])
+    time.sleep(0.2)
+    cdp.eval_js(
+        sess,
+        """(() => {
+            const root = document.querySelector('.postArticle-content .section-inner, .postArticle-content, article') || document.body;
+            const first = root.querySelector('h3, h1, p, blockquote, pre');
+            if (!first) return false;
+            first.focus();
+            const sel = window.getSelection();
+            const range = document.createRange();
+            range.setStart(first, 0);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            return true;
+        })()""",
+    )
+    cdp.press_enter(sess)
+    time.sleep(0.25)
+    for evt_type in ("rawKeyDown", "keyUp"):
+        cdp.call(
+            "Input.dispatchKeyEvent",
+            {"type": evt_type, "key": "ArrowUp", "code": "ArrowUp", "windowsVirtualKeyCode": 38, "nativeVirtualKeyCode": 38},
+            session_id=sess,
+        )
+    time.sleep(0.2)
+    cdp.insert_text(sess, full_title)
+    time.sleep(0.25)
+    # Medium Big Title shortcut: Alt+Ctrl+1 on Linux/Win (modifiers=3), Alt+Cmd+1 on macOS (modifiers=5)
+    title_mod = 5 if platform.system().lower() == "darwin" else 3
+    cdp.call(
+        "Input.dispatchKeyEvent",
+        {
+            "type": "rawKeyDown",
+            "key": "1",
+            "code": "Digit1",
+            "windowsVirtualKeyCode": 49,
+            "nativeVirtualKeyCode": 49,
+            "modifiers": title_mod,
+        },
+        session_id=sess,
+    )
+    cdp.call(
+        "Input.dispatchKeyEvent",
+        {
+            "type": "keyUp",
+            "key": "1",
+            "code": "Digit1",
+            "windowsVirtualKeyCode": 49,
+            "nativeVirtualKeyCode": 49,
+            "modifiers": title_mod,
+        },
+        session_id=sess,
+    )
+    time.sleep(1.0)
+    return full_title
+
+
 def prefix_draft_title(cdp: CDPClient, sess: str, prefix: str) -> str:
     if not prefix:
         return ""
@@ -499,6 +667,71 @@ def prefix_draft_title(cdp: CDPClient, sess: str, prefix: str) -> str:
     )
 
 
+def _focus_and_replace_input_text(cdp: CDPClient, sess: str, x: float, y: float, new_text: str) -> None:
+    """Clicks an <input> or <textarea> via real CDP coordinates, selects all existing text via DOM
+    selection APIs (immune to OS Ctrl+A vs Cmd+A differences), clears it, and inserts `new_text`."""
+    cdp.click_xy(sess, x, y)
+    time.sleep(0.2)
+    has_existing = bool(
+        cdp.eval_js(
+            sess,
+            """(() => {
+                const el = document.activeElement;
+                if (!el) return false;
+                if (typeof el.setSelectionRange === 'function' && typeof el.value === 'string') {
+                    el.focus();
+                    el.setSelectionRange(0, el.value.length);
+                    return el.value.length > 0;
+                }
+                const sel = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(el);
+                sel.removeAllRanges();
+                sel.addRange(range);
+                return (el.innerText || '').length > 0;
+            })()""",
+        )
+    )
+    if has_existing:
+        for evt_type in ("rawKeyDown", "keyUp"):
+            cdp.call(
+                "Input.dispatchKeyEvent",
+                {"type": evt_type, "key": "Backspace", "code": "Backspace", "windowsVirtualKeyCode": 8, "nativeVirtualKeyCode": 8},
+                session_id=sess,
+            )
+        time.sleep(0.15)
+    if new_text:
+        cdp.insert_text(sess, new_text)
+
+
+def _click_nearest_save_button(cdp: CDPClient, sess: str, anchor_js_expr: str) -> bool:
+    """Walks up <=6 ancestors from `anchor_js_expr` to find the section's enabled 'Save' button and clicks via real CDP."""
+    btn_box = cdp.eval_js(
+        sess,
+        f"""(() => {{
+            let cur = {anchor_js_expr};
+            for (let depth = 0; cur && depth < 7; depth++, cur = cur.parentElement) {{
+                if (cur.tagName === 'MAIN' || cur.tagName === 'BODY') break;
+                const btns = Array.from(cur.querySelectorAll('button'));
+                const saveBtn = btns.find(b => /^save(\\s+canonical\\s+link)?$/i.test((b.innerText || '').trim()) && !b.disabled && !/publish/i.test(b.innerText || ''));
+                if (saveBtn) {{
+                    saveBtn.scrollIntoView({{ block: 'center' }});
+                    const r = saveBtn.getBoundingClientRect();
+                    if (r.width > 0 && r.height > 0) {{
+                        return {{ text: (saveBtn.innerText || '').trim(), x: r.left + r.width / 2, y: r.top + r.height / 2 }};
+                    }}
+                }}
+            }}
+            return null;
+        }})()""",
+    )
+    if not btn_box or FORBIDDEN_BUTTON_RE.search(btn_box.get("text", "")):
+        return False
+    time.sleep(0.15)
+    cdp.click_xy(sess, btn_box["x"], btn_box["y"])
+    return True
+
+
 def inspect_and_set_canonical_in_settings(
     cdp: CDPClient,
     sess: str,
@@ -512,13 +745,14 @@ def inspect_and_set_canonical_in_settings(
     settings_url = f"https://medium.com/p/{story_id}/settings"
     cdp.navigate(sess, settings_url, wait_sec=3.5)
 
-    # 1. Populate up to 5 Topics/Keywords via 'Add a topic...' input on /settings if provided
+    # 1. Populate up to 5 Topics/Keywords via 'Add a topic...' / 'Add more topics...' input on /settings
     topics_added: list[str] = []
+    topics_saved = False
     if topics:
         topic_box = cdp.eval_js(
             sess,
             """(() => {
-                const inp = document.querySelector('input[placeholder*="Add a topic" i]');
+                const inp = document.querySelector('input[placeholder*="topic" i]');
                 if (!inp) return null;
                 inp.scrollIntoView({ block: 'center' });
                 const r = inp.getBoundingClientRect();
@@ -532,33 +766,86 @@ def inspect_and_set_canonical_in_settings(
                 clean_t = t_name.strip()
                 if not clean_t:
                     continue
+                # Clear any leftover text in the topic input before typing the next topic
+                cdp.eval_js(
+                    sess,
+                    """(() => {
+                        const inp = document.querySelector('input[placeholder*="topic" i]');
+                        if (inp && inp.value) { inp.focus(); inp.setSelectionRange(0, inp.value.length); return true; }
+                        return false;
+                    })()""",
+                )
                 cdp.insert_text(sess, clean_t)
-                time.sleep(0.35)
+                time.sleep(0.65)
+                # Select first autocomplete dropdown item if visible, else press Enter
+                has_menu = bool(
+                    cdp.eval_js(
+                        sess,
+                        """(() => {
+                            const items = Array.from(document.querySelectorAll('[role="option"], [role="listbox"] li, [role="listbox"] button, ul li button'));
+                            return items.some(el => { const r = el.getBoundingClientRect(); return r.width > 20 && r.height > 12; });
+                        })()""",
+                    )
+                )
+                if has_menu:
+                    for evt_type in ("rawKeyDown", "keyUp"):
+                        cdp.call(
+                            "Input.dispatchKeyEvent",
+                            {"type": evt_type, "key": "ArrowDown", "code": "ArrowDown", "windowsVirtualKeyCode": 40, "nativeVirtualKeyCode": 40},
+                            session_id=sess,
+                        )
+                    time.sleep(0.2)
                 cdp.press_enter(sess)
-                time.sleep(0.35)
+                time.sleep(0.4)
                 topics_added.append(clean_t)
-            cdp.eval_js(
-                sess,
-                """(() => {
-                    const inp = document.querySelector('input[placeholder*="Add a topic" i]');
-                    const sec = inp ? inp.closest('section, div') : document;
-                    const btns = Array.from((sec || document).querySelectorAll('button'));
-                    const saveBtn = btns.find(b => /^save$/i.test((b.innerText || '').trim()) && !b.disabled);
-                    if (saveBtn) saveBtn.click();
-                })()""",
-            )
-            time.sleep(1.0)
 
-    # 1b. Populate SEO Title and SEO Description on /settings so the author does not have to type them manually!
+            # Clear any uncommitted tail text so the Save button for already-added topic chips is enabled
+            leftover = bool(
+                cdp.eval_js(
+                    sess,
+                    """(() => {
+                        const inp = document.querySelector('input[placeholder*="topic" i]');
+                        if (inp && inp.value) { inp.focus(); inp.setSelectionRange(0, inp.value.length); return true; }
+                        return false;
+                    })()""",
+                )
+            )
+            if leftover:
+                for evt_type in ("rawKeyDown", "keyUp"):
+                    cdp.call(
+                        "Input.dispatchKeyEvent",
+                        {"type": evt_type, "key": "Backspace", "code": "Backspace", "windowsVirtualKeyCode": 8, "nativeVirtualKeyCode": 8},
+                        session_id=sess,
+                    )
+                time.sleep(0.25)
+
+            topics_saved = _click_nearest_save_button(
+                cdp, sess, "document.querySelector('input[placeholder*=\"topic\" i]')"
+            ) or bool(
+                cdp.eval_js(
+                    sess,
+                    """(() => {
+                        const inp = document.querySelector('input[placeholder*="topic" i]');
+                        return !!(inp && /add more topics/i.test(inp.placeholder || ''));
+                    })()""",
+                )
+            )
+            time.sleep(1.1)
+
+    # 1b. Populate SEO Title and SEO Description on /settings
     seo_title_saved = False
     if seo_title:
         st_box = cdp.eval_js(
             sess,
             """(() => {
-                const headings = Array.from(document.querySelectorAll('h3, h4, label, div'));
-                const hdr = headings.find(h => /^SEO Title$/i.test((h.innerText || '').trim()));
-                const sec = hdr ? hdr.closest('section, div')?.parentElement || hdr.parentElement : null;
-                const inp = sec ? sec.querySelector('input[type="text"], input:not([type]), textarea') : null;
+                let inp = document.querySelector('input[placeholder*="| by " i], input[placeholder*="| Medium" i]');
+                if (!inp) {
+                    const hdr = Array.from(document.querySelectorAll('h3, h4, label, div, p')).find(h => /^SEO Title$/i.test((h.innerText || '').trim()));
+                    let cur = hdr ? hdr.parentElement : null;
+                    for (let d = 0; cur && d < 5 && !inp; d++, cur = cur.parentElement) {
+                        inp = cur.querySelector('input[type="text"], input:not([type])');
+                    }
+                }
                 if (!inp) return null;
                 inp.scrollIntoView({ block: 'center' });
                 const r = inp.getBoundingClientRect();
@@ -566,34 +853,27 @@ def inspect_and_set_canonical_in_settings(
             })()""",
         )
         if st_box:
-            cdp.click_xy(sess, st_box["x"], st_box["y"])
-            time.sleep(0.2)
-            cdp.press_command_shortcut(sess, "a", "KeyA", 65, "SelectAll")
-            cdp.insert_text(sess, seo_title[:60].strip() if len(seo_title) > 70 else seo_title.strip())
+            clean_st = seo_title.strip()
+            if len(clean_st) > 75:
+                clean_st = clean_st[:72].rsplit(" ", 1)[0].rstrip(".,;:- ")
+            _focus_and_replace_input_text(cdp, sess, st_box["x"], st_box["y"], clean_st)
             time.sleep(0.4)
-            seo_title_saved = bool(
-                cdp.eval_js(
-                    sess,
-                    """(() => {
-                        const hdr = Array.from(document.querySelectorAll('h3, h4, label, div')).find(h => /^SEO Title$/i.test((h.innerText || '').trim()));
-                        const sec = hdr ? hdr.closest('section, div')?.parentElement || hdr.parentElement : null;
-                        const saveBtn = sec ? Array.from(sec.querySelectorAll('button')).find(b => /^save$/i.test((b.innerText || '').trim()) && !b.disabled) : null;
-                        if (saveBtn) { saveBtn.click(); return true; }
-                        return false;
-                    })()""",
-                )
-            )
-            time.sleep(0.9)
+            seo_title_saved = _click_nearest_save_button(cdp, sess, "document.activeElement")
+            time.sleep(1.0)
 
     seo_desc_saved = False
     if seo_description:
         sd_box = cdp.eval_js(
             sess,
             """(() => {
-                const headings = Array.from(document.querySelectorAll('h3, h4, label, div'));
-                const hdr = headings.find(h => /^SEO Description$/i.test((h.innerText || '').trim()));
-                const sec = hdr ? hdr.closest('section, div')?.parentElement || hdr.parentElement : null;
-                const inp = sec ? sec.querySelector('textarea, input[type="text"], input:not([type]), [contenteditable="true"]') : null;
+                let inp = document.querySelector('textarea');
+                if (!inp) {
+                    const hdr = Array.from(document.querySelectorAll('h3, h4, label, div, p')).find(h => /^SEO Description$/i.test((h.innerText || '').trim()));
+                    let cur = hdr ? hdr.parentElement : null;
+                    for (let d = 0; cur && d < 5 && !inp; d++, cur = cur.parentElement) {
+                        inp = cur.querySelector('textarea, [contenteditable="true"], input[type="text"]');
+                    }
+                }
                 if (!inp) return null;
                 inp.scrollIntoView({ block: 'center' });
                 const r = inp.getBoundingClientRect();
@@ -601,54 +881,42 @@ def inspect_and_set_canonical_in_settings(
             })()""",
         )
         if sd_box:
-            cdp.click_xy(sess, sd_box["x"], sd_box["y"])
-            time.sleep(0.2)
-            cdp.press_command_shortcut(sess, "a", "KeyA", 65, "SelectAll")
-            cdp.insert_text(sess, seo_description[:156].strip())
+            clean_sd = seo_description.strip()
+            if len(clean_sd) > 156:
+                clean_sd = clean_sd[:152].rsplit(" ", 1)[0].rstrip(".,;:- ") + "..."
+            _focus_and_replace_input_text(cdp, sess, sd_box["x"], sd_box["y"], clean_sd)
             time.sleep(0.4)
-            seo_desc_saved = bool(
-                cdp.eval_js(
-                    sess,
-                    """(() => {
-                        const hdr = Array.from(document.querySelectorAll('h3, h4, label, div')).find(h => /^SEO Description$/i.test((h.innerText || '').trim()));
-                        const sec = hdr ? hdr.closest('section, div')?.parentElement || hdr.parentElement : null;
-                        const saveBtn = sec ? Array.from(sec.querySelectorAll('button')).find(b => /^save$/i.test((b.innerText || '').trim()) && !b.disabled) : null;
-                        if (saveBtn) { saveBtn.click(); return true; }
-                        return false;
-                    })()""",
-                )
-            )
-            time.sleep(0.9)
+            seo_desc_saved = _click_nearest_save_button(cdp, sess, "document.activeElement")
+            time.sleep(1.0)
 
-    # 2. Expand Advanced Settings if collapsed (target <button> directly, not outer wrapper <div>!)
-    cdp.eval_js(
+    # 2. Expand Advanced Settings if 'originally published elsewhere' is not already visible in viewport/DOM
+    adv_btn = cdp.eval_js(
         sess,
         """(() => {
-            const btns = Array.from(document.querySelectorAll('button'));
-            for (const b of btns) {
-                const txt = (el => (el.innerText || '').trim())(b);
-                if (/^Advanced Settings$/i.test(txt)) {
-                    b.scrollIntoView({ block: 'center' });
-                    b.click();
-                    return true;
-                }
-            }
-            return false;
+            const bodyTxt = document.body ? document.body.innerText : '';
+            if (/originally published elsewhere/i.test(bodyTxt)) return null;
+            const b = Array.from(document.querySelectorAll('button')).find(el => /^Advanced Settings$/i.test((el.innerText || '').trim()));
+            if (!b) return null;
+            b.scrollIntoView({ block: 'center' });
+            const r = b.getBoundingClientRect();
+            return r.width > 0 ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
         })()""",
     )
-    time.sleep(1.2)
+    if adv_btn:
+        cdp.click_xy(sess, adv_btn["x"], adv_btn["y"])
+        time.sleep(1.2)
 
     before_info = cdp.eval_js(
         sess,
         """(() => {
-            const inputs = Array.from(document.querySelectorAll('input')).map(i => ({
-                type: i.type,
-                name: i.name,
-                id: i.id,
-                placeholder: i.placeholder,
-                value: i.value,
-                checked: i.checked,
-                disabled: i.disabled
+            const inputs = Array.from(document.querySelectorAll('input, textarea')).map(i => ({
+                tag: i.tagName,
+                type: i.type || '',
+                name: i.name || '',
+                placeholder: i.placeholder || '',
+                value: i.value || '',
+                checked: !!i.checked,
+                disabled: !!i.disabled
             }));
             const buttons = Array.from(document.querySelectorAll('button')).map(b => ({
                 text: (b.innerText || '').trim(),
@@ -660,69 +928,83 @@ def inspect_and_set_canonical_in_settings(
 
     updated = False
     if canonical_url:
-        # Step A: Click 'This story was originally published elsewhere' checkbox first, then wait 0.8s for React to mount the URL input!
-        cdp.eval_js(
+        # Step A: Find the 'This story was originally published elsewhere' label/checkbox and click via real CDP coordinates!
+        canon_cb_box = cdp.eval_js(
             sess,
             """(() => {
-                const cbs = Array.from(document.querySelectorAll('input[type="checkbox"]'));
-                for (const cb of cbs) {
-                    const rowText = (cb.closest('div, section, label, li')?.innerText || '');
-                    if (/canonical|originally published/i.test(rowText) && !cb.checked) {
-                        cb.scrollIntoView({ block: 'center' });
-                        cb.click();
-                        return true;
-                    }
+                const labels = Array.from(document.querySelectorAll('label, div, p, span')).filter(el =>
+                    /originally published elsewhere/i.test((el.innerText || '').trim()) &&
+                    (el.innerText || '').trim().length < 120
+                );
+                // Prefer <label> or innermost matching element
+                const target = labels.find(el => el.tagName === 'LABEL') || labels[labels.length - 1];
+                if (!target) return null;
+                target.scrollIntoView({ block: 'center' });
+                let cur = target;
+                let cb = null;
+                for (let d = 0; cur && d < 4 && !cb; d++, cur = cur.parentElement) {
+                    cb = cur.querySelector('input[type="checkbox"]');
                 }
-                return false;
+                if (cb && cb.checked) return { alreadyChecked: true };
+                const r = (cb && cb.getBoundingClientRect().width > 0) ? cb.getBoundingClientRect() : target.getBoundingClientRect();
+                return { alreadyChecked: false, x: r.left + Math.min(16, r.width / 2), y: r.top + r.height / 2 };
             })()""",
         )
-        time.sleep(0.9)
+        if canon_cb_box and not canon_cb_box.get("alreadyChecked"):
+            cdp.click_xy(sess, canon_cb_box["x"], canon_cb_box["y"])
+            time.sleep(1.0)
 
-        # Step B: Now locate the newly mounted Canonical URL input, insert canonical_url, and click Save Canonical Link
+        # Step A2: Medium keeps the canonical URL input locked until 'Edit canonical link' button is clicked!
+        edit_canon_btn = cdp.eval_js(
+            sess,
+            """(() => {
+                const b = Array.from(document.querySelectorAll('button')).find(el =>
+                    /^edit\\s+canonical\\s+link$/i.test((el.innerText || '').trim())
+                );
+                if (!b) return null;
+                b.scrollIntoView({ block: 'center' });
+                const r = b.getBoundingClientRect();
+                return r.width > 0 ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
+            })()""",
+        )
+        if edit_canon_btn:
+            cdp.click_xy(sess, edit_canon_btn["x"], edit_canon_btn["y"])
+            time.sleep(0.6)
+
+        # Step B: Now locate the unlocked Canonical URL input, insert canonical_url, and click Save canonical link via real CDP!
         target_box = cdp.eval_js(
             sess,
             """(() => {
-                const candidates = Array.from(document.querySelectorAll('input[type="text"], input[type="url"], input:not([type])'))
+                const candidates = Array.from(document.querySelectorAll('input[placeholder*="canonical" i], input[type="text"], input[type="url"], input:not([type])'))
                     .filter(el => {
+                        if (el.disabled || el.readOnly) return false;
                         const meta = ((el.name || '') + ' ' + (el.placeholder || '') + ' ' + (el.id || '')).toLowerCase();
-                        if (meta.includes('search') || meta.includes('topic') || el.disabled) return false;
-                        const ctx = (el.closest('div, section, li')?.innerText || '').toLowerCase();
-                        return meta.includes('canonical') || meta.includes('http') || ctx.includes('canonical') || ctx.includes('originally published');
+                        if (meta.includes('search') || meta.includes('topic') || meta.includes('| by ') || meta.includes('| medium')) return false;
+                        let ctx = '';
+                        let cur = el.parentElement;
+                        for (let d = 0; cur && d < 5; d++, cur = cur.parentElement) {
+                            ctx += ' ' + (cur.innerText || '').toLowerCase();
+                        }
+                        return meta.includes('canonical') || meta.includes('http') || ctx.includes('canonical link') || ctx.includes('originally published elsewhere');
                     });
                 if (!candidates.length) return null;
                 const el = candidates[0];
                 el.scrollIntoView({ block: 'center' });
                 const r = el.getBoundingClientRect();
-                return { x: r.left + Math.min(40, r.width / 2), y: r.top + r.height / 2 };
+                return r.width > 0 ? { x: r.left + Math.min(40, r.width / 2), y: r.top + r.height / 2 } : null;
             })()""",
         )
         if target_box:
-            cdp.click_xy(sess, target_box["x"], target_box["y"])
-            time.sleep(0.2)
-            cdp.press_command_shortcut(sess, "a", "KeyA", 65, "SelectAll")
-            cdp.insert_text(sess, canonical_url)
+            _focus_and_replace_input_text(cdp, sess, target_box["x"], target_box["y"], canonical_url)
             time.sleep(0.5)
-            updated = bool(
-                cdp.eval_js(
-                    sess,
-                    """(() => {
-                        const btns = Array.from(document.querySelectorAll('button'));
-                        const saveBtn = btns.find(b => /save\\s+canonical|^save$/i.test((b.innerText || '').trim()) && !b.disabled && !/publish/i.test(b.innerText));
-                        if (saveBtn) {
-                            saveBtn.click();
-                            return true;
-                        }
-                        return false;
-                    })()""",
-                )
-            )
+            updated = _click_nearest_save_button(cdp, sess, "document.activeElement")
             time.sleep(2.2)
 
     after_info = cdp.eval_js(
         sess,
         """(() => ({
-            inputs: Array.from(document.querySelectorAll('input')).map(i => ({
-                type: i.type, name: i.name, placeholder: i.placeholder, value: i.value, checked: i.checked
+            inputs: Array.from(document.querySelectorAll('input, textarea')).map(i => ({
+                tag: i.tagName, type: i.type || '', name: i.name || '', placeholder: i.placeholder || '', value: i.value || '', checked: !!i.checked
             }))
         }))()""",
     )
@@ -732,6 +1014,7 @@ def inspect_and_set_canonical_in_settings(
     return {
         "settings_url": settings_url,
         "topics_added": topics_added,
+        "topics_saved": topics_saved,
         "seo_title_saved": seo_title_saved,
         "seo_desc_saved": seo_desc_saved,
         "before": before_info,
@@ -949,17 +1232,36 @@ def resolve_local_asset_file(src: str, assets_root: Path) -> Path | None:
 
 
 def prepare_html_and_local_uploads(
-    raw_html: str, assets_root: Path
+    raw_html: str, assets_root: Path, enable_local_upload: bool = True, prefer_local_files: bool = False
 ) -> tuple[str, list[dict[str, Any]], list[dict[str, Any]]]:
-    """1. Reachable HTTP 200 remote <figure>/<img> tags stay untouched (Medium auto-uploads them on paste!).
-    2. Unreachable/404 or relative <figure>/<img> tags that exist locally in `assets_root` become
-       `<p>__MEDIUM_LOCAL_UPLOAD_i__</p>` markers queued for direct CDP file-input upload!
-    3. Truly missing assets become visible `[TODO]` callouts so Medium never throws 'Uh oh!'.
+    """1. When `prefer_local_files=True` and the image/GIF exists locally in `assets_root` (`out/medium/`),
+          queues it directly for `DOM.setFileInputFiles` (100% immune to Medium's external-URL skeleton race!).
+    2. Otherwise, reachable HTTP 200 remote <figure>/<img> tags stay untouched (Medium auto-uploads them on paste).
+    3. Unreachable/404 or relative <figure>/<img> tags that exist locally in `assets_root` become clean
+       `[LOCAL_ASSET_i: ...]` paragraphs queued for Phase-2 keyboard-safe CDP file-input upload!
+    4. Truly missing assets become visible `[TODO]` callouts so Medium never throws 'Uh oh!'.
     """
     local_upload_queue: list[dict[str, Any]] = []
     skipped_missing: list[dict[str, Any]] = []
 
     def handle_img_or_figure(src: str, alt: str, caption: str, original_html: str) -> str:
+        local_file = resolve_local_asset_file(src, assets_root)
+        if prefer_local_files and enable_local_upload and local_file is not None:
+            idx = len(local_upload_queue)
+            short_cap = (caption or alt or local_file.name)[:70]
+            marker = f"[LOCAL_ASSET_{idx}: {short_cap}]"
+            local_upload_queue.append(
+                {
+                    "marker": f"[LOCAL_ASSET_{idx}:",
+                    "full_marker": marker,
+                    "file": str(local_file.resolve()),
+                    "rel_file": str(local_file.relative_to(assets_root)) if local_file.is_relative_to(assets_root) else local_file.name,
+                    "caption": caption or alt,
+                    "original_src": src,
+                }
+            )
+            return f"<p>{html_lib.escape(marker)}</p>"
+
         if src.startswith(("http://", "https://")):
             ok, status = _check_url_reachable(src)
             if ok:
@@ -967,23 +1269,28 @@ def prepare_html_and_local_uploads(
         else:
             status = "local_relative"
 
-        local_file = resolve_local_asset_file(src, assets_root)
-        if local_file is not None:
-            marker = f"__MEDIUM_LOCAL_UPLOAD_{len(local_upload_queue)}__"
+        if local_file is not None and enable_local_upload:
+            idx = len(local_upload_queue)
+            rel_label = local_file.name
+            short_cap = (caption or alt or rel_label)[:70]
+            marker = f"[LOCAL_ASSET_{idx}: {short_cap}]"
             local_upload_queue.append(
                 {
-                    "marker": marker,
+                    "marker": f"[LOCAL_ASSET_{idx}:",
+                    "full_marker": marker,
                     "file": str(local_file.resolve()),
+                    "rel_file": str(local_file.relative_to(assets_root)) if local_file.is_relative_to(assets_root) else local_file.name,
                     "caption": caption or alt,
                     "original_src": src,
                 }
             )
-            return f"<p>{marker}</p>"
+            return f"<p>{html_lib.escape(marker)}</p>"
 
-        skipped_missing.append({"src": src, "alt": alt, "status": status})
+        rel_hint = str(local_file.relative_to(assets_root)) if (local_file and local_file.is_relative_to(assets_root)) else src
+        skipped_missing.append({"src": src, "alt": alt, "status": status, "local_file": str(local_file) if local_file else None})
         return (
-            f'<p>⚠️ <strong>[TODO: Upload missing image ({status}): {html_lib.escape(alt or "Image")}]</strong>'
-            f" — <code>{html_lib.escape(src)}</code></p>"
+            f'<p>🖼️ <strong>[TODO: Drag local image here ({html_lib.escape(alt or "Image")})]</strong>'
+            f" — <code>{html_lib.escape(rel_hint)}</code></p>"
         )
 
     def repl_figure(match: re.Match[str]) -> str:
@@ -1019,11 +1326,39 @@ def prepare_html_and_local_uploads(
     return "".join(parts), local_upload_queue, skipped_missing
 
 
+def _count_uploaded_cdn_imgs(cdp: CDPClient, sess: str) -> int:
+    """Counts genuinely uploaded Medium CDN images, explicitly excluding Medium's 700x400 white loading
+    skeleton (`1*b31hiO4ynbDLRrXWEFF4aQ.png`) and `.is-imageUploading` figures!
+    """
+    return int(
+        cdp.eval_js(
+            sess,
+            """(() => {
+                const SKELETON = '1*b31hiO4ynbDLRrXWEFF4aQ';
+                const root = document.querySelector('.postArticle-content, section.section--body, main article, article') || document.body;
+                return Array.from(root.querySelectorAll('figure img, p img, img')).filter(i => {
+                    const src = i.getAttribute('src') || '';
+                    if (src.includes('/fit/c/60/60/') || src.includes(SKELETON)) return false;
+                    const id = i.getAttribute('data-image-id') || '';
+                    if (id.includes(SKELETON)) return false;
+                    if (i.closest('.is-imageUploading, .graf--PgLoading')) return false;
+                    return (src.includes('medium.com') || Boolean(id)) && i.naturalWidth > 0;
+                }).length;
+            })()""",
+        )
+        or 0
+    )
+
+
 def upload_queued_local_assets(
     cdp: CDPClient, sess: str, queue: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    """Uploads local .png/.jpg/.gif files directly into Medium's editor at each `__MEDIUM_LOCAL_UPLOAD_i__`
-    marker paragraph using CDP `Page.setInterceptFileChooserDialog` + `DOM.setFileInputFiles` (zero OS dialogs!).
+    """Phase-2 uploader for local .png/.jpg/.gif files (Mermaid PNGs, Math PNGs, un-deployed GIFs).
+
+    CRITICAL INVARIANT: NEVER calls raw DOM `.remove()` inside Medium's Graf editor (which corrupts
+    Medium's internal paragraph model and breaks delta-saving!). Instead, selects the `[LOCAL_ASSET_i: ...]`
+    paragraph via native mouse click + Range selection + Backspace so Medium's own Graf controller turns it
+    into an empty selected paragraph (`p.graf--empty.is-selected`), then triggers `(+)` -> `Add an image`.
     """
     if not queue:
         return []
@@ -1035,7 +1370,9 @@ def upload_queued_local_assets(
         for item in queue:
             marker = item["marker"]
             file_path = item["file"]
+            rel_file = item.get("rel_file") or Path(file_path).name
             caption = item.get("caption") or ""
+            prev_cdn_count = _count_uploaded_cdn_imgs(cdp, sess)
 
             # 1. Scroll marker paragraph into view and get center coordinates
             loc = cdp.eval_js(
@@ -1047,14 +1384,15 @@ def upload_queued_local_assets(
                     if (!p) return null;
                     p.scrollIntoView({{ block: 'center' }});
                     const r = p.getBoundingClientRect();
-                    return {{ x: r.left + 30, y: r.top + r.height / 2 }};
+                    return {{ x: r.left + 35, y: r.top + r.height / 2 }};
                 }})()""",
             )
             if not loc:
-                results.append({"marker": marker, "file": file_path, "uploaded": False, "reason": "marker_not_found"})
+                results.append({"marker": marker, "file": rel_file, "uploaded": False, "reason": "marker_not_found"})
                 continue
 
-            # 2. Place cursor at END of marker paragraph and press Enter to open a clean empty paragraph (where Medium's (+) button appears!)
+            # 2. Click inside the marker paragraph, select ALL its text via Range, and press Backspace
+            # so Medium's Graf editor turns it into a genuine `p.graf--empty.is-selected` (ZERO `.remove()`!)
             cdp.click_xy(sess, loc["x"], loc["y"])
             time.sleep(0.2)
             cdp.eval_js(
@@ -1068,13 +1406,17 @@ def upload_queued_local_assets(
                     const sel = window.getSelection();
                     const range = document.createRange();
                     range.selectNodeContents(p);
-                    range.collapse(false);
                     sel.removeAllRanges();
                     sel.addRange(range);
                     return true;
                 }})()""",
             )
-            cdp.press_enter(sess)
+            for evt_type in ("rawKeyDown", "keyUp"):
+                cdp.call(
+                    "Input.dispatchKeyEvent",
+                    {"type": evt_type, "key": "Backspace", "code": "Backspace", "windowsVirtualKeyCode": 8, "nativeVirtualKeyCode": 8},
+                    session_id=sess,
+                )
             time.sleep(0.55)
 
             # Clear stale fileChooserOpened events
@@ -1087,9 +1429,7 @@ def upload_queued_local_assets(
                     const sel = [
                         'button[data-action="inline-menu"]',
                         '.js-inlineTooltipControl',
-                        '.inlineTooltip button',
-                        'button[title*="Add" i]',
-                        'button[aria-label*="Add" i]'
+                        '.inlineTooltip button'
                     ];
                     for (const s of sel) {
                         const b = document.querySelector(s);
@@ -1098,13 +1438,12 @@ def upload_queued_local_assets(
                             if (r.width > 0 && r.height > 0) return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
                         }
                     }
-                    // Geometric fallback: circular (+) button next to the currently selected empty paragraph
-                    const curP = document.querySelector('p.is-selected, .graf--empty') || document.activeElement;
+                    const curP = document.querySelector('p.graf--empty.is-selected, p.graf--empty, p.is-selected');
                     if (curP) {
                         const pr = curP.getBoundingClientRect();
                         const near = Array.from(document.querySelectorAll('button')).find(b => {
                             const br = b.getBoundingClientRect();
-                            return br.width >= 20 && br.width <= 60 && Math.abs((br.top + br.height / 2) - (pr.top + pr.height / 2)) < 50 && !/publish/i.test(b.innerText || '');
+                            return br.width >= 20 && br.width <= 60 && Math.abs((br.top + br.height / 2) - (pr.top + pr.height / 2)) < 55 && !/publish/i.test(b.innerText || '');
                         });
                         if (near) {
                             const br = near.getBoundingClientRect();
@@ -1116,7 +1455,7 @@ def upload_queued_local_assets(
             )
             if plus_btn:
                 cdp.click_xy(sess, plus_btn["x"], plus_btn["y"])
-                time.sleep(0.4)
+                time.sleep(0.45)
 
             img_btn = cdp.eval_js(
                 sess,
@@ -1125,7 +1464,6 @@ def upload_queued_local_assets(
                         'button[data-action="inline-menu-image"]',
                         '.inlineTooltip-menu button[title*="image" i]',
                         '.inlineTooltip-menu button[aria-label*="image" i]',
-                        'button[data-testid*="image" i]',
                         '.inlineTooltip-menu button'
                     ];
                     for (const s of sel) {
@@ -1142,16 +1480,15 @@ def upload_queued_local_assets(
                 cdp.click_xy(sess, img_btn["x"], img_btn["y"])
 
             evt = cdp.wait_for_event("Page.fileChooserOpened", timeout=2.5)
-            uploaded_ok = False
+            triggered_input = False
             if evt and evt.get("params", {}).get("backendNodeId"):
                 cdp.call(
                     "DOM.setFileInputFiles",
                     {"backendNodeId": evt["params"]["backendNodeId"], "files": [file_path]},
                     session_id=sess,
                 )
-                uploaded_ok = True
+                triggered_input = True
             else:
-                # Fallback: query <input type="file"> directly in DOM
                 doc_root = cdp.call("DOM.getDocument", {"depth": 1}, session_id=sess)["root"]["nodeId"]
                 q = cdp.call(
                     "DOM.querySelector",
@@ -1164,11 +1501,20 @@ def upload_queued_local_assets(
                         {"nodeId": q["nodeId"], "files": [file_path]},
                         session_id=sess,
                     )
-                    uploaded_ok = True
+                    triggered_input = True
 
-            time.sleep(2.5)
-            if uploaded_ok and caption:
-                # Focus the newly inserted <figcaption> (if empty) and insert caption text
+            # 4. Wait up to 20s for Medium to finish uploading the local image onto cdn-images-1.medium.com!
+            cdn_ready = False
+            if triggered_input:
+                up_deadline = time.monotonic() + 20.0
+                while time.monotonic() < up_deadline:
+                    time.sleep(1.0)
+                    dismiss_uh_oh_modal_if_present(cdp, sess)
+                    if _count_uploaded_cdn_imgs(cdp, sess) > prev_cdn_count:
+                        cdn_ready = True
+                        break
+
+            if cdn_ready and caption:
                 cap_box = cdp.eval_js(
                     sess,
                     """(() => {
@@ -1188,19 +1534,13 @@ def upload_queued_local_assets(
                     cdp.click_xy(sess, cap_box["x"], cap_box["y"])
                     time.sleep(0.15)
                     cdp.insert_text(sess, caption)
-                    time.sleep(0.25)
+                    time.sleep(0.3)
+            elif not cdn_ready:
+                # Restore a clean visible TODO note inside the empty paragraph so no gap is left behind
+                cdp.insert_text(sess, f"🖼️ [TODO: Drag local image here -> {rel_file}]")
+                time.sleep(0.3)
 
-            # Remove the temporary marker paragraph once upload triggered
-            cdp.eval_js(
-                sess,
-                f"""(() => {{
-                    const marker = {json.dumps(marker)};
-                    const root = document.querySelector('.postArticle-content, section.section--body, article') || document.body;
-                    const p = Array.from(root.querySelectorAll('p')).find(el => (el.innerText || '').includes(marker));
-                    if (p) p.remove();
-                }})()""",
-            )
-            results.append({"marker": marker, "file": Path(file_path).name, "uploaded": uploaded_ok})
+            results.append({"marker": marker, "file": rel_file, "triggered": triggered_input, "uploaded": cdn_ready})
     finally:
         try:
             cdp.call("Page.setInterceptFileChooserDialog", {"enabled": False}, session_id=sess)
@@ -1209,20 +1549,142 @@ def upload_queued_local_assets(
     return results
 
 
+def extract_ordered_figure_captions(raw_html: str) -> list[str]:
+    """Extracts the ordered list of human captions/alt texts for every <figure> inside #medium-story-body."""
+    m_body = re.search(r'<article[^>]+id="medium-story-body"[^>]*>(.*?)</article>', raw_html, re.DOTALL | re.IGNORECASE)
+    body = m_body.group(1) if m_body else raw_html
+    captions: list[str] = []
+    for m_fig in re.finditer(r"<figure\b[^>]*>(.*?)</figure>", body, flags=re.I | re.DOTALL):
+        inner = m_fig.group(1)
+        m_cap = re.search(r"<figcaption[^>]*>(.*?)</figcaption>", inner, flags=re.I | re.DOTALL)
+        m_alt = re.search(r'<img\b[^>]*\balt="([^"]*)"', inner, flags=re.I)
+        cap_txt = ""
+        if m_cap:
+            cap_txt = html_lib.unescape(re.sub(r"<[^>]+>", "", m_cap.group(1))).strip()
+        if not cap_txt and m_alt:
+            cap_txt = html_lib.unescape(m_alt.group(1)).strip()
+        captions.append(cap_txt)
+    return captions
+
+
+def populate_all_figure_captions(cdp: CDPClient, sess: str, ordered_captions: list[str]) -> list[dict[str, Any]]:
+    """Populates <figcaption> on every uploaded <figure> in Medium's Graf editor!
+
+    Why this is mandatory: Medium's async image-ingestion XHR re-mounts every uploaded <figure>
+    and resets <figcaption class='imageCaption'> back to 'Type caption for image (optional)'!
+    Clicking each uploaded <img> activates its <figcaption>, and typing via real CDP persists the caption!
+    """
+    results: list[dict[str, Any]] = []
+    total_figs = int(
+        cdp.eval_js(
+            sess,
+            """(() => {
+                const root = document.querySelector('.postArticle-content, section.section--body, article') || document.body;
+                return root.querySelectorAll('figure').length;
+            })()""",
+        )
+        or 0
+    )
+    for idx in range(min(total_figs, len(ordered_captions))):
+        cap = (ordered_captions[idx] or "").strip()
+        if not cap:
+            results.append({"idx": idx, "skipped": True})
+            continue
+
+        img_box = cdp.eval_js(
+            sess,
+            f"""(() => {{
+                const root = document.querySelector('.postArticle-content, section.section--body, article') || document.body;
+                const figs = Array.from(root.querySelectorAll('figure'));
+                const f = figs[{idx}];
+                if (!f) return null;
+                f.scrollIntoView({{ block: 'center' }});
+                const existing = (f.querySelector('figcaption')?.innerText || '').trim();
+                if (existing && !/type caption/i.test(existing)) {{
+                    return {{ alreadySet: true, existing }};
+                }}
+                const target = f.querySelector('img') || f;
+                const r = target.getBoundingClientRect();
+                return r.width > 0 ? {{ alreadySet: false, x: r.left + r.width / 2, y: r.top + Math.min(80, r.height / 2) }} : null;
+            }})()""",
+        )
+        if not img_box:
+            results.append({"idx": idx, "caption": cap[:50], "set": False, "reason": "no_figure_box"})
+            continue
+        if img_box.get("alreadySet"):
+            results.append({"idx": idx, "caption": img_box.get("existing", "")[:50], "set": True, "already": True})
+            continue
+
+        # 1. Click the uploaded <img> so Medium highlights it in green and mounts <figcaption class="imageCaption">
+        cdp.click_xy(sess, img_box["x"], img_box["y"])
+        time.sleep(0.3)
+
+        # 2. Click <figcaption> underneath the image and insert the caption text!
+        cap_box = cdp.eval_js(
+            sess,
+            f"""(() => {{
+                const root = document.querySelector('.postArticle-content, section.section--body, article') || document.body;
+                const f = Array.from(root.querySelectorAll('figure'))[{idx}];
+                const fc = f ? f.querySelector('figcaption') : null;
+                if (!fc) return null;
+                fc.scrollIntoView({{ block: 'center' }});
+                const r = fc.getBoundingClientRect();
+                return r.width > 0 ? {{ x: r.left + r.width / 2, y: r.top + r.height / 2 }} : null;
+            }})()""",
+        )
+        if cap_box:
+            cdp.click_xy(sess, cap_box["x"], cap_box["y"])
+            time.sleep(0.2)
+            # Medium's <figcaption class="imageCaption"> ignores raw Input.insertText until awakened by real keyDown/char events!
+            first_ch = cap[0]
+            cdp.call(
+                "Input.dispatchKeyEvent",
+                {"type": "keyDown", "text": first_ch, "unmodifiedText": first_ch, "key": first_ch},
+                session_id=sess,
+            )
+            cdp.call(
+                "Input.dispatchKeyEvent",
+                {"type": "keyUp", "key": first_ch},
+                session_id=sess,
+            )
+            if len(cap) > 1:
+                time.sleep(0.08)
+                cdp.insert_text(sess, cap[1:])
+            time.sleep(0.25)
+            results.append({"idx": idx, "caption": cap[:60], "set": True})
+        else:
+            results.append({"idx": idx, "caption": cap[:60], "set": False, "reason": "no_figcaption_after_click"})
+    return results
+
+
+def _enable_headless_tab_focus(cdp: CDPClient, sess: str) -> None:
+    """Enables Blink page focus emulation inside `sess` WITHOUT calling `Page.bringToFront`!
+
+    CRITICAL UX SAFETY RULE: NEVER call `Page.bringToFront` on a user's live desktop browser — raising
+    the Chrome OS window steals X11/Wayland keyboard focus while the user is typing in another app!
+    `Emulation.setFocusEmulationEnabled` makes Blink treat the page as focused (`Copy`/`Paste`/`Selection`
+    all work in the background!) with ZERO OS window focus-stealing!
+    """
+    try:
+        cdp.call("Emulation.setFocusEmulationEnabled", {"enabled": True}, session_id=sess, call_timeout=5.0)
+    except Exception:
+        pass
+
+
 def _native_copy_from_local_html_and_paste_into_medium(
     cdp: CDPClient,
     sess: str,
     html_file_to_copy: Path,
     full_title: str,
 ) -> dict[str, Any]:
-    """Brings tab to front, navigates to local HTML file, selects #medium-story-body via Blink Range,
-    executes both document.execCommand('copy') and native CDP Copy, navigates to Medium /new-story,
-    types Title into h3.graf--title, presses Enter, and pastes #medium-story-body into the story body!
+    """Enables background focus emulation (NEVER `Page.bringToFront`!), navigates to local HTML file
+    (with <h1>full_title</h1> prepended inside #medium-story-body so Medium natively converts the leading
+    <h1> into `h3.graf--title` on paste), copies via Blink Range + CDP Copy, and pastes on /new-story!
     """
-    cdp.call("Page.bringToFront", session_id=sess)
+    _enable_headless_tab_focus(cdp, sess)
     file_url = html_file_to_copy.resolve().as_uri()
-    cdp.navigate(sess, file_url, wait_sec=1.5)
-    cdp.call("Page.bringToFront", session_id=sess)
+    cdp.navigate(sess, file_url, wait_sec=1.8)
+    _enable_headless_tab_focus(cdp, sess)
 
     copied_info = cdp.eval_js(
         sess,
@@ -1241,7 +1703,7 @@ def _native_copy_from_local_html_and_paste_into_medium(
     time.sleep(0.4)
 
     cdp.navigate(sess, "https://medium.com/new-story", wait_sec=4.0)
-    cdp.call("Page.bringToFront", session_id=sess)
+    _enable_headless_tab_focus(cdp, sess)
     dismiss_editor_onboarding_overlay(cdp, sess)
 
     title_box = cdp.eval_js(
@@ -1257,28 +1719,39 @@ def _native_copy_from_local_html_and_paste_into_medium(
     if not title_box:
         return {"ok": False, "error": "Could not locate Title element on /new-story"}
 
-    # 1. Click h3.graf--title, insert Title text, press Enter to advance cursor to p.graf--p ('Tell your story...')
+    # Focus the empty Title block, clear any stray characters, and paste the entire story (including leading <h1>Title</h1>)!
     cdp.click_xy(sess, title_box["x"], title_box["y"])
     time.sleep(0.25)
-    cdp.insert_text(sess, full_title)
-    time.sleep(0.35)
-    cdp.press_enter(sess)
-    time.sleep(0.6)
-
-    # 2. Explicitly focus the body paragraph ('Tell your story...') and execute native Paste!
-    body_box = cdp.eval_js(
-        sess,
-        """(() => {
-            const p = document.querySelector('p.is-selected, .postArticle-content p, p.graf--p');
-            if (!p) return null;
-            p.focus();
-            const r = p.getBoundingClientRect();
-            return { x: r.left + 25, y: r.top + Math.min(18, r.height / 2) };
-        })()""",
+    had_stray_title_chars = bool(
+        cdp.eval_js(
+            sess,
+            """(() => {
+                const t = document.querySelector('h3.graf--title, [data-default-value*="Title"], .postArticle-content h3');
+                if (!t) return false;
+                const isEmpty = t.classList.contains('graf--empty');
+                const txt = (t.innerText || '').trim();
+                if (!isEmpty && txt && txt.toLowerCase() !== 'title') {
+                    t.focus();
+                    const sel = window.getSelection();
+                    const range = document.createRange();
+                    range.selectNodeContents(t);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                    return true;
+                }
+                return false;
+            })()""",
+        )
     )
-    if body_box:
-        cdp.click_xy(sess, body_box["x"], body_box["y"])
+    if had_stray_title_chars:
+        for evt_type in ("rawKeyDown", "keyUp"):
+            cdp.call(
+                "Input.dispatchKeyEvent",
+                {"type": evt_type, "key": "Backspace", "code": "Backspace", "windowsVirtualKeyCode": 8, "nativeVirtualKeyCode": 8},
+                session_id=sess,
+            )
         time.sleep(0.2)
+
     cdp.press_command_shortcut(sess, "v", "KeyV", 86, "Paste")
 
     return {"ok": True, "copied_info": copied_info}
@@ -1306,10 +1779,10 @@ def dismiss_uh_oh_modal_if_present(cdp: CDPClient, sess: str) -> bool:
         return False
 
 
-def wait_for_medium_images_and_save(cdp: CDPClient, sess: str, timeout_sec: float = 65.0) -> dict[str, Any]:
-    """Polls until every <img> inside the Medium editor has finished uploading to Medium's CDN
-    (data-image-id populated, zero external pending src), flushes a tiny title edit so Medium commits
-    the post-upload imageId delta to its backend, and waits until header status shows 'Saved'.
+def wait_for_medium_images_and_save(cdp: CDPClient, sess: str, timeout_sec: float = 95.0) -> dict[str, Any]:
+    """Polls until EVERY <img> inside the Medium editor has finished uploading to Medium's CDN
+    (explicitly waiting past Medium's `1*b31hiO4ynbDLRrXWEFF4aQ.png` 700x400 white loading skeleton!),
+    flushes a 1-space-and-backspace edit at the end of the LAST body paragraph, and waits for 'Saved'.
     """
     deadline = time.monotonic() + timeout_sec
     last_state: dict[str, Any] = {}
@@ -1320,73 +1793,90 @@ def wait_for_medium_images_and_save(cdp: CDPClient, sess: str, timeout_sec: floa
         last_state = cdp.eval_js(
             sess,
             """(() => {
+                const SKELETON = '1*b31hiO4ynbDLRrXWEFF4aQ';
                 const bodyText = document.body ? document.body.innerText : '';
-                const savedMatch = bodyText.match(/\\b(Saved|Saving\\.\\.\\.)\\b/i);
+                const hdrText = (document.querySelector('header, nav, .metabar')?.innerText || '') + ' ' + bodyText;
+                const savedMatch = hdrText.match(/(Saving\\.\\.\\.|Saved)/i);
                 const root = document.querySelector('.postArticle-content, section.section--body, main article, article') || document.body;
                 const imgs = Array.from(root.querySelectorAll('figure img, p img, img')).filter(i => {
                     const src = i.getAttribute('src') || '';
                     return !src.includes('/fit/c/60/60/'); // exclude navbar avatar
                 });
                 const total = imgs.length;
+                const skeletons = imgs.filter(i => {
+                    const src = i.getAttribute('src') || '';
+                    const id = i.getAttribute('data-image-id') || '';
+                    return src.includes(SKELETON) || id.includes(SKELETON) || !!i.closest('.is-imageUploading, .graf--PgLoading');
+                }).length;
                 const uploaded = imgs.filter(i => {
                     const src = i.getAttribute('src') || '';
                     const id = i.getAttribute('data-image-id') || '';
+                    if (src.includes(SKELETON) || id.includes(SKELETON)) return false;
+                    if (i.closest('.is-imageUploading, .graf--PgLoading')) return false;
                     return (src.includes('medium.com') || Boolean(id)) && i.naturalWidth > 0;
                 }).length;
                 return {
                     url: location.href,
                     saveStatus: savedMatch ? savedMatch[1] : 'unknown',
                     totalImgs: total,
+                    skeletonImgs: skeletons,
                     uploadedImgs: uploaded
                 };
             })()""",
         ) or {}
         total = int(last_state.get("totalImgs", 0))
         uploaded = int(last_state.get("uploadedImgs", 0))
-        if total == 0 or uploaded >= total:
+        skeletons = int(last_state.get("skeletonImgs", 0))
+        if total == 0 or (uploaded >= total and skeletons == 0):
             all_uploaded = True
             break
-        time.sleep(1.5)
+        time.sleep(1.8)
 
-    # Flush a 1-space-and-backspace edit at the end of the title so Medium's delta-saver persists all uploaded data-image-ids!
+    # Place caret at the very end of the LAST body paragraph <p> via JS Range (zero wrapped-title click risk!)
     try:
-        title_end = cdp.eval_js(
-            sess,
-            """(() => {
-                const t = document.querySelector('h3.graf--title, .postArticle-content h3');
-                if (!t) return null;
-                t.scrollIntoView({ block: 'center' });
-                const r = t.getBoundingClientRect();
-                return { x: r.right - 6, y: r.top + Math.min(18, r.height / 2) };
-            })()""",
+        placed_at_end = bool(
+            cdp.eval_js(
+                sess,
+                """(() => {
+                    const root = document.querySelector('.postArticle-content, section.section--body, article') || document.body;
+                    const ps = Array.from(root.querySelectorAll('p.graf--p, p')).filter(el => (el.innerText || '').trim().length > 0);
+                    if (!ps.length) return false;
+                    const lastP = ps[ps.length - 1];
+                    lastP.scrollIntoView({ block: 'center' });
+                    lastP.focus();
+                    const sel = window.getSelection();
+                    const range = document.createRange();
+                    range.selectNodeContents(lastP);
+                    range.collapse(false);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                    return true;
+                })()""",
+            )
         )
-        if title_end:
-            cdp.click_xy(sess, title_end["x"], title_end["y"])
+        if placed_at_end:
             time.sleep(0.15)
             cdp.insert_text(sess, " ")
             time.sleep(0.3)
-            cdp.call(
-                "Input.dispatchKeyEvent",
-                {"type": "rawKeyDown", "key": "Backspace", "code": "Backspace", "windowsVirtualKeyCode": 8, "nativeVirtualKeyCode": 8},
-                session_id=sess,
-            )
-            cdp.call(
-                "Input.dispatchKeyEvent",
-                {"type": "keyUp", "key": "Backspace", "code": "Backspace", "windowsVirtualKeyCode": 8, "nativeVirtualKeyCode": 8},
-                session_id=sess,
-            )
+            for evt_type in ("rawKeyDown", "keyUp"):
+                cdp.call(
+                    "Input.dispatchKeyEvent",
+                    {"type": evt_type, "key": "Backspace", "code": "Backspace", "windowsVirtualKeyCode": 8, "nativeVirtualKeyCode": 8},
+                    session_id=sess,
+                )
     except Exception:
         pass
 
-    # Now wait up to 15s for 'Saved' (not 'Saving...')
-    save_deadline = time.monotonic() + 15.0
+    # Now wait up to 20s for 'Saved' (not 'Saving...')
+    save_deadline = time.monotonic() + 20.0
     while time.monotonic() < save_deadline:
         time.sleep(1.2)
         status = str(
             cdp.eval_js(
                 sess,
                 """(() => {
-                    const m = (document.body ? document.body.innerText : '').match(/\\b(Saved|Saving\\.\\.\\.)\\b/i);
+                    const hdrText = (document.querySelector('header, nav, .metabar')?.innerText || '') + ' ' + (document.body?.innerText || '');
+                    const m = hdrText.match(/(Saving\\.\\.\\.|Saved)/i);
                     return m ? m[1] : 'unknown';
                 })()""",
             )
@@ -1396,6 +1886,11 @@ def wait_for_medium_images_and_save(cdp: CDPClient, sess: str, timeout_sec: floa
         if status.lower() == "saved":
             time.sleep(1.5)
             break
+
+    try:
+        cdp.eval_js(sess, "window.scrollTo(0, 0)", await_promise=False)
+    except Exception:
+        pass
 
     last_state["allUploaded"] = all_uploaded
     return last_state
@@ -1408,20 +1903,32 @@ def run_method_b_paste(
     title_prefix: str,
     canonical_override: str | None,
     out_dir: Path,
+    upload_local_files: bool = True,
+    prefer_local_files: bool = False,
 ) -> dict[str, Any]:
     title, canon_from_html, _ = extract_story_payload_from_html(html_path)
     canonical_url = canonical_override or canon_from_html
     full_title = f"{title_prefix}{title}"
 
-    # Keep reachable 200-OK remote images intact, queue local/un-deployed PNGs & GIFs (Mermaid, Math, local GIFs) for direct upload!
     raw_html = html_path.read_text(encoding="utf-8")
+    ordered_captions = extract_ordered_figure_captions(raw_html)
     m_topics = re.search(r'data-topics="([^"]*)"', raw_html)
     topics_list = [t.strip() for t in html_lib.unescape(m_topics.group(1)).split(",") if t.strip()] if m_topics else []
     m_desc = re.search(r'data-description="([^"]*)"', raw_html)
     seo_description = html_lib.unescape(m_desc.group(1)).strip() if m_desc else ""
-    filtered_html, local_upload_queue, skipped_imgs = prepare_html_and_local_uploads(raw_html, html_path.parent)
+    filtered_html, local_upload_queue, skipped_imgs = prepare_html_and_local_uploads(
+        raw_html, html_path.parent, enable_local_upload=upload_local_files, prefer_local_files=prefer_local_files
+    )
+    # Prepend <h1>{full_title}</h1> right inside #medium-story-body so Medium natively creates h3.graf--title on paste!
+    filtered_html_with_h1 = re.sub(
+        r'(<article[^>]+id="medium-story-body"[^>]*>)',
+        rf'\1\n<h1>{html_lib.escape(full_title)}</h1>\n',
+        filtered_html,
+        count=1,
+        flags=re.IGNORECASE,
+    )
     with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False, encoding="utf-8") as tmp_f:
-        tmp_f.write(filtered_html)
+        tmp_f.write(filtered_html_with_h1)
         staged_html_path = Path(tmp_f.name)
 
     try:
@@ -1429,15 +1936,27 @@ def run_method_b_paste(
     finally:
         staged_html_path.unlink(missing_ok=True)
 
+    # PHASE 1: Wait until ALL remote CDN images/GIFs finish moving past `1*b31hiO4ynbDLRrXWEFF4aQ.png` skeleton and save!
     time.sleep(3.5)
     dismiss_editor_onboarding_overlay(cdp, sess)
-    local_upload_results = upload_queued_local_assets(cdp, sess, local_upload_queue)
-    upload_sync_state = wait_for_medium_images_and_save(cdp, sess, timeout_sec=110.0)
+    phase1_sync_state = wait_for_medium_images_and_save(cdp, sess, timeout_sec=120.0)
 
     edit_url = str(cdp.eval_js(sess, "location.href", await_promise=False) or "")
     m_id = re.search(r"/p/([0-9a-f]+)", edit_url)
     story_id = m_id.group(1) if m_id else ""
 
+    # PHASE 2: Upload local rendered PNGs/GIFs via keyboard-safe Graf paragraph replacement (ZERO `p.remove()`!)
+    local_upload_results: list[dict[str, Any]] = []
+    phase2_sync_state: dict[str, Any] = {}
+    if upload_local_files and local_upload_queue and story_id:
+        local_upload_results = upload_queued_local_assets(cdp, sess, local_upload_queue)
+        phase2_sync_state = wait_for_medium_images_and_save(cdp, sess, timeout_sec=75.0)
+
+    # PHASE 3: Populate ALL 12 <figcaption> captions AFTER all async uploads have finished re-mounting <figure>s!
+    captions_results = populate_all_figure_captions(cdp, sess, ordered_captions)
+    captions_sync_state = wait_for_medium_images_and_save(cdp, sess, timeout_sec=45.0)
+
+    # PHASE 4: Configure Topics, SEO Title, SEO Description, and 2-step Canonical Link on /settings, then full reload!
     settings_audit = {}
     if story_id:
         settings_audit = inspect_and_set_canonical_in_settings(
@@ -1450,10 +1969,11 @@ def run_method_b_paste(
             seo_description=seo_description,
             screenshot_path=out_dir / "method_b_settings.png",
         )
-        # Navigate back to /p/<story_id>/edit to force a FULL SERVER RELOAD and prove image persistence!
-        cdp.navigate(sess, f"https://medium.com/p/{story_id}/edit", wait_sec=4.0)
+        cdp.navigate(sess, f"https://medium.com/p/{story_id}/edit", wait_sec=4.5)
         dismiss_editor_onboarding_overlay(cdp, sess)
 
+    cdp.eval_js(sess, "window.scrollTo(0, 0)", await_promise=False)
+    time.sleep(0.5)
     final_audit = cdp.eval_js(sess, AUDIT_EDITOR_JS)
     editor_shot = out_dir / "method_b_editor.png"
     cdp.screenshot(sess, editor_shot)
@@ -1461,8 +1981,11 @@ def run_method_b_paste(
     return {
         "method": "B_HTML_PASTE",
         "paste_result": paste_res,
+        "phase1_sync_state": phase1_sync_state,
         "local_uploads": local_upload_results,
-        "upload_sync_state": upload_sync_state,
+        "phase2_sync_state": phase2_sync_state,
+        "captions_populated": captions_results,
+        "captions_sync_state": captions_sync_state,
         "skipped_unreachable_imgs": skipped_imgs,
         "story_id": story_id,
         "edit_url": f"https://medium.com/p/{story_id}/edit" if story_id else edit_url,
@@ -1499,34 +2022,38 @@ def delete_test_draft_by_id(
         }
 
     cdp.navigate(sess, f"https://medium.com/p/{story_id}/settings", wait_sec=3.5)
-    # Click 'Delete story' in settings, then confirm 'Delete' in modal
-    clicked_delete_story = cdp.eval_js(
+    del_btn = cdp.eval_js(
         sess,
         """(() => {
             const btns = Array.from(document.querySelectorAll('button, a, [role="button"]'));
             const del = btns.find(b => /^delete\\s+story$/i.test((b.innerText || '').trim()));
-            if (!del) return false;
+            if (!del) return null;
             del.scrollIntoView({ block: 'center' });
-            del.click();
-            return true;
+            const r = del.getBoundingClientRect();
+            return r.width > 0 ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
         })()""",
     )
-    if not clicked_delete_story:
+    if not del_btn:
         return {"story_id": story_id, "deleted": False, "reason": "no_delete_story_button_on_settings"}
 
+    cdp.click_xy(sess, del_btn["x"], del_btn["y"])
     time.sleep(1.5)
-    confirmed = cdp.eval_js(
+
+    confirm_btn = cdp.eval_js(
         sess,
         """(() => {
             const btns = Array.from(document.querySelectorAll('button'));
             const confirmBtn = btns.find(b => /^delete$/i.test((b.innerText || '').trim()));
-            if (!confirmBtn) return false;
-            confirmBtn.click();
-            return true;
+            if (!confirmBtn) return null;
+            const r = confirmBtn.getBoundingClientRect();
+            return r.width > 0 ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
         })()""",
     )
-    time.sleep(3.0)
-    return {"story_id": story_id, "title": title_txt, "deleted": bool(confirmed)}
+    if confirm_btn:
+        cdp.click_xy(sess, confirm_btn["x"], confirm_btn["y"])
+        time.sleep(3.0)
+        return {"story_id": story_id, "title": title_txt, "deleted": True}
+    return {"story_id": story_id, "title": title_txt, "deleted": False, "reason": "no_confirm_delete_button"}
 
 
 def cleanup_all_test_drafts(cdp: CDPClient, sess: str, extra_ids: list[str] | None = None) -> list[dict[str, Any]]:
@@ -1538,7 +2065,6 @@ def cleanup_all_test_drafts(cdp: CDPClient, sess: str, extra_ids: list[str] | No
             seen.add(sid)
             results.append(delete_test_draft_by_id(cdp, sess, sid))
 
-    # Also scan https://medium.com/me/stories/drafts (or /me/stories?tab=posts-draft) for leftover [TEST - DELETE ME] drafts
     cdp.navigate(sess, "https://medium.com/me/stories?tab=posts-draft", wait_sec=3.5)
     found_ids = cdp.eval_js(
         sess,
@@ -1574,8 +2100,16 @@ def main() -> int:
     )
     parser.add_argument("--chrome-root", default=None)
     parser.add_argument("--target-id", default=None)
+    parser.add_argument(
+        "--expect-account",
+        default=None,
+        help="Require the matched medium.com tab to be logged into this @handle (prevents staging on the wrong Chrome profile!)",
+    )
     parser.add_argument("--story-id", default=None, help="Draft story ID for delete-story")
-    parser.add_argument("--allow-unprefixed", action="store_true", help="Allow delete-story on an explicit --story-id without [TEST - DELETE ME] prefix")
+    parser.add_argument("--delete-first", default=None, help="Optional broken/test draft story ID to delete first in the same CDP session")
+    parser.add_argument("--allow-unprefixed", action="store_true", help="Allow delete-story / --delete-first on an explicit story ID without [TEST - DELETE ME] prefix")
+    parser.add_argument("--no-upload-local-files", action="store_true", help="Skip Phase-2 local <input type='file'> uploads (avoids corporate DLP dialogs; emits clean [TODO] callouts instead)")
+    parser.add_argument("--prefer-local-files", action="store_true", help="Upload ALL images/GIFs found locally in out/medium/ via DOM.setFileInputFiles instead of relying on Medium's external URL fetcher")
     parser.add_argument("--url", default=None, help="Public article URL for Method A import or Canonical URL")
     parser.add_argument("--html", default=None, help="Compiled index.html path for Method B paste")
     parser.add_argument(
@@ -1595,6 +2129,11 @@ def main() -> int:
         action="store_true",
         help="Automatically delete `[TEST - DELETE ME]` drafts after capturing screenshots and reports",
     )
+    parser.add_argument(
+        "--no-notify",
+        action="store_true",
+        help="Disable OS desktop start/end notifications during focusless Chrome control",
+    )
     args = parser.parse_args()
 
     out_dir = Path(args.out_dir).expanduser().resolve()
@@ -1610,98 +2149,166 @@ def main() -> int:
     try:
         if args.action == "status":
             targets = cdp.call("Target.getTargets", call_timeout=30.0).get("targetInfos", [])
-            matched = [
-                {"targetId": t.get("targetId"), "title": t.get("title"), "url": t.get("url")}
-                for t in targets
-                if t.get("type") == "page" and "medium.com" in (t.get("url") or "")
-            ]
+            matched = []
+            for t in targets:
+                if t.get("type") == "page" and (urllib.parse.urlparse(t.get("url") or "").hostname or "").lower() in ("medium.com", "www.medium.com"):
+                    acct = detect_logged_in_medium_account(cdp, t["targetId"])
+                    matched.append(
+                        {
+                            "targetId": t.get("targetId"),
+                            "browserContextId": t.get("browserContextId"),
+                            "account": acct,
+                            "title": t.get("title"),
+                            "url": t.get("url"),
+                        }
+                    )
             print(json.dumps({"total_targets": len(targets), "matched_pages": matched}, indent=2))
             return 0
 
-        tid = args.target_id or find_medium_target(cdp, "medium.com")["targetId"]
+        tid = args.target_id or find_medium_target(cdp, "medium.com", expect_account=args.expect_account)["targetId"]
+        identity = detect_logged_in_medium_account(cdp, tid)
         sess = cdp.call("Target.attachToTarget", {"targetId": tid, "flatten": True})["sessionId"]
+        _enable_headless_tab_focus(cdp, sess)
+
+        user_name = getpass.getuser() or os.environ.get("USER") or "human"
+        target_label = args.url or (str(Path(args.html).name) if args.html else "https://medium.com")
+        notify_enabled = not args.no_notify and args.action != "status"
+        final_result_url = "https://medium.com"
+        run_succeeded = False
+
+        if notify_enabled:
+            send_desktop_notification(
+                "🤖 Focusless Browser Use — Active",
+                f"Hi {user_name}, I'm controlling your Chrome browser (@{identity}) to run '{args.action}' "
+                f"for {target_label}. Please don't focus that Chrome window — copy/paste might briefly "
+                "interfere until I tell you I'm done!",
+            )
 
         report: dict[str, Any] = {}
         created_ids: list[str] = []
 
-        if args.action == "delete-story":
-            if not args.story_id:
-                raise ValueError("--story-id is required for delete-story")
-            res_del = delete_test_draft_by_id(cdp, sess, args.story_id, allow_unprefixed=args.allow_unprefixed)
-            print(json.dumps({"ok": True, "deleted": res_del}, indent=2))
-            return 0
+        try:
+            if args.delete_first:
+                report["deleted_first"] = delete_test_draft_by_id(
+                    cdp, sess, args.delete_first, allow_unprefixed=args.allow_unprefixed
+                )
 
-        if args.action == "cleanup-test-drafts":
-            report["cleanup"] = cleanup_all_test_drafts(cdp, sess)
-            cdp.screenshot(sess, out_dir / "drafts_after_cleanup.png")
-            print(json.dumps({"ok": True, "cleanup": report["cleanup"]}, indent=2))
-            return 0
+            if args.action == "delete-story":
+                if not args.story_id:
+                    raise ValueError("--story-id is required for delete-story")
+                res_del = delete_test_draft_by_id(cdp, sess, args.story_id, allow_unprefixed=args.allow_unprefixed)
+                run_succeeded = True
+                print(json.dumps({"ok": True, "deleted": res_del}, indent=2))
+                return 0
 
-        if args.action == "import-url":
-            if not args.url:
-                raise ValueError("--url is required for import-url")
-            res_a = run_method_a_import(cdp, sess, args.url, args.title_prefix, out_dir)
-            report["method_a"] = res_a
-            if res_a.get("story_id"):
-                created_ids.append(res_a["story_id"])
+            if args.action == "cleanup-test-drafts":
+                report["cleanup"] = cleanup_all_test_drafts(cdp, sess)
+                cdp.screenshot(sess, out_dir / "drafts_after_cleanup.png")
+                run_succeeded = True
+                print(json.dumps({"ok": True, "cleanup": report["cleanup"]}, indent=2))
+                return 0
 
-        elif args.action == "paste-html":
-            if not args.html:
-                raise ValueError("--html is required for paste-html")
-            res_b = run_method_b_paste(
-                cdp, sess, Path(args.html).expanduser().resolve(), args.title_prefix, args.url, out_dir
-            )
-            report["method_b"] = res_b
-            if res_b.get("story_id"):
-                created_ids.append(res_b["story_id"])
+            if args.action == "import-url":
+                if not args.url:
+                    raise ValueError("--url is required for import-url")
+                res_a = run_method_a_import(cdp, sess, args.url, args.title_prefix, out_dir)
+                report["method_a"] = res_a
+                if res_a.get("story_id"):
+                    created_ids.append(res_a["story_id"])
+                    final_result_url = res_a.get("edit_url") or final_result_url
 
-        elif args.action == "ab-experiment":
-            if not args.url or not args.html:
-                raise ValueError("Both --url and --html are required for ab-experiment")
-            res_a = run_method_a_import(cdp, sess, args.url, f"{args.title_prefix}[A-IMPORT] ", out_dir)
-            report["method_a"] = res_a
-            if res_a.get("story_id"):
-                created_ids.append(res_a["story_id"])
+            elif args.action == "paste-html":
+                if not args.html:
+                    raise ValueError("--html is required for paste-html")
+                res_b = run_method_b_paste(
+                    cdp,
+                    sess,
+                    Path(args.html).expanduser().resolve(),
+                    args.title_prefix,
+                    args.url,
+                    out_dir,
+                    upload_local_files=not args.no_upload_local_files,
+                    prefer_local_files=args.prefer_local_files,
+                )
+                report["method_b"] = res_b
+                if res_b.get("story_id"):
+                    created_ids.append(res_b["story_id"])
+                    final_result_url = res_b.get("edit_url") or final_result_url
 
-            res_b = run_method_b_paste(
-                cdp,
-                sess,
-                Path(args.html).expanduser().resolve(),
-                f"{args.title_prefix}[B-PASTE] ",
-                args.url,
-                out_dir,
-            )
-            report["method_b"] = res_b
-            if res_b.get("story_id"):
-                created_ids.append(res_b["story_id"])
+            elif args.action == "ab-experiment":
+                if not args.url or not args.html:
+                    raise ValueError("Both --url and --html are required for ab-experiment")
+                res_a = run_method_a_import(cdp, sess, args.url, f"{args.title_prefix}[A-IMPORT] ", out_dir)
+                report["method_a"] = res_a
+                if res_a.get("story_id"):
+                    created_ids.append(res_a["story_id"])
 
-        if args.cleanup_after:
-            report["cleanup"] = cleanup_all_test_drafts(cdp, sess, extra_ids=created_ids)
-            cdp.screenshot(sess, out_dir / "drafts_after_cleanup.png")
+                res_b = run_method_b_paste(
+                    cdp,
+                    sess,
+                    Path(args.html).expanduser().resolve(),
+                    f"{args.title_prefix}[B-PASTE] ",
+                    args.url,
+                    out_dir,
+                    upload_local_files=not args.no_upload_local_files,
+                    prefer_local_files=args.prefer_local_files,
+                )
+                report["method_b"] = res_b
+                if res_b.get("story_id"):
+                    created_ids.append(res_b["story_id"])
+                    final_result_url = res_b.get("edit_url") or final_result_url
 
-        report_file = out_dir / "ab_report.json"
-        report_file.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
-        summary = {}
-        for k in ("method_a", "method_b"):
-            if k in report:
-                v = report[k]
-                summary[k] = {
-                    "story_id": v.get("story_id"),
-                    "edit_url": v.get("edit_url"),
-                    "save_status": v.get("editor_audit", {}).get("saveStatus"),
-                    "error_banner": v.get("editor_audit", {}).get("errorBanner"),
-                    "skipped_unreachable_imgs": v.get("skipped_unreachable_imgs"),
-                    "figures_count": v.get("editor_audit", {}).get("figuresCount"),
-                    "raw_imgs_count": v.get("editor_audit", {}).get("rawImgsCount"),
-                    "pre_count": v.get("editor_audit", {}).get("preCount"),
-                    "tables_count": v.get("editor_audit", {}).get("tablesCount"),
-                    "blockquotes_count": v.get("editor_audit", {}).get("blockquotesCount"),
-                    "ordered_lists_count": v.get("editor_audit", {}).get("orderedListsCount"),
-                    "unordered_lists_count": v.get("editor_audit", {}).get("unorderedListsCount"),
-                }
-        if "cleanup" in report:
-            summary["cleanup"] = report["cleanup"]
-        print(json.dumps({"ok": True, "report_file": str(report_file), "summary": summary}, indent=2, ensure_ascii=False))
+            if args.cleanup_after:
+                report["cleanup"] = cleanup_all_test_drafts(cdp, sess, extra_ids=created_ids)
+                cdp.screenshot(sess, out_dir / "drafts_after_cleanup.png")
+
+            report_file = out_dir / "ab_report.json"
+            report_file.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+            summary = {}
+            if "deleted_first" in report:
+                summary["deleted_first"] = report["deleted_first"]
+            for k in ("method_a", "method_b"):
+                if k in report:
+                    v = report[k]
+                    summary[k] = {
+                        "story_id": v.get("story_id"),
+                        "edit_url": v.get("edit_url"),
+                        "save_status": v.get("editor_audit", {}).get("saveStatus"),
+                        "error_banner": v.get("editor_audit", {}).get("errorBanner"),
+                        "local_uploads": v.get("local_uploads"),
+                        "skipped_unreachable_imgs": v.get("skipped_unreachable_imgs"),
+                        "figures_count": v.get("editor_audit", {}).get("figuresCount"),
+                        "raw_imgs_count": v.get("editor_audit", {}).get("rawImgsCount"),
+                        "pre_count": v.get("editor_audit", {}).get("preCount"),
+                        "tables_count": v.get("editor_audit", {}).get("tablesCount"),
+                        "blockquotes_count": v.get("editor_audit", {}).get("blockquotesCount"),
+                        "ordered_lists_count": v.get("editor_audit", {}).get("orderedListsCount"),
+                        "unordered_lists_count": v.get("editor_audit", {}).get("unorderedListsCount"),
+                        "settings": {
+                            "topics_saved": v.get("settings_audit", {}).get("topics_saved"),
+                            "seo_title_saved": v.get("settings_audit", {}).get("seo_title_saved"),
+                            "seo_desc_saved": v.get("settings_audit", {}).get("seo_desc_saved"),
+                            "canonical_set_attempted": v.get("settings_audit", {}).get("canonical_set_attempted"),
+                        },
+                    }
+            if "cleanup" in report:
+                summary["cleanup"] = report["cleanup"]
+            run_succeeded = True
+            print(json.dumps({"ok": True, "report_file": str(report_file), "summary": summary}, indent=2, ensure_ascii=False))
+        finally:
+            if notify_enabled:
+                if run_succeeded:
+                    send_desktop_notification(
+                        "🌌 Done! Don't Panic — Over to You",
+                        f"I'm done controlling @{identity}! Don't Panic — the SEP (Somebody Else's Problem) "
+                        f"field is off, so {final_result_url} is now 100% your responsibility. So long, and thanks for all the fish 🐬",
+                    )
+                else:
+                    send_desktop_notification(
+                        "⚠️ Focusless Browser Use — Paused",
+                        f"Hit a snag while driving @{identity} — releasing Chrome focus & clipboard back to you. Don't Panic!",
+                        urgency="critical",
+                    )
     finally:
         cdp.close()
     return 0

@@ -1,3 +1,10 @@
+## [0.6.50] - 2026-11-18
+
+- 📰💛 **`publish-to-medium` (`v0.4.0`)**: Hardened `scripts/cdp_medium_draft.py` and `references/medium.md` with focusless `Emulation.setFocusEmulationEnabled` + OS desktop toasts (`--no-notify`), exclusion of Medium's `1*b31hiO4ynbDLRrXWEFF4aQ.png` white skeleton race + `--prefer-local-files`, native `Range`+`Backspace` Graf deletion (eliminating `.remove()` corruption), post-upload `<figcaption>` hydration (`populate_all_figure_captions`), `--expect-account`, `--delete-first`, and complete 2-step `/settings` canonical link + SEO/Topics automation.
+- 💃🕺🎺 **`chumbia` (`v1.5.2`)**: Fixed `grep -v '^-'` exit-code-1 trap under `set -euo pipefail` in `scripts/chumbia_audit.sh`.
+- 🧹🔒 **OSS Hygiene (`gemini-finops` `v0.0.2` & `justfile`)**: Replaced internal console URL with public `console.cloud.google.com` in `skills/gemini-finops/scripts/apikey_usage.py` and replaced hardcoded absolute home path in `justfile` with `~/`.
+- 🚀 Bumped version to 0.6.50.
+
 ## [0.6.49] - 2026-11-18
 
 - 💛🚀 **`gemini-model-selector` (`v0.3.3`)**: Self-healed skill with the 2 newly released mid-November 2026 models (`gemini-4-hydrogen` GA `2026-11-12` replacing `gemini-3.8-flash` as default daily driver + `xhigh` thinking, and `gemini-decision-1` `2026-11-11` zero-output-token Decisions API classifier) plus Nov 17 `gemini-3.5-transcribe` voice editing.

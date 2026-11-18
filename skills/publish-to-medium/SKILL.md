@@ -7,7 +7,7 @@ description: >-
   Human-in-the-Loop (HITL) Draft-Only gate.
 compatibility: Gemini CLI, Antigravity, Jetski
 metadata:
-  version: 0.3.0
+  version: 0.4.0
   author: palladius
   tags: medium, linkedin, blogging, cross-posting, seo, canonical-url, chrome-devtools, cdp, mermaid, latex
 ---

@@ -121,8 +121,8 @@ if [ -n "$MAIN_REF" ]; then
     MERGED_TO_MAIN=true
   else
     # Fallback for squashed or cherry-picked worktrees
-    CHERRY_UNMERGED_COUNT="$(git cherry -v "$MAIN_REF" HEAD 2>/dev/null | grep -v '^-' | wc -l || echo 99)"
-    if [ "$CHERRY_UNMERGED_COUNT" -eq 0 ]; then
+    CHERRY_UNMERGED_COUNT="$(git cherry -v "$MAIN_REF" HEAD 2>/dev/null | { grep -v '^-' || true; } | wc -l | tr -d ' ')"
+    if [ "${CHERRY_UNMERGED_COUNT:-99}" -eq 0 ]; then
       MERGED_TO_MAIN=true
     fi
   fi

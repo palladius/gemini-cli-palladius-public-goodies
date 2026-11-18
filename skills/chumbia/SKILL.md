@@ -14,7 +14,7 @@ description: >-
   and concludes with CHUMBIA! so the session can be archived.
 compatibility: gemini-cli, antigravity, claude, t3-code
 metadata:
-  version: "1.5.1"
+  version: "1.5.2"
   author: "Riccardo Carlesso"
   tags: "cleanup, git, worktree, branch, workflow, session-end, chumbia, hygiene, learn, learnings, breadcrumbs, superpowers, t3-code, mcp, auto-archive"
 ---

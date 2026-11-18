@@ -265,10 +265,10 @@ def fetch_and_display(project_id, breakdown_by_product=False, allowed_types=None
     
     print(f"\n{CYAN}🔗 Cloud Monitoring Permalink:{RESET}\n{m_url}")
 
-    # 2. Pantheon Credential Link (if apikey)
+    # 2. Google Cloud Console Credential Link (if apikey)
     if filter_id and "-" in filter_id: # Looks like a UUID
-        p_url = f"https://pantheon.corp.google.com/apis/credentials/key/{filter_id}?project={project_id}"
-        print(f"\n{YELLOW}🔑 Pantheon Credential Permalink:{RESET}\n{p_url}")
+        p_url = f"https://console.cloud.google.com/apis/credentials/key/{filter_id}?project={project_id}"
+        print(f"\n{YELLOW}🔑 Google Cloud Console Credential Permalink:{RESET}\n{p_url}")
 
 def main():
     parser = argparse.ArgumentParser()

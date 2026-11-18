@@ -4,7 +4,7 @@ description: >-
   Monitor and analyze GenAI expenditure on Google Cloud (Vertex AI/Gemini).
 compatibility: gemini-cli
 metadata:
-  version: 0.0.1
+  version: 0.0.2
 ---
 
 # Gemini FinOps Skill

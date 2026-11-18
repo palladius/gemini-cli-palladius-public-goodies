@@ -47,3 +47,8 @@ All notable changes to this skill will be documented in this file.
   - Aggiornato `scripts/chumbia_audit.sh` e i comandi manuali in `SKILL.md` per usare `timeout 8 git fetch --prune origin` con `GIT_SSH_COMMAND="ssh -o ConnectTimeout=5"`, evitando blocchi multi-minuto quando la porta SSH 22 verso GitHub e' filtrata da firewall restrittivi.
 - 🛡️ **Antigravity `<agent-embed>` CSP Compatibility**:
   - Sostituito `https://cdn.tailwindcss.com` (bloccato dalla Content Security Policy degli iframe `<agent-embed>`) con lo script allowlisted `https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js` e token semantici CSS (`var(--card)`, `var(--foreground)`) in `scripts/chumbia_applet.html`, richiedendo `ArtifactMetadata` (`UserFacing: true`, `RequestFeedback: false`) alla creazione del file HTML.
+
+## [1.5.2] - 2026-11-18
+
+- 🛠️ **Safe `set -euo pipefail` `grep` Pipeline in `chumbia_audit.sh`**:
+  - Neutralized exit-code 1 from `grep -v '^-'` when `git cherry -v` has 0 unmerged commits (`{ grep -v '^-' || true; } | wc -l | tr -d ' '`), avoiding false `"0\n99"` fallback output.
