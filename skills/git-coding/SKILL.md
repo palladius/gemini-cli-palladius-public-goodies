@@ -9,7 +9,7 @@ description: >-
   and auditing system prompt markdowns.
 compatibility: Gemini CLI
 metadata:
-  version: 0.0.3
+  version: 0.0.5
 ---
 # Git Coding Best Practices
 
@@ -28,6 +28,7 @@ Untracked files may contain active, uncommitted work by the user or other agents
 
 Before proposing or executing any `git commit`, you must perform the following actions in the repository:
 1. **Bump Version:** Find the main configuration file containing the version (e.g., `gemini-extension.json`, `plugin.json`, `package.json`, etc.) and increment it according to Semantic Versioning (usually a patch bump, like `0.1.4` -> `0.1.5`).
+   - **Fetch first:** run `git fetch origin` and read the version on `origin/main` before picking the next number. Parallel agent sessions (other worktrees) may have already claimed it.
 2. **Update CHANGELOG.md:** Add a new entry to the `CHANGELOG.md` file documenting the changes under the new version header. Follow the `[Keep a Changelog]` format.
 3. **Run Anti-Bloat Check on System Prompts:** If your diff touches `GEMINI.md`, `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `SPECS.md`, `INSTRUCTIONS.md`, or `SKILL.md`, run `$SKILL_DIR/scripts/analyze_bloat_history.py --uncommitted <FILENAME>` before committing (see Mandate #6 and the `ai-coding` skill).
 
@@ -36,8 +37,10 @@ Before proposing or executing any `git commit`, you must perform the following a
 - Prefer commit messages that are clear, concise, and focused more on "why" than "what".
 - If the repository uses `gitmoji`, use the appropriate emoji in the commit title (e.g., 🐛 for bugs, ✨ for features, 🤖 for chores, etc.).
 
-### 4. Push Etiquette
-- **NEVER** push changes to a remote repository automatically unless explicitly requested by the user.
+### 4. Push Etiquette (`autopush-enabled`)
+- Before finishing a commit workflow, check if `autopush-enabled` is available in `$PATH` and run it.
+- **If `autopush-enabled` exits `0` (Relaxx Mode 🏖️):** **ALWAYS** `git commit` and `git push` (or `just autopush`) automatically **without asking the user for confirmation**.
+- **If `autopush-enabled` exits non-zero (or is not installed):** **NEVER** push automatically unless explicitly requested by the user.
 
 ### 5. Renaming
 
@@ -88,5 +91,5 @@ When asked to "commit the recent changes":
 3. Find the version file and bump it.
 4. Add the changes to `CHANGELOG.md`.
 5. Stage the files (`git add ...`).
-6. Propose the commit message to the user or execute it if given permission.
+6. If `autopush-enabled` exits `0`, commit and push (`git pull --rebase && git push`) automatically without asking; otherwise propose the commit/push to the user.
 7. Ensure to attach GH issue if available in the messages. If so, also comment on the issue post-commit/push with a digest of what has been done. It reads nicely.
