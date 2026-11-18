@@ -1,3 +1,12 @@
+## [0.6.45] - 2026-11-18
+
+- 🧭🍌📐 **`slide-diagram-router` (`v1.0.0`)**: Added new Tri-Engine Slide Diagram Router skill (`SKILL.md`, `references/nanobanana-lego-prompts.md`, and deterministic `2x` Retina renderer `scripts/render_slide_diagram.py` with automated Headless Chrome DOM font/overflow auditing) routing technical visuals across:
+  1. **Engine 1** (`gemini-3-pro-image` "Physical Lego" + `N >= 4` adversarial vision filter) for cloud pipelines blending physical objects (`PDF` pages, `ACL` padlock, `GPU` chip) with cloud blocks;
+  2. **Engine 2** (Deterministic `2x` Topological SVG `--mode bipartite`) for `M × N` vs `M + N` multi-icon connector graphs;
+  3. **Engine 3** (Custom HiDPI Multi-Tab Contrast Cards `--mode multitab`) for side-by-side `1..4` column comparisons with verbatim monospace `SYSTEM PROMPT`s and JSON.
+- 📽️💛 **`presentation-that-riccardo-likes` (`v1.4.0`)**: Added §14 Tri-Engine Diagram Routing cross-reference and §15 **"Creation Is Expensive, Destruction Takes 2 Seconds"** (`#FEF9C3` light-yellow `Option 1` / `Option 2` highlighter badges on side-by-side slides + `skip: true` / Slide Graveyard archival).
+- 🚀 Bumped version to 0.6.45.
+
 ## [0.6.44] - 2026-11-17
 
 - 🗑️ **`article-creator`**: Removed legacy duplicate `skills/article-creator` from `public-goodies` (consolidated into `private-goodies` `v2.0.0`, while keeping public Medium/LinkedIn staging in `publish-to-medium`).
