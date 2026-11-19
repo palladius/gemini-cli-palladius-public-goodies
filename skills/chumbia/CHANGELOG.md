@@ -52,3 +52,8 @@ All notable changes to this skill will be documented in this file.
 
 - 🛠️ **Safe `set -euo pipefail` `grep` Pipeline in `chumbia_audit.sh`**:
   - Neutralized exit-code 1 from `grep -v '^-'` when `git cherry -v` has 0 unmerged commits (`{ grep -v '^-' || true; } | wc -l | tr -d ' '`), avoiding false `"0\n99"` fallback output.
+
+## [1.5.3] - 2026-11-19
+
+- 🤖 **Agent Experience (AX) Virtuous Feedback Loop**:
+  - Integrated AX friction checks into Phase 3 (`/learn` & AX Piggyback) and Phase 4 Sign-Off, logging CLI hangs, context floods, and ambiguous multi-path docs via `ax_toolkit.py learn` and `/learn [AX]`.

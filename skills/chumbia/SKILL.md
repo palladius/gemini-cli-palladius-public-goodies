@@ -14,7 +14,7 @@ description: >-
   and concludes with CHUMBIA! so the session can be archived.
 compatibility: gemini-cli, antigravity, claude, t3-code
 metadata:
-  version: "1.5.2"
+  version: "1.5.3"
   author: "Riccardo Carlesso"
   tags: "cleanup, git, worktree, branch, workflow, session-end, chumbia, hygiene, learn, learnings, breadcrumbs, superpowers, t3-code, mcp, auto-archive"
 ---
@@ -36,7 +36,7 @@ When invoked, run the 5-step protocol below:
 2. **Phase 2 — Post-Work Cleanup ("Le Pulizie Dopo la Fatica")**:
    - Detect linked Git worktrees via `git rev-parse --git-dir` vs `--git-common-dir`.
    - Remove merged worktrees (`~/.gemini/antigravity/worktrees/`), merged branches, temporary `node_modules/`, and run `just clean`.
-3. **Phase 3 — 🧠 `/learn` Piggyback**: Distill session learnings, persist what can be saved directly, and output a ready-to-trigger `/learn` recommendation.
+3. **Phase 3 — 🧠 `/learn` & 🤖 AX Piggyback**: Distill session and Agent Experience (AX) learnings, log AX items via `ax_toolkit.py learn`, and emit a `/learn` snippet.
 4. **Phase 4 — Harness-Aware Settle/Archive, Clear `.chumbia.touch` & Sign-Off**:
    - On **T3 Code**: Automatically call `t3_thread_organize` with `action: "archive"` (or `"settle"`).
    - On **Antigravity**: Render the interactive **Chumbia Archival Applet** via `<agent-embed>` with a blue "Archivia Chat" button.
@@ -161,14 +161,26 @@ GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
 
 ---
 
-## 🧠 Phase 3: `/learn` Piggyback ("Cosa Abbiamo Imparato Oggi?")
+## 🧠 Phase 3: `/learn` & 🤖 AX (Agent Experience) Piggyback ("Cosa Abbiamo Imparato Oggi?")
 
-Before declaring `CHUMBIA!`, you **MUST ALWAYS** piggyback a `/learn` knowledge-capture pass so no valuable lesson vanishes when the conversation is destroyed:
+Before declaring `CHUMBIA!`, run a `/learn` pass and an **Agent Experience (AX)** feedback check:
 
-1. **Scan the Conversation Trajectory for Learnings**:
-   - User corrections, style rules, gotchas, tricky setups, or reusable recipes.
-2. **Persist or Stage the Learnings**:
-   - Save directly if appropriate, and always output a ready-to-copy `/learn <frase>` command snippet.
+1. **Scan the Conversation Trajectory**:
+   - **General Learnings**: User corrections, style rules, gotchas, tricky setups, or reusable recipes.
+   - **🤖 AX Friction Check**: Did the agent hit CLI hangs (`[y/N]`), context floods, missing `--ai-help` / `AGENTS.md` / `llms.txt`, or ambiguous multi-path docs?
+2. **Feed the Virtuous AX Growth Loop (`carlessian-agent-experience`)**:
+   - If AX friction or a reusable agent-friendliness pattern was found, record it via `ax_toolkit.py learn`:
+     ```bash
+     AX_SCRIPT="$HOME/.gemini/config/skills/carlessian-agent-experience/scripts/ax_toolkit.py"
+     if [ -f "$AX_SCRIPT" ]; then
+       python3 "$AX_SCRIPT" learn \
+         --category <cli|workload|content|gcp-clarity> \
+         --symptom "<what confused, hung, or bloated the agent>" \
+         --fix "<the deterministic AX rule or Golden Path fix>"
+     fi
+     ```
+3. **Persist or Stage the Learnings**:
+   - Save directly if appropriate, and output a ready-to-copy `/learn <frase>` (or `/learn [AX] <frase>`) snippet.
 
 ---
 
@@ -213,7 +225,8 @@ Tutto pulito e archiviato su `main` — puoi chiudere o distruggere questa conve
 - 🌿 **Branch & Worktree**: [Rimosso worktree temporaneo / eliminato branch locale e remoto `<branch>` / `git fetch --prune` eseguito].
 - 🧹 **Pulizie Disco & Task**: [`just clean` eseguito / rimossi `node_modules` temporanei / nessun task o cron rimasto attivo].
 - 📦 **Session Status**: [Archiviata / Settled via T3 MCP | In attesa click su Applet Antigravity].
-- 🧠 **Learnings (`/learn` Piggyback)**:
+- 🧠 **Learnings & 🤖 AX Loop (`/learn` Piggyback)**:
   - 💡 *Takeaways*: [1–3 bullet sintetici].
+  - 🤖 *AX Growth (`carlessian-agent-experience`)*: [Registrato via `ax_toolkit.py learn` / Nessuna frizione AX rilevata].
   - 📌 *Persistenza*: [Già salvato / Consigliato prima di chiudere: `/learn ...`].
 ```

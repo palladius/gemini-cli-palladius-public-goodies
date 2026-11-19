@@ -1,3 +1,8 @@
+## [0.6.52] - 2026-11-19
+
+- 💃🕺🎺🤖 **`chumbia` (`v1.5.3`)**: Integrated the **Agent Experience (AX) Virtuous Feedback Loop** into Phase 3 (`/learn` Piggyback) and Phase 4 Sign-Off so any end-of-session agent friction (CLI hangs, unbounded outputs, ambiguous multi-path docs, missing `llms.txt` / `AGENTS.md`) is automatically fed back into `carlessian-agent-experience` via `ax_toolkit.py learn` and `/learn [AX]`. (Maintained by `gc-skillume-bot-v0_2`)
+- 🚀 Bumped version to 0.6.52.
+
 ## [0.6.51] - 2026-11-19
 
 - 📽️🟨 **`presentation-that-riccardo-likes` (`v1.6.1`)**: Updated **§15** A/B Option pill specification from soft pastel yellow (`#FEF9C3`) to intentionally garish pure neon yellow (`#FFFF00` / `rgb(255, 255, 0)`, `1.5pt solid #000000` border, bold `#000000` text) so side-by-side `Option 1` / `Option 2` review badges scream visually during deck review and can never be missed before going on stage.
