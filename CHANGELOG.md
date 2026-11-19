@@ -1,3 +1,8 @@
+## [0.6.51] - 2026-11-19
+
+- 📽️🟨 **`presentation-that-riccardo-likes` (`v1.6.1`)**: Updated **§15** A/B Option pill specification from soft pastel yellow (`#FEF9C3`) to intentionally garish pure neon yellow (`#FFFF00` / `rgb(255, 255, 0)`, `1.5pt solid #000000` border, bold `#000000` text) so side-by-side `Option 1` / `Option 2` review badges scream visually during deck review and can never be missed before going on stage.
+- 🚀 Bumped version to 0.6.51.
+
 ## [0.6.50] - 2026-11-18
 
 - 📰💛 **`publish-to-medium` (`v0.4.0`)**: Hardened `scripts/cdp_medium_draft.py` and `references/medium.md` with focusless `Emulation.setFocusEmulationEnabled` + OS desktop toasts (`--no-notify`), exclusion of Medium's `1*b31hiO4ynbDLRrXWEFF4aQ.png` white skeleton race + `--prefer-local-files`, native `Range`+`Backspace` Graf deletion (eliminating `.remove()` corruption), post-upload `<figcaption>` hydration (`populate_all_figure_captions`), `--expect-account`, `--delete-first`, and complete 2-step `/settings` canonical link + SEO/Topics automation.

@@ -5,10 +5,10 @@ description: >-
   presentations for Riccardo — enforces canonical 1..N+1 deck spine (incl. hidden noir Slides Cemetery),
   native multi-shape Google Slides composability over monolithic flat images, Tri-Engine diagram routing,
   bright cutie-cartoon metaphors with floating 1-punchline text (banning 50% dark glass-capsule cards),
-  light-yellow A/B option pills, minimal-text editorial flow, QR 1/4-slide sizing, and PNG verification.
+  garish neon-yellow (#FFFF00) A/B option pills, minimal-text editorial flow, QR 1/4-slide sizing, and PNG verification.
 compatibility: "gemini-cli, antigravity, openclaudio"
 metadata:
-  version: "1.6.0"
+  version: "1.6.1"
 ---
 
 # Presentations That Riccardo Likes 📽️🦖🦞
@@ -228,13 +228,13 @@ Rigid multi-box templates with double horizontal black rules, numbered prefixes,
 
 ---
 
-## 15. 🟨 "Creation Is Expensive, Destruction Takes 2 Seconds" — Light-Yellow A/B Option Pills & Slide Graveyard
+## 15. 🟨 "Creation Is Expensive, Destruction Takes 2 Seconds" — Super-Ugly Neon-Yellow (`#FFFF00`) A/B Option Pills & Slide Graveyard
 
 High-craft visuals take real effort to create; killing a weaker slide in Google Slides takes 2 seconds. Whenever proposing an alternative visual or layout for an existing slide:
 
 1. **NEVER overwrite, delete, or pre-emptively `skip` a strong existing visual!** Do not decide unilaterally for the speaker.
-2. **Duplicate Side-by-Side with Light-Yellow Highlighter Badges (`#FEF9C3` / `#F59E0B`)**:
-   - Keep **both** candidate slides active next to each other and place a soft light-yellow highlighter pill (`fill: #FEF9C3`, `border: 1.5pt solid #F59E0B`, text `#78350F` bold `10pt`) in the top-right margin:
+2. **Duplicate Side-by-Side with Intentionally Garish Pure Neon-Yellow Highlighter Badges (`#FFFF00` + `#000000`)**:
+   - Keep **both** candidate slides active next to each other and place an **intentionally super-ugly, unmistakable pure neon-yellow highlighter pill** (`fill: #FFFF00` / `rgb(255, 255, 0)`, `border: 1.5pt solid #000000`, text `#000000` bold `10pt`) in the top-right margin so it screams visually during review and can never be forgotten on stage:
      - Slide 1: `Option 1: <short desc>`
      - Slide 2: `Option 2: <short desc>`
 3. **Park Runner-Ups in `skip: true` or the `N+1` Slides Cemetery**:
