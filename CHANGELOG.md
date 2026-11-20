@@ -1,3 +1,8 @@
+## [0.6.53] - 2026-11-20
+
+- 💃🧭 **`chumbia` (`v1.5.4`)**: Updated Phase 3 (`/learn` Target Routing) to forbid editing chezmoi-managed `~/.gemini/AGENTS.md` / `GEMINI.md` directly and route global learnings to `~/.gemini/carlessian/AGENTS_LOCAL.md`, work-only learnings to `~/.gemini/carlessian/AGENTS_WORK.md`, and repo/skill learnings to the local repo `AGENTS.md` or `SKILL.md`.
+- 🔧 Re-aligned `gemini-extension.json` version (fixing `0.6.49` downgrade in `43e28cc`) and bumped all manifests to `0.6.53`. (Maintained by `gc-skillume-bot-v0_2`)
+
 ## [0.6.52] - 2026-11-19
 
 - 💃🕺🎺🤖 **`chumbia` (`v1.5.3`)**: Integrated the **Agent Experience (AX) Virtuous Feedback Loop** into Phase 3 (`/learn` Piggyback) and Phase 4 Sign-Off so any end-of-session agent friction (CLI hangs, unbounded outputs, ambiguous multi-path docs, missing `llms.txt` / `AGENTS.md`) is automatically fed back into `carlessian-agent-experience` via `ax_toolkit.py learn` and `/learn [AX]`. (Maintained by `gc-skillume-bot-v0_2`)

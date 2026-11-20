@@ -57,3 +57,8 @@ All notable changes to this skill will be documented in this file.
 
 - 🤖 **Agent Experience (AX) Virtuous Feedback Loop**:
   - Integrated AX friction checks into Phase 3 (`/learn` & AX Piggyback) and Phase 4 Sign-Off, logging CLI hangs, context floods, and ambiguous multi-path docs via `ax_toolkit.py learn` and `/learn [AX]`.
+
+## [1.5.4] - 2026-11-19
+
+- 🧭 **`/learn` Target Routing (`~/.gemini/carlessian/AGENTS_LOCAL.md`)**:
+  - Updated Phase 3 to forbid editing chezmoi-managed `~/.gemini/AGENTS.md` / `GEMINI.md` directly and route global learnings to `~/.gemini/carlessian/AGENTS_LOCAL.md`, work-only learnings to `~/.gemini/carlessian/AGENTS_WORK.md`, and repo/skill learnings to the local repo `AGENTS.md` or `SKILL.md`.

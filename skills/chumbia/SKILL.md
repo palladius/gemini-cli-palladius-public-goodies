@@ -14,7 +14,7 @@ description: >-
   and concludes with CHUMBIA! so the session can be archived.
 compatibility: gemini-cli, antigravity, claude, t3-code
 metadata:
-  version: "1.5.3"
+  version: "1.5.4"
   author: "Riccardo Carlesso"
   tags: "cleanup, git, worktree, branch, workflow, session-end, chumbia, hygiene, learn, learnings, breadcrumbs, superpowers, t3-code, mcp, auto-archive"
 ---
@@ -179,8 +179,14 @@ Before declaring `CHUMBIA!`, run a `/learn` pass and an **Agent Experience (AX)*
          --fix "<the deterministic AX rule or Golden Path fix>"
      fi
      ```
-3. **Persist or Stage the Learnings**:
-   - Save directly if appropriate, and output a ready-to-copy `/learn <frase>` (or `/learn [AX] <frase>`) snippet.
+3. **Target Routing — NEVER Edit Chezmoi-Managed Global `AGENTS.md` / `GEMINI.md`**:
+   - 🚫 **NEVER write learnings directly into `~/.gemini/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/AGENTS.md`, or `~/GEMINI.md`** — those are chezmoi-managed and identical/templated across machines!
+   - Route each learning to the proper destination:
+     - **Repo / project-specific learning** -> the repository's `AGENTS.md` (or the relevant `skills/<name>/SKILL.md`).
+     - **Global / user-wide learning** -> **`~/.gemini/carlessian/AGENTS_LOCAL.md`** (unmanaged by chezmoi after creation).
+     - **Work-only learning** (only on work machines) -> **`~/.gemini/carlessian/AGENTS_WORK.md`** (never leak work details into personal or public repos).
+4. **Persist or Stage the Learnings**:
+   - Save directly to the appropriate routed file above if clearly warranted, and always output a ready-to-copy `/learn` snippet with an explicit destination hint (e.g., `/learn [target: ~/.gemini/carlessian/AGENTS_LOCAL.md] <frase>` or `/learn [AX] <frase>`), so built-in `/learn` commands never pollute `~/.gemini/GEMINI.md`.
 
 ---
 
