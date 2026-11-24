@@ -1,3 +1,11 @@
+## [1.7.0] - 2026-11-23
+
+- 🚦🧩👵 Added **§19 Anti-Wall-of-Tabs, Semantic Traffic-Light Colors & "70-Year-Old Mom" Clarity**: splits dense `6-8` tab grids into uniform `1/N..N/N` Card + Visual sequences (with concrete editable artifacts like an Enterprise AI Model Inventory table), enforces strict semantic colors (`Red` = danger/broken/banned ONLY, `Green` = safe/fix, `Amber` = regulated/caution, `Blue/Teal` = neutral architecture), bans unexplained 3-letter acronyms (`Zero Data Retention (ZDR)` spelled out on sight), mandates `Month + Year` regulatory dates + clickable primary links, styles code/token identifiers (`sub=alice`, `~/.config`, `0.95^20`) in `Roboto Mono` pills, and enforces `Gemma 4` over deprecated `Gemma 3`.
+
+## [1.6.1] - 2026-11-19
+
+- 🟨 Updated **§15** A/B Option pill specification to pure neon yellow (`#FFFF00` + bold `#000000` text) so side-by-side review pills are impossible to miss before going on stage.
+
 ## [1.6.0] - 2026-11-18
 
 - 🚫🖤➡️🧸✨ Added **§18 Anti-Pattern Ban: No "50% Dark Glass-Capsule" Over Moody Sci-Fi Stock — Use Bright Cutie-Cartoon Metaphors + Floating 1-Punchline**: bans dark abstract stock renders + 50%-width `GLASS_CAPSULE` overlays with 4 stacked text layers (`eyebrow + title + paragraph + colored footer`); mandates bright, cutie, cartoony literal illustrations (e.g., robot in a yellow harness for harness context rot) with **only 1 bold punchline + at most 1 short sentence floating directly over the clean light zone of the image**, and dedicated Chapter Break slides for section transitions.

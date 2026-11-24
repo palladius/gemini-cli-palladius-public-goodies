@@ -8,7 +8,7 @@ description: >-
   garish neon-yellow (#FFFF00) A/B option pills, minimal-text editorial flow, QR 1/4-slide sizing, and PNG verification.
 compatibility: "gemini-cli, antigravity, openclaudio"
 metadata:
-  version: "1.6.1"
+  version: "1.7.0"
 ---
 
 # Presentations That Riccardo Likes 📽️🦖🦞
@@ -291,6 +291,34 @@ Never build "WOW / Hook / Intuition" slides using a **dark, moody, generic sci-f
    - *(Even on intentional dark-sky or retro-CRT slides like a 1983 Cart-Pole GIF, float ONLY the crisp white punchline + 1 short sentence directly on the background — never wrap them in a 50% card box!)*
 3. **Need to Open a New Section? Use a Real Chapter Divider**:
    - Never overload a hook slide with section-header eyebrows (`CHAPTER 3 | ...`). If a new chapter is starting, insert a dedicated full-color **Chapter Break** slide beforehand.
+
+---
+
+## 19. 🚦🧩👵 Anti-Wall-of-Tabs, Semantic Traffic-Light Colors & "70-Year-Old Mom" Clarity
+
+### 1. Split Dense Tab Grids (`6-8` Boxes -> `1/N .. N/N` Card + Visual Series)
+- **Never cram 6 to 8 text boxes or 2 to 3 text-only columns onto one slide.** When an audience faces an 8-box grid of buzzwords, comprehension drops to zero.
+- **Split into a uniform `1/2..2/2` or `1/3..3/3` sequence**: Every slide in a multi-part mini-series MUST share the exact same clean two-column geometry (`1 semantic-colored card with <= 3 short points` + `1 concrete visual, UI mockup, or real-world table`), e.g.:
+  - Instead of an abstract *"AI Inventory"* box, show a **real, native-editable 4-row Enterprise AI Inventory table** (`Gemini`, `OpenAI`, `Apertus` open weights, `Gemma 4`) with concrete columns (`Model | Use Case | Human Owner | Safety Gate`).
+
+### 2. Semantic Traffic-Light Color Law (Never Cycle Colors Arbitrarily!)
+Never rotate `[Blue, Red, Yellow, Green]` mechanically across neutral tabs (which accidentally colors positive governance controls Red or colors a *"Green Zone"* Blue!):
+- **Red (`#DC2626` / `#FEF2F2`)** = **BAD / DANGER / BROKEN / ATTACK / FORBIDDEN / RED ZONE** *(plus literal flag colors such as the Swiss flag)*. Never use Red for neutral or positive governance steps, and ALWAYS color the *"broken / attack / anti-pattern"* card Red!
+- **Green (`#16A34A` / `#F0FDF4`)** = **GOOD / SAFE / THE FIX / AIR-GAPPED / GREEN ZONE**. Always color the *"safe / cured / target"* card Green!
+- **Amber / Yellow (`#D97706` / `#FFFBEB`)** = **CAUTION / REGULATED / HIGH-RISK / YELLOW ZONE**.
+- **Blue / Teal (`#1A73E8` / `#0D9488`)** = **NEUTRAL CLOUD ARCHITECTURE / REFERENCE PILLARS**.
+
+### 3. Plain-English "70-Year-Old Mom" Test, Acronym Hygiene & `Roboto Mono` Pills
+1. **Zero Unexplained 3-Letter Acronyms on Screen**:
+   - Never drop opaque acronyms (`ZDR`, `CMEK`, `EFZ`, `FH`, `VES`) without immediate plain-English meaning on first sight (e.g., **`Zero Data Retention (ZDR)`** = *"zero logs saved to disk; wiped from RAM right after reply"*). Move regional or niche acronyms strictly to a **Speaker Notes Glossary**.
+2. **Explain Regulation by Human Consequence (`Month + Year` Only)**:
+   - Frame legal rules so a smart non-engineer (like your 70-year-old mom!) gets them in 10 seconds: *"Brussels baptized life-changing AI decisions — job CVs, bank loans, health/life insurance, school grades — as High-Risk -> allowed ONLY with bias audits and human sign-off."*
+   - Use **`Month + Year`** (`Feb 2025`, `Aug 2026`, `Dec 2027`) on slides — strip noisy ISO day strings (`2025-02-02`) — and attach clickable primary links to every statutory rule, RFC (`RFC 8693`), and cloud product (`Google Gemini Enterprise`, `Microsoft 365 Copilot`, `Amazon Q Business`).
+3. **Monospace Code Pills for "Robot Words"**:
+   - Format technical tokens, token claims, CLI paths, API flags, and math formulas (`sub=alice`, `act=claims-bot`, `~/.config`, `thinking_level`, `if/else`, `0.95^20`) in **`Roboto Mono` with a subtle pill background** so code identifiers stand out cleanly from English prose.
+4. **Always Current Model Names (`Gemma 4`, Never `Gemma 3`)**:
+   - Audit slides and Speaker Notes so deprecated open-weight generations (`Gemma 3`) never appear when teaching modern 2026 stacks (`Gemma 4`, `Apertus`).
+
 
 
 

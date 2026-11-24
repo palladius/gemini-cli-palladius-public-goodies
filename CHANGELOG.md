@@ -1,3 +1,8 @@
+## [0.6.54] - 2026-11-23
+
+- 📽️🚦🧩 **`presentation-that-riccardo-likes` (`v1.7.0`)**: Added **§19 Anti-Wall-of-Tabs, Semantic Traffic-Light Colors & "70-Year-Old Mom" Clarity**: splits dense `6-8` tab grids into uniform `1/N..N/N` Card + Visual sequences (with real editable examples like an Enterprise AI Model Inventory table), enforces strict semantic colors (`Red` = danger/broken/banned ONLY, `Green` = safe/fix, `Amber` = regulated/caution, `Blue/Teal` = neutral architecture), bans unexplained 3-letter acronyms (`Zero Data Retention (ZDR)` spelled out on sight), mandates `Month + Year` regulatory dates + clickable primary links, styles code/token identifiers (`sub=alice`, `~/.config`, `0.95^20`) in `Roboto Mono` pills, and enforces `Gemma 4` over deprecated `Gemma 3`.
+- 🚀 Bumped version to 0.6.54.
+
 ## [0.6.53] - 2026-11-20
 
 - 💃🧭 **`chumbia` (`v1.5.4`)**: Updated Phase 3 (`/learn` Target Routing) to forbid editing chezmoi-managed `~/.gemini/AGENTS.md` / `GEMINI.md` directly and route global learnings to `~/.gemini/carlessian/AGENTS_LOCAL.md`, work-only learnings to `~/.gemini/carlessian/AGENTS_WORK.md`, and repo/skill learnings to the local repo `AGENTS.md` or `SKILL.md`.
