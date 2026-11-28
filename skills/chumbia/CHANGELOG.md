@@ -62,3 +62,8 @@ All notable changes to this skill will be documented in this file.
 
 - 🧭 **`/learn` Target Routing (`~/.gemini/carlessian/AGENTS_LOCAL.md`)**:
   - Updated Phase 3 to forbid editing chezmoi-managed `~/.gemini/AGENTS.md` / `GEMINI.md` directly and route global learnings to `~/.gemini/carlessian/AGENTS_LOCAL.md`, work-only learnings to `~/.gemini/carlessian/AGENTS_WORK.md`, and repo/skill learnings to the local repo `AGENTS.md` or `SKILL.md`.
+
+## [1.5.5] - 2026-11-28
+
+- 🚫📦 **Removed fake Antigravity "Archivia Chat" button**: the applet POSTed to a non-existent `/_sidecar/send-message` endpoint, swallowed the error in an empty `catch {}`, and falsely showed "🔒 Sessione Archiviata". Antigravity exposes no documented archive API (MCP / CLI / `<agent-embed>` bridge), so the applet is now a static **Sign-Off Card** with manual archive steps (Sidebar → Unpin → Archive).
+- 🚦 **Render-only-if-green rule**: the card must be rendered ONLY when all Phase 1 gates pass (it was shown with "TUTTO VERIFICATO" in a session blocked on a `master.key` / `credentials.yml.enc` mismatch).

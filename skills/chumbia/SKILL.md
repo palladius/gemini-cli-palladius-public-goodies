@@ -10,11 +10,11 @@ description: >-
   git worktrees (with safe common-dir navigation & ancestor verification), leftover node_modules/
   and build caches (via 'just clean'), cancels active background timers, piggybacks a mandatory
   '/learn' session-learnings distillation, settles/archives the thread on T3 Code via MCP
-  ('t3_thread_organize') or renders an interactive archival applet on Antigravity ('<agent-embed>'),
+  ('t3_thread_organize') or renders a static sign-off card with manual archive steps on Antigravity,
   and concludes with CHUMBIA! so the session can be archived.
 compatibility: gemini-cli, antigravity, claude, t3-code
 metadata:
-  version: "1.5.4"
+  version: "1.5.5"
   author: "Riccardo Carlesso"
   tags: "cleanup, git, worktree, branch, workflow, session-end, chumbia, hygiene, learn, learnings, breadcrumbs, superpowers, t3-code, mcp, auto-archive"
 ---
@@ -39,7 +39,7 @@ When invoked, run the 5-step protocol below:
 3. **Phase 3 — 🧠 `/learn` & 🤖 AX Piggyback**: Distill session and Agent Experience (AX) learnings, log AX items via `ax_toolkit.py learn`, and emit a `/learn` snippet.
 4. **Phase 4 — Harness-Aware Settle/Archive, Clear `.chumbia.touch` & Sign-Off**:
    - On **T3 Code**: Automatically call `t3_thread_organize` with `action: "archive"` (or `"settle"`).
-   - On **Antigravity**: Render the interactive **Chumbia Archival Applet** via `<agent-embed>` with a blue "Archivia Chat" button.
+   - On **Antigravity**: No archive API exists — render the static **Chumbia Sign-Off Card** via `<agent-embed>` (only if Phase 1 passed) and tell the user to archive manually from the sidebar.
    - Conclude with **`CHUMBIA! 💃🕺🎺🦖✨`**.
 
 ---
@@ -212,13 +212,17 @@ When Phases 1, 2, and 3 are complete:
      *(Note: omitting `threadId` targets the current thread; settling applies automatically at the end of the turn).*
 
    - **If on Antigravity (Desktop / IDE / agy CLI)**:
-     Render the interactive **Chumbia Archival Applet** inline in chat:
+     > ⚠️ **No programmatic archive exists on Antigravity.** There is no documented MCP tool, CLI command, or `<agent-embed>` JS bridge to archive the hosting conversation (verified 2026-11-28). Versions ≤ 1.5.4 POSTed to a made-up `/_sidecar/send-message` endpoint, swallowed the error, and falsely showed "Sessione Archiviata". **Never claim the chat was archived**, never invent host endpoints, and never poke undocumented local services or app state to fake it.
+     >
+     > 🚦 **Render the card ONLY if every Phase 1 gate passed.** If Phase 1 stopped (e.g. a pending credentials mismatch), do NOT render it — its "all green" badges would contradict the blocker.
+
+     Render the static **Chumbia Sign-Off Card** inline in chat (status + manual archive instructions, no fake button):
      1. Write `$SKILL_DIR/scripts/chumbia_applet.html` to `<appDataDir>/brain/<conversation-id>/chumbia_applet.html` using the native file-creation tool (`write_file` / `write_to_file`, **not** shell `cp`) with `ArtifactMetadata` (`UserFacing: true`, `RequestFeedback: false`). Ensure the HTML loads the CSP-allowlisted Tailwind script (`https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js`) rather than `https://cdn.tailwindcss.com` (blocked by `<agent-embed>` CSP).
      2. Render the inline embed widget in your response:
         ```html
         <agent-embed src="file:///<appDataDir>/brain/<conversation-id>/chumbia_applet.html"></agent-embed>
         ```
-     *(This displays a card with a prominent blue button **"📦 Archivia Chat"** and secondary **"Mantieni Aperta"**).*
+     *(This displays a status card telling the user to archive manually: Sidebar → right-click → **Archive**, after **Unpin** if pinned).*
 
 3. **End with the Joyful Chumbia Sign-Off**:
 
@@ -230,7 +234,7 @@ Tutto pulito e archiviato su `main` — puoi chiudere o distruggere questa conve
 - ✅ **Git & Main**: `origin/main` allineato (`vX.Y.Z`), working tree pulito, test verdi.
 - 🌿 **Branch & Worktree**: [Rimosso worktree temporaneo / eliminato branch locale e remoto `<branch>` / `git fetch --prune` eseguito].
 - 🧹 **Pulizie Disco & Task**: [`just clean` eseguito / rimossi `node_modules` temporanei / nessun task o cron rimasto attivo].
-- 📦 **Session Status**: [Archiviata / Settled via T3 MCP | In attesa click su Applet Antigravity].
+- 📦 **Session Status**: [Archiviata / Settled via T3 MCP | Antigravity: da archiviare a mano dalla sidebar].
 - 🧠 **Learnings & 🤖 AX Loop (`/learn` Piggyback)**:
   - 💡 *Takeaways*: [1–3 bullet sintetici].
   - 🤖 *AX Growth (`carlessian-agent-experience`)*: [Registrato via `ax_toolkit.py learn` / Nessuna frizione AX rilevata].

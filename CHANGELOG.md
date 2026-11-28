@@ -1,3 +1,8 @@
+## [0.6.55] - 2026-11-28
+
+- 💃🚫 **`chumbia` (`v1.5.5`)**: Replaced the fake Antigravity "📦 Archivia Chat" applet (POST to a non-existent `/_sidecar/send-message`, error swallowed, false "Sessione Archiviata") with an honest static Sign-Off Card + manual archive instructions, and added a rule to render it only when all Phase 1 gates pass.
+- 🚀 Bumped version to 0.6.55.
+
 ## [0.6.54] - 2026-11-23
 
 - 📽️🚦🧩 **`presentation-that-riccardo-likes` (`v1.7.0`)**: Added **§19 Anti-Wall-of-Tabs, Semantic Traffic-Light Colors & "70-Year-Old Mom" Clarity**: splits dense `6-8` tab grids into uniform `1/N..N/N` Card + Visual sequences (with real editable examples like an Enterprise AI Model Inventory table), enforces strict semantic colors (`Red` = danger/broken/banned ONLY, `Green` = safe/fix, `Amber` = regulated/caution, `Blue/Teal` = neutral architecture), bans unexplained 3-letter acronyms (`Zero Data Retention (ZDR)` spelled out on sight), mandates `Month + Year` regulatory dates + clickable primary links, styles code/token identifiers (`sub=alice`, `~/.config`, `0.95^20`) in `Roboto Mono` pills, and enforces `Gemma 4` over deprecated `Gemma 3`.
